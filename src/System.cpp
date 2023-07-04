@@ -32,12 +32,6 @@ System::~System()
 {
 }
 
-// TODO  - Remove
-void System::Test()
-{
-    mCpu.Test();
-}
-
 //--------//
 // Read
 //

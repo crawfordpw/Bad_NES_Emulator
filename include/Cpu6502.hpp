@@ -27,9 +27,6 @@ class Cpu6502 : public Device
 
         void Reset();
 
-        // TODO - Remove
-        void Test(void);
-
     private:
 
         enum ExtraCycleFlags
@@ -61,6 +58,9 @@ class Cpu6502 : public Device
             BRK_VECTOR,
             NUM_VECTORS
         };
+
+        void NMI();
+        void IRQ();
 
         uint8_t  GetFlag(Flags lFlag)   {return (mRegisters.mStatus & lFlag) ? FLAG_SET : FLAG_NOT_SET;}
         void     SetFlag(Flags lFlag)   {mRegisters.mStatus |= lFlag;}

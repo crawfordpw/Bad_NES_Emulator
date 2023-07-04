@@ -60,10 +60,68 @@ Cpu6502::~Cpu6502()
 {
 }
 
-// TODO - Remove
-void Cpu6502::Test(void)
+//--------//
+// NMI
+//
+// Non-maskable interrupt. Does exactly what an IRQ does just reading from
+// a different interrupt vector. Can happen even when interrupts are disabled.
+//--------//
+//
+void Cpu6502::NMI()
 {
-    
+    // NMI still interrupts, even if they are disabled.
+    // https://www.nesdev.org/wiki/Status_flags#I:_Interrupt_Disable
+
+    // Store the return address onto the stack, high byte then low byte.
+    PushStack((mRegisters.mPc >> 8) & 0x00FF);
+    PushStack(mRegisters.mPc & 0x00FF);
+
+    // Make sure break flag is clear.
+    ClearFlag(Flags::B);
+    SetFlag(Flags::U);                  // Unused flag should always be high.
+    PushStack(mRegisters.mStatus);
+
+    // Disable interrupts.
+    SetFlag(Flags::I);
+
+    // Finally, jump to the address from the interrupt vector.
+    mRegisters.mPc = (mSystem->Read(mInterruptVectors[NMI_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[NMI_VECTOR].mHighByte) << 8));
+
+    // Hardware takes 7 clock cycles to do this.
+    mCyclesLeft = 7;
+}
+
+//--------//
+// IRQ
+//
+// Interrupt request. Store the current program counter onto stack
+// along with the status register. Can only be done if interrupts are
+// not disabled.
+//--------//
+//
+void Cpu6502::IRQ()
+{
+    // If interrupts are enabled.
+    if (GetFlag(Flags::I) == 0)
+    {
+        // Store the return address onto the stack, high byte then low byte.
+        PushStack((mRegisters.mPc >> 8) & 0x00FF);
+        PushStack(mRegisters.mPc & 0x00FF);
+
+        // Make sure break flag is clear.
+        ClearFlag(Flags::B);
+        SetFlag(Flags::U);                  // Unused flag should always be high.
+        PushStack(mRegisters.mStatus);
+
+        // Disable interrupts.
+        SetFlag(Flags::I);
+
+        // Finally, jump to the address from the interrupt vector.
+        mRegisters.mPc = (mSystem->Read(mInterruptVectors[IRQ_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[IRQ_VECTOR].mHighByte) << 8));
+
+        // Hardware takes 7 clock cycles to do this.
+        mCyclesLeft = 7;
+    }
 }
 
 //--------//
@@ -74,20 +132,31 @@ void Cpu6502::Test(void)
 //
 void Cpu6502::Reset()
 {
-    mOpcode             = 0x1A;                 // NOP - Implied
+    // Reset registers and internals.
+    mOpcode             = 0x1A;                 // NOP - Implied. Souldn't matter since PC will jump to some other Opcode.
     mAddress            = 0x0000;
     mRelativeAddress    = 0x0000;
-    mRegisters.mPc      = 0x0000;
     mRegisters.mAcc     = 0x00;
     mRegisters.mX       = 0x00;
     mRegisters.mY       = 0x00;
-    mRegisters.mStatus  = 0x00 | Flags::U;      // Unused flag should always be high.
-                                                // https://github.com/OneLoneCoder/olcNES/issues/34
+    mRegisters.mStatus  = 0x00 | Flags::U | Flags::I;   // Unused flag should always be high.
+                                                        // https://github.com/OneLoneCoder/olcNES/issues/34
 
+    // Believe this is what the hardware does. Not sure if this should push the PC and status
+    // register to the stack, or 0x00. The hardware does "fake" reads of those registers and
+    // discards the results, decrementing the SP. Push 0x00 for now until there is a reason not to.
+    // Regardless, SP should end up at 0xFD after this.
+    // https://www.pagetable.com/?p=410
     mRegisters.mSp      = 0x00;
-    PushStack((mRegisters.mPc >> 8) & 0x00FF);
-    PushStack(mRegisters.mPc & 0x00FF);
-    PushStack(mRegisters.mStatus);
+    PushStack(0x00);
+    PushStack(0x00);
+    PushStack(0x00);
+
+    // Grab program counter from known interrupt vector.
+    mRegisters.mPc = (mSystem->Read(mInterruptVectors[RESET_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[RESET_VECTOR].mHighByte) << 8));
+
+    // Hardware takes 7 clock cycles to do this.
+    mCyclesLeft = 7;
 }
 
 //--------//
@@ -640,17 +709,19 @@ uint8_t Cpu6502::BRK()
     // being padding. Skip over it.
     ++mRegisters.mPc;
 
-    // Disable interrupts.
-    SetFlag(Flags::I);
-
     // Store the return address onto the stack, high byte then low byte.
     PushStack((mRegisters.mPc >> 8) & 0x00FF);
     PushStack(mRegisters.mPc & 0x00FF);
 
     // Mark the break in status register, then store it onto the stack.
     SetFlag(Flags::B);
+    SetFlag(Flags::U);                  // Unused flag should always be high.
     PushStack(mRegisters.mStatus);
     ClearFlag(Flags::B);
+
+    // Disable interrupts.
+    // Should this happen before status is pushed onto stack?
+    SetFlag(Flags::I);
 
     // Finally, jump to the address from the interrupt vector.
     mRegisters.mPc = (mSystem->Read(mInterruptVectors[BRK_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[BRK_VECTOR].mHighByte) << 8));
@@ -1233,6 +1304,9 @@ uint8_t Cpu6502::PLP()
 {
     // Pop value from stack and store to status register.
     mRegisters.mStatus = PopStack();
+
+    // Ignore break flag.
+    ClearFlag(Flags::B);
 
     // Unused flag should always be high.
     // https://github.com/OneLoneCoder/olcNES/issues/34

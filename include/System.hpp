@@ -25,9 +25,6 @@ class System
         System(void);
         ~System(void);
 
-        // TODO - Remove
-        void Test(void);
-
         DataType Read(AddressType lAddress);
         void     Write(AddressType lAddress, DataType lData);
 

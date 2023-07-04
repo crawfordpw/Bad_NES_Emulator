@@ -18,7 +18,6 @@
 int main(void)
 {
     System lNes;
-    lNes.Test();
 
     return 0;
 }
