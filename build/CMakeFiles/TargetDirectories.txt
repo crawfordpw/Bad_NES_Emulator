@@ -1,0 +1,3 @@
+Z:/Code/C++/6502_Cpu/build/CMakeFiles/rebuild_cache.dir
+Z:/Code/C++/6502_Cpu/build/CMakeFiles/NES.dir
+Z:/Code/C++/6502_Cpu/build/CMakeFiles/edit_cache.dir
