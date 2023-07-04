@@ -11,6 +11,12 @@
 #include <System.hpp>
 
 //--------//
+//
+// Cpu6502
+//
+//--------//
+
+//--------//
 // Cpu6502
 //
 // Constructor.
@@ -58,6 +64,47 @@ Cpu6502::Cpu6502()
 //
 Cpu6502::~Cpu6502()
 {
+}
+
+//--------//
+// StepClock
+//
+// Performs the fetch-decode-execute cycle for instructions. All
+// operations execute fully on the "first" clock cycle of that
+// instruction. If an instruction is in progress (indicated by
+// the mCyclesLeft variable), then just decrement the counter and
+// do nothing else.
+//--------//
+//
+void Cpu6502::StepClock()
+{
+    uint8_t lAddCycleAddress;
+    uint8_t lAddCycleInstruction;
+
+    // No instruction is in progress, so perform fetch-decode-execute.
+    if (mCyclesLeft == 0)
+    {
+        // Grab next instruction and increment program counter.
+        FetchOpcode();
+
+        // Figure out where the data is going to be.
+        lAddCycleAddress     = (this->*mOpcodeMatrix[mOpcode].mAddressMode)();
+
+        // Execute the instruction.
+        lAddCycleInstruction = (this->*mOpcodeMatrix[mOpcode].mInstruction)();
+
+        // If both the address mode and instruction indicates that an extra cycle needs to be added, add it here.
+        if (lAddCycleAddress == Cpu6502::ADD_CLOCK_CYCLE && lAddCycleInstruction == Cpu6502::ADD_CLOCK_CYCLE)
+        {
+            mCyclesLeft += 1;
+        }
+
+        // Calculate how much cycles this instruction takes. 
+        mCyclesLeft += mOpcodeMatrix[mOpcode].mCycles;
+    }
+
+    // Decrement the cycles counter, as one cycle has now elapsed.
+    --mCyclesLeft;
 }
 
 //--------//

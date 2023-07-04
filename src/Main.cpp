@@ -7,7 +7,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include "System.hpp"
+#include <System.hpp>
+#include <File.hpp>
 
 //--------//
 // main
@@ -17,7 +18,11 @@
 //
 int main(void)
 {
+    // Create the NES.
     System lNes;
+
+    // Grab some program from a file.
+    UnixFile lFile;
 
     return 0;
 }

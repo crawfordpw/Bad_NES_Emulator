@@ -27,6 +27,7 @@ class System
 
         DataType Read(AddressType lAddress);
         void     Write(AddressType lAddress, DataType lData);
+        void     LoadMemory(DataType lProgram[], AddressType lSize);
 
     public:
 

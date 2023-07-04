@@ -26,6 +26,7 @@ class Cpu6502 : public Device
         ~Cpu6502();
 
         void Reset();
+        void StepClock();
 
     private:
 
