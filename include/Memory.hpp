@@ -27,6 +27,7 @@ class Memory : public Device
 
         virtual DataType Read(AddressType lAddress) = 0;
         virtual void     Write(AddressType lAddress, DataType lData) = 0;
+        AddressType      GetSize(void) {return mSize;}
         
     protected:
 
@@ -97,7 +98,7 @@ inline void MemoryMapped::Initialize(AddressType lSize)
 //
 inline DataType MemoryMapped::Read(AddressType lAddress)
 {
-    if (lAddress <= mSize)
+    if (lAddress < mSize)
     {
         return mMemory[lAddress];
     }

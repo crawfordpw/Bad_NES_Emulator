@@ -25,15 +25,18 @@ class System
         System(void);
         ~System(void);
 
+        void     Start(void);
         DataType Read(AddressType lAddress);
         void     Write(AddressType lAddress, DataType lData);
-        void     LoadMemory(DataType lProgram[], AddressType lSize);
+        void     LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset);
+        void     DumpMemory(const char * lFilename);
 
     public:
 
         enum
         {
-            RAM_SIZE = 2048
+            //RAM_SIZE = 2048
+            RAM_SIZE = 1024 * 64 - 1    // Temporary for testing until ROM is in.
         };
     
         Cpu6502      mCpu;

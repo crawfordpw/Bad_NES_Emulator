@@ -7,6 +7,40 @@
 /////////////////////////////////////////////////////////////////////
 
 #include <System.hpp>
+#include <File.hpp>
+
+//--------//
+// ValidHexCharacter
+//
+// Helper function to check if a character is a valid hex character.
+// If it is, then convert it to a number.
+//
+// param[in]  lChar   The character to check. 
+// param[out] lByte   The converted byte if it was valid. 
+// returns  True if its a valid hex character, fals otherwise. 
+//--------//
+//
+bool ValidHexCharacter(char lChar, uint8_t * lByte)
+{
+    if (lChar >= 'a' && lChar <= 'f')
+    {
+        *lByte = static_cast<uint8_t>(lChar - 'a' + 10);
+        return true;
+    }
+
+    if (lChar >= 'A' && lChar <= 'F')
+    {
+        *lByte = static_cast<uint8_t>(lChar - 'A' + 10);
+        return true;
+    }
+
+    if (lChar >= '0' && lChar <= '9')
+    {
+        *lByte = static_cast<uint8_t>(lChar - '0');
+        return true;
+    }
+    return false;
+}
 
 //--------//
 //
@@ -25,6 +59,9 @@ System::System()
 {
     mCpu.Connect(this);
     mRam.Connect(this);
+
+    Write(mCpu.mInterruptVectors[Cpu6502::RESET_VECTOR].mLowByte, 0x00);
+    Write(mCpu.mInterruptVectors[Cpu6502::RESET_VECTOR].mHighByte, 0x00);
     mCpu.Reset();
 }
 
@@ -36,6 +73,38 @@ System::System()
 //
 System::~System()
 {
+}
+
+//--------//
+// Start
+//
+// Starts running a program already loaded into memory.
+//
+// NOTE: This structure is just in for testing purposes.
+//
+//--------//
+//
+void System::Start(void)
+{
+    uint8_t lCycles;
+    uint8_t lInstructions = 0;
+
+    while (true)
+    {
+        mCpu.StepClock();
+        lCycles = mCpu.GetCyclesLeft();
+        if (lCycles == 0)
+        {
+            ++lInstructions;
+        }
+        if (lInstructions > 7)
+        {
+            mCpu.Reset();
+            lInstructions = 0;
+            DumpMemory("../MemDump.hex");
+            break;
+        }
+    }
 }
 
 //--------//
@@ -74,14 +143,76 @@ void System::Write(AddressType lAddress, DataType lData)
 // This is likely a temporary function for testing the CPU,
 // or at the very least will be heavily modified as more pieces are added.
 //
+// pre: No size checking is performed on the program or the offset. It is
+//      assumed that the program will all fit inside memory.
+//
 // param[in] lProgram   The program to load, an array of uint8_t.
 // param[in] lSize      Size of the array.
+// param[in] lOffset    Offset in memory to start loading program to.
 //--------//
 //
-void System::LoadMemory(DataType lProgram[], AddressType lSize)
+void System::LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset)
 {
+    uint8_t     lHexByteLow;
+    uint8_t     lHexByteHigh;
+    bool        lHighAcquired = false;
+
     for (AddressType lIndex = 0; lIndex < lSize; ++lIndex)
     {
-        Write(lIndex, lProgram[lIndex]);
+        // Skip over invalid characters.
+        if (!ValidHexCharacter(lProgram[lIndex], &lHexByteLow))
+        {
+            continue;
+        }
+
+        // We've already got the high hex byte, which means we just acquired the low byte.
+        // Combine them into one byte and then write out to memory.
+        if (lHighAcquired)
+        {
+            lHighAcquired = false;
+            Write(lOffset++, ((lHexByteHigh << 4) | lHexByteLow));
+            continue;
+        }
+
+        // If made it this far, then it is the high hex byte. Grab the low on next iteration.
+        lHexByteHigh = lHexByteLow;
+        lHighAcquired = true;
     }
+}
+
+//--------//
+// DumpMemory
+//
+// Dumps contents of memory to a file.
+//
+// param[in] lFilename   File to write memory to.
+//--------//
+//
+void System::DumpMemory(const char * lFilename)
+{
+    static const char * lHexArray = "0123456789ABCDEF";
+    size_t   lSize = mRam.GetSize() * 2;
+    char     lBuffer[lSize];
+    DataType lValue;
+
+    // Open up a file.
+    UnixFile lFile(lFilename, "w+");
+
+    // Don't proceed if can't open.
+    if (lFile.GetStatus() != File::SUCCESS)
+    {
+        printf("Couldn't open file!");
+        return;
+    }
+    
+    // Loop through all of memory and convert to hex.
+    for (AddressType lIndex = 0; lIndex < mRam.GetSize(); ++lIndex)
+    {
+        lValue = Read(lIndex) & 0xFF;
+        lBuffer[lIndex * 2] = lHexArray[lValue >> 4];
+        lBuffer[lIndex * 2 + 1] = lHexArray[lValue & 0x0F];
+    }
+
+    // Write out to file.
+    lFile.Write(lBuffer, lSize);
 }

@@ -25,6 +25,7 @@
 //--------//
 //
 UnixFile::UnixFile(const char * lFilename, const char * lMode)
+  : mFileHandle(NULL)
 {
     mStatus = Open(lFilename, lMode);
 }

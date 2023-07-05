@@ -22,11 +22,29 @@ class Cpu6502 : public Device
 {
     public:
 
+        enum InterruptVectorIndex
+        {
+            NMI_VECTOR       = 0,
+            RESET_VECTOR,
+            IRQ_VECTOR,
+            BRK_VECTOR,
+            NUM_VECTORS
+        };
+
+        struct InterruptVector
+        {
+            uint16_t mLowByte;
+            uint16_t mHighByte;
+        };
+
         Cpu6502();
         ~Cpu6502();
 
-        void Reset();
-        void StepClock();
+        void    Reset();
+        void    StepClock();
+        uint8_t GetCyclesLeft() {return mCyclesLeft;}
+
+        const InterruptVector  mInterruptVectors[NUM_VECTORS];
 
     private:
 
@@ -49,15 +67,6 @@ class Cpu6502 : public Device
 
             FLAG_NOT_SET = 0,
             FLAG_SET     = 1
-        };
-
-        enum InterruptVectorIndex
-        {
-            NMI_VECTOR       = 0,
-            RESET_VECTOR,
-            IRQ_VECTOR,
-            BRK_VECTOR,
-            NUM_VECTORS
         };
 
         void NMI();
@@ -121,19 +130,12 @@ class Cpu6502 : public Device
             uint16_t  mPc;          // Program counter.
         };
 
-        struct InterruptVector
-        {
-            uint16_t mLowByte;
-            uint16_t mHighByte;
-        };
-
         const std::vector<Instruction> mOpcodeMatrix;
         DataType                 mOpcode;               // Opcode of current instruction being executed.
         AddressType              mAddress;              // Address used for the current instruction.
         AddressType              mRelativeAddress;      // Address offset used for branch instructions.
         uint8_t                  mCyclesLeft;           // Remaining clock cycles current instruction has.
         Registers                mRegisters;            // All registers the cpu has.
-        const InterruptVector    mInterruptVectors[NUM_VECTORS];
         inline static constexpr uint16_t       mStartOfStack = 0x0100;
         inline static constexpr uint8_t        mStackSize    = 0xFF;
 };

@@ -23,7 +23,15 @@
 //--------//
 //
 Cpu6502::Cpu6502()
-  : // Matrix based on http://www.oxyron.de/html/opcodes02.html
+  :
+    mInterruptVectors
+    {
+        {0xFFFA, 0xFFFB},
+        {0xFFFC, 0xFFFD},
+        {0xFFFE, 0xFFFF},
+        {0xFFFE, 0xFFFF},
+    },
+    // Matrix based on http://www.oxyron.de/html/opcodes02.html
     mOpcodeMatrix
     {
         // Indexed Indirect = izx
@@ -45,13 +53,6 @@ Cpu6502::Cpu6502()
         /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2},{&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLD,&Cpu6502::Implied,2},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
         /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3},{&Cpu6502::SBC,&Cpu6502::ZeroPage,3},{&Cpu6502::INC,&Cpu6502::ZeroPage,5},{&Cpu6502::KIL,&Cpu6502::ZeroPage,5},{&Cpu6502::INX,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::CPX,&Cpu6502::Absolute,4},{&Cpu6502::SBC,&Cpu6502::Absolute,4},{&Cpu6502::INC,&Cpu6502::Absolute,6},{&Cpu6502::KIL,&Cpu6502::Absolute,6},
         /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2},{&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::SED,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7}
-    },
-    mInterruptVectors
-    {
-        {0xFFFA, 0xFFFB},
-        {0xFFFC, 0xFFFD},
-        {0xFFFE, 0xFFFF},
-        {0xFFFE, 0xFFFF},
     }
 {
 }
@@ -246,6 +247,12 @@ void Cpu6502::FetchOpcode()
 //
 DataType Cpu6502::FetchData()
 {
+    // For immediate addressing, the data immediately follow the opcode.
+    // This was already retrieved and stored in a variable.
+    if (mOpcodeMatrix[mOpcode].mAddressMode == &Immediate)
+    {
+        return mAddress;
+    }
     return mSystem->Read(mAddress);
 }
 
