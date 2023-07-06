@@ -7,8 +7,12 @@ project(
     LANGUAGES CXX
     DESCRIPTION "NES Emulator"
 )
+set(CMAKE_CXX_FLAGS "-std=gnu++11")
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/ MAIN_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ MAIN_SOURCES)
+
+configure_file(config.h.in Config.h)
 
 set(SOURCES
     ${SOURCES} 

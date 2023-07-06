@@ -29,7 +29,8 @@ class System
         DataType Read(AddressType lAddress);
         void     Write(AddressType lAddress, DataType lData);
         void     LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset);
-        void     DumpMemory(const char * lFilename);
+        void     DumpMemoryAsHex(const char * lFilename);
+        void     DumpMemoryAsRaw(const char * lFilename);
 
     public:
 

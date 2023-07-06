@@ -7,7 +7,7 @@
 /////////////////////////////////////////////////////////////////////
 
 #include <System.hpp>
-#include <File.hpp>
+#include <File/ApiFile.hpp>
 
 //--------//
 // ValidHexCharacter
@@ -101,7 +101,7 @@ void System::Start(void)
         {
             mCpu.Reset();
             lInstructions = 0;
-            DumpMemory("../MemDump.hex");
+            DumpMemoryAsRaw("../MemDump.hex");
             break;
         }
     }
@@ -181,25 +181,27 @@ void System::LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset)
 }
 
 //--------//
-// DumpMemory
+// DumpMemoryAsHex
 //
-// Dumps contents of memory to a file.
+// Dumps contents of memory to a file, converting raw memory to hex string.
 //
 // param[in] lFilename   File to write memory to.
 //--------//
 //
-void System::DumpMemory(const char * lFilename)
+void System::DumpMemoryAsHex(const char * lFilename)
 {
     static const char * lHexArray = "0123456789ABCDEF";
     size_t   lSize = mRam.GetSize() * 2;
     char     lBuffer[lSize];
     DataType lValue;
+    File *   lFile;
+    int      lStatus;
 
     // Open up a file.
-    UnixFile lFile(lFilename, "w+");
+    lStatus = ApiFileSystem::Open(lFilename, "w+", &lFile);
 
     // Don't proceed if can't open.
-    if (lFile.GetStatus() != File::SUCCESS)
+    if (lStatus != File::SUCCESS)
     {
         printf("Couldn't open file!");
         return;
@@ -214,5 +216,40 @@ void System::DumpMemory(const char * lFilename)
     }
 
     // Write out to file.
-    lFile.Write(lBuffer, lSize);
+    ApiFileSystem::Read(lBuffer, lSize, lFile);
+}
+
+//--------//
+// DumpMemoryAsRaw
+//
+// Dumps raw contents of memory to a file.
+//
+// param[in] lFilename   File to write memory to.
+//--------//
+//
+void System::DumpMemoryAsRaw(const char * lFilename)
+{
+    size_t   lSize = mRam.GetSize();
+    char     lBuffer[lSize];
+    File *   lFile;
+    int      lStatus;
+
+    // Open up a file.
+    lStatus = ApiFileSystem::Open(lFilename, "w+", &lFile);
+
+    // Don't proceed if can't open.
+    if (lStatus != File::SUCCESS)
+    {
+        printf("Couldn't open file!");
+        return;
+    }
+    
+    // Loop through all of memory and convert to hex.
+    for (AddressType lIndex = 0; lIndex < lSize; ++lIndex)
+    {
+        lBuffer[lIndex] = static_cast<char>(Read(lIndex));
+    }
+
+    // Write out to file.
+    ApiFileSystem::Write(lBuffer, lSize, lFile);
 }

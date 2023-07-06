@@ -1,22 +1,30 @@
 /////////////////////////////////////////////////////////////////////
 //
-// File.cpp
+// StdFile.cpp
 //
-// Implementation file for file operations.
+// Implementation file for c++ standard files.
 //
 /////////////////////////////////////////////////////////////////////
 
-#include <stdint.h>
-#include <File.hpp>
+#include <File/StdFile.hpp>
+
+#ifdef _WIN32
+    #include <direct.h>
+    #include <windows.h>
+    #define GetCurrentDir _getcwd
+#elif __linux__
+    #include <unistd.h>
+    #define GetCurrentDir getcwd
+#endif
 
 //--------//
 //
-// UnixFile
+// StdFile
 //
 //--------//
 
 //--------//
-// UnixFile
+// StdFile
 //
 // Constructor. Opens a file, setting mStatus in the process.
 //
@@ -24,19 +32,19 @@
 // param[in] lMode       Mode to open the file with, "r", "w", etc.
 //--------//
 //
-UnixFile::UnixFile(const char * lFilename, const char * lMode)
+StdFile::StdFile(const char * lFilename, const char * lMode)
   : mFileHandle(NULL)
 {
     mStatus = Open(lFilename, lMode);
 }
 
 //--------//
-// ~UnixFile
+// ~StdFile
 //
 // Destructor. Closes the file handle
 //--------//
 //
-UnixFile::~UnixFile(void)
+StdFile::~StdFile(void)
 {
     Close();
 }
@@ -51,7 +59,7 @@ UnixFile::~UnixFile(void)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::Open(const char * lFilename, const char * lMode)
+int StdFile::Open(const char * lFilename, const char * lMode)
 {
     // Don't try opening another file if one is already opened.
     if (mFileHandle != NULL)
@@ -83,7 +91,7 @@ int UnixFile::Open(const char * lFilename, const char * lMode)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::Close()
+int StdFile::Close()
 {
     // Don't try closing a file if the file handle doesn't exist.
     if (mFileHandle == NULL)
@@ -94,6 +102,7 @@ int UnixFile::Close()
 
     // Close the file.
     mStatus = fclose(mFileHandle);
+    mFileHandle = NULL;
 
     // Failed to close the file for some reason.
     if (mStatus != 0)
@@ -121,7 +130,7 @@ int UnixFile::Close()
 //          NOTE: Need to check status variable to know if succesful.
 //--------//
 //
-size_t UnixFile::Read(void * lBuffer, size_t lCount)
+size_t StdFile::Read(void * lBuffer, size_t lCount)
 {
     size_t lNumRead;
 
@@ -176,7 +185,7 @@ size_t UnixFile::Read(void * lBuffer, size_t lCount)
 //          NOTE: Need to check status variable to know if succesful.
 //--------//
 //
-size_t UnixFile::Write(void * lBuffer, size_t lCount)
+size_t StdFile::Write(void * lBuffer, size_t lCount)
 {
     size_t lNumWrote;
 
@@ -223,7 +232,7 @@ size_t UnixFile::Write(void * lBuffer, size_t lCount)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::Seek(long int lOffset)
+int StdFile::Seek(long int lOffset)
 {
     return SeekHelper(lOffset, SEEK_CUR);
 }
@@ -237,7 +246,7 @@ int UnixFile::Seek(long int lOffset)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::SeekFromStart(long int lOffset)
+int StdFile::SeekFromStart(long int lOffset)
 {
     return SeekHelper(lOffset, SEEK_SET);
 }
@@ -251,7 +260,7 @@ int UnixFile::SeekFromStart(long int lOffset)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::SeekFromEnd(long int lOffset)
+int StdFile::SeekFromEnd(long int lOffset)
 {
     return SeekHelper(lOffset, SEEK_END);
 }
@@ -269,7 +278,7 @@ int UnixFile::SeekFromEnd(long int lOffset)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::SeekHelper(long int lOffset, int lMode)
+int StdFile::SeekHelper(long int lOffset, int lMode)
 {
     // Don't try seeking if the file handle doesn't exist.
     if (mFileHandle == NULL)
@@ -302,7 +311,7 @@ int UnixFile::SeekHelper(long int lOffset, int lMode)
 // returns  Status on the operation.
 //--------//
 //
-int UnixFile::Tell(long int * lPosition)
+int StdFile::Tell(long int * lPosition)
 {
     // Don't try telling if the file handle doesn't exist.
     if (mFileHandle == NULL)
@@ -325,3 +334,250 @@ int UnixFile::Tell(long int * lPosition)
     mStatus = File::SUCCESS;
     return mStatus;
 }
+
+//--------//
+//
+// StdFileSystem
+//
+//--------//
+
+//--------//
+// OpenFile
+//
+// Opens a file. Creates a file using "new". Close will clean up the memory.
+//
+// param[in]  lFilename   Name of the file to open. 
+// param[in]  lMode       Mode to open the file with, "r", "w", etc.
+// param[out] lFile       The file structure created by open.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::OpenFile(const char * lFilename, const char * lMode, File ** lFile)
+{
+    StdFile * lStdFile = new StdFile(lFilename, lMode);
+    *lFile = reinterpret_cast<File *>(lStdFile);
+    return lStdFile->GetStatus();
+}
+
+//--------//
+// ReadFile
+//
+// Reads a file.
+//
+// pre      lBuffer is expected to have enough space to hold
+//          lCount bytes.
+//
+// param[in]    lBuffer     Location to read the bytes into.
+// param[in]    lCount      Number of bytes to read.
+// param[in]    lFile       The file structure to read from.
+// returns  The number of bytes wrote to a file.
+//          NOTE: Need to check status variable to know if succesful.
+//--------//
+//
+size_t StdFileSystem::ReadFile(void * lBuffer, size_t lCount, File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return 0;
+    }
+    return lFile->Read(lBuffer, lCount);
+}
+
+//--------//
+// WriteFile
+//
+// Writes to a file.
+//
+// pre      lBuffer is expected to hbe at least lCount bytes large.
+//
+// param[in]    lBuffer     Location to write the bytes from.
+// param[in]    lCount      Number of bytes to write.
+// param[in]    lFile       The file structure to write to.
+// returns  The number of bytes wrote to a file.
+//          NOTE: Need to check status variable to know if succesful.
+//--------//
+//
+size_t StdFileSystem::WriteFile(void * lBuffer, size_t lCount, File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return 0;
+    }
+    return lFile->Write(lBuffer, lCount);
+}
+
+//--------//
+// CloseFile
+//
+// Closes a file. Cleans up memory from Open.
+//
+// param[in]    lFile       The file structure to close.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::CloseFile(File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return File::FAILURE;
+    }
+    int lStatus = lFile->Close();
+    delete reinterpret_cast<StdFile *>(lFile);
+    return lStatus;
+}
+
+//--------//
+// SeekFile
+//
+// Sets the position indicator in file starting from the current position.
+//
+// param[in]    lOffset     Number of bytes to move file position.
+// param[in]    lFile       The file structure to seek.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::SeekFile(long int lOffset, File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return File::FAILURE;
+    }
+    return lFile->Seek(lOffset);
+}
+
+//--------//
+// SeekFromStartFile
+//
+// Sets the position indicator in file starting from the start of the file.
+//
+// param[in]    lOffset     Number of bytes to move file position.
+// param[in]    lFile       The file structure to seek.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::SeekFromStartFile(long int lOffset, File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return File::FAILURE;
+    }
+    return lFile->SeekFromStart(lOffset);
+}
+
+//--------//
+// SeekFromEndFile
+//
+// Sets the position indicator in file starting from the end of the file.
+//
+// param[in]    lOffset     Number of bytes to move file position.
+// param[in]    lFile       The file structure to seek.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::SeekFromEndFile(long int lOffset, File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return File::FAILURE;
+    }
+    return lFile->SeekFromEnd(lOffset);
+}
+
+//--------//
+// TellFile
+//
+// Get the current position in the file.
+//
+// param[out]   lPosition     The current position.
+// param[in]    lFile         The file structure to tell.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::TellFile(long int * lPosition, File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return File::FAILURE;
+    }
+    return lFile->Tell(lPosition);
+}
+
+//--------//
+// GetCwdFS
+//
+// Get the current working directory.
+//
+// returns  The current working directory.
+//--------//
+//
+const char * StdFileSystem::GetCwdFS(void)
+{
+    cCurrentDirectory = new char [FILENAME_MAX];
+
+    if (!GetCurrentDir(cCurrentDirectory, FILENAME_MAX))
+    {
+        delete [] cCurrentDirectory;
+        cCurrentDirectory = NULL;
+        return cCurrentDirectory;
+    }
+    return reinterpret_cast<const char *>(cCurrentDirectory);
+}
+
+//--------//
+//
+// WindowsFileSystem
+//
+//--------//
+
+#ifdef _WIN32
+//--------//
+// GetExecDirectoryFS
+//
+// Gets the directory from where the program is executing.
+//
+// returns  The execution directory.
+//--------//
+//
+const char * WindowsFileSystem::GetExecDirectoryFS(void)
+{
+    cExecDirectory = new char [FILENAME_MAX];
+    int lBytes = GetModuleFileName(NULL, cExecDirectory, FILENAME_MAX);
+
+    if (lBytes == 0)
+    {
+        delete [] cExecDirectory;
+        cExecDirectory = NULL;
+    }
+    return reinterpret_cast<const char *>(cExecDirectory);
+}
+#endif
+
+//--------//
+//
+// LinuxFileSystem
+//
+//--------//
+
+#ifdef __linux__
+//--------//
+// GetExecDirectoryFS
+//
+// Gets the directory from where the program is executing.
+//
+// returns  The execution directory.
+//--------//
+//
+const char * LinuxFileSystem::GetExecDirectoryFS(void)
+{
+    cExecDirectory = new char [FILENAME_MAX];
+    int lBytes = readlink("/proc/self/exe", cExecDirectory, FILENAME_MAX);
+
+    if (lBytes <= 0)
+    {
+        delete [] cExecDirectory;
+        cExecDirectory = NULL;
+    }
+    cExecDirectory[lBytes] = '\0';
+    return reinterpret_cast<const char *>(cExecDirectory);
+}
+#endif

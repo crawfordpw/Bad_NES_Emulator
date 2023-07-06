@@ -1,0 +1,19 @@
+/////////////////////////////////////////////////////////////////////
+//
+// Config.h
+//
+// Configuration and definitions file for the build.
+//
+/////////////////////////////////////////////////////////////////////
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// To enable logging, uncomment USE_LOGGER and one
+// of the other LOGGER define below it.
+#cmakedefine USE_LOGGER
+//#cmakedefine STDOUT_LOGGER
+//#cmakedefine FILE_LOGGER
+#cmakedefine STDOUT_FILE_LOGGER
+
+#endif

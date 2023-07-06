@@ -8,8 +8,14 @@
 
 #include <stdio.h>
 #include <System.hpp>
-#include <File.hpp>
+#include <File/StdFile.hpp>
 #include <unistd.h>
+
+#ifdef _WIN32
+    WindowsFileSystem * gFileSystem = new WindowsFileSystem();
+#elif __linux__
+    LinuxFileSystem * gFileSystem = new LinuxFileSystem();
+#endif
 
 //--------//
 // main
@@ -20,27 +26,30 @@
 int main(void)
 {
     long int lFileSize;
+    File *   lFile;
+    int      lStatus;
 
     // Create the NES.
     System lNes;
 
     // Grab program from a file.
-    UnixFile lFile("../Program.txt", "r");
+    lStatus = ApiFileSystem::Open("../Program.txt", "r", &lFile);
 
-    if (lFile.GetStatus() != File::SUCCESS)
+    if (lStatus != File::SUCCESS)
     {
         printf("Couldn't open file!");
         return 0;
     }
 
     // Get file size.
-    lFile.SeekFromEnd(0);
-    lFile.Tell(&lFileSize);
-    lFile.SeekFromStart(0);
+    ApiFileSystem::SeekFromEnd(0, lFile);
+    ApiFileSystem::Tell(&lFileSize, lFile);
+    ApiFileSystem::SeekFromStart(0, lFile);
 
     // Read entire file.
     char * lObjectCode = new char [lFileSize];
-    lFile.Read(lObjectCode, lFileSize);
+    ApiFileSystem::Read(lObjectCode, lFileSize, lFile);
+    ApiFileSystem::Close(lFile);
 
     // Load into memory.
     lNes.LoadMemory(lObjectCode, lFileSize, 0);
