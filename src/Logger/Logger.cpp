@@ -13,7 +13,7 @@
 #include <stdio.h>
 #endif
 
-#ifdef FILE_LOGGER
+#ifdef USE_LOGGER
 #include <cstring>
 #endif
 
@@ -175,7 +175,7 @@ void ApiLogger::CleanupMemory(void)
 //
 void StdLogger::CaptureLog(std::string * lMessage)
 {
-    std::cout << &lMessage << "\n";
+    std::cout << *lMessage;
 }
 
 //--------//
@@ -188,7 +188,7 @@ void StdLogger::CaptureLog(std::string * lMessage)
 //
 void StdLogger::CaptureLog(const char * lMessage)
 {
-    printf("%s\n", lMessage);
+    printf("%s", lMessage);
 }
 
 //--------//
@@ -201,7 +201,7 @@ void StdLogger::CaptureLog(const char * lMessage)
 //
 void StdLogger::CaptureLog(const char * lMessage, size_t lLength)
 {
-    printf("%s\n", lMessage);
+    printf("%s", lMessage);
 }
 #endif
 

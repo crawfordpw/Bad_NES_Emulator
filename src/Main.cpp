@@ -41,6 +41,7 @@ int main(void)
     FileLogger * lFileLogger = new FileLogger();
     lFileLogger->OpenLogFileFromExecDirectory("../Logs.txt");
 #endif
+    ApiLogger::Log("Program Started!\n");
 #endif
     // Create the NES.
     System lNes;
@@ -75,6 +76,10 @@ int main(void)
 
     // Start the system.
     lNes.Start();
+
+#ifdef USE_LOGGER
+    ApiLogger::Log("Program End!\n");
+#endif
 
     // Clean up any left over memory.
 #ifdef USE_LOGGER

@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 # Configurable compile options.
-set(LOG_TO_CONSOLE  ON)
-set(LOG_TO_FILE     ON)
+set(DEBUG           OFF)
+set(LOG_TO_CONSOLE  OFF)
+set(LOG_TO_FILE     OFF)
+set(DUMP_STACK      OFF)     # This option needs DEBUG enabled.
+
+configure_file(config.h.in Config.h)
 
 # Project set up.
 set(PROJECT_NAME "NES")
@@ -24,13 +28,18 @@ set(SOURCES
 )
 
 # Set up logging defines.
-if (LOG_TO_CONSOLE OR LOG_TO_FILE)
+if (LOG_TO_CONSOLE OR LOG_TO_FILE OR DEBUG)
     add_definitions(-DUSE_LOGGER)
     aux_source_directory(${PROJECT_SOURCE_DIR}/src/Logger/ LOGGER_SOURCES)
     set(SOURCES
         ${SOURCES}
         ${LOGGER_SOURCES}
     )
+endif()
+
+if (DEBUG)
+    message("Debug Logging Enabled.")
+    add_definitions(-DDEBUG)
 endif()
 
 if (LOG_TO_CONSOLE)
@@ -52,7 +61,6 @@ set(INCLUDES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_compile_options(${PROJECT_NAME} PUBLIC -g -Wall -MMD -MP -Wno-multichar)
-
 target_include_directories(NES PUBLIC ${INCLUDES})
 
 set_target_properties(NES PROPERTIES

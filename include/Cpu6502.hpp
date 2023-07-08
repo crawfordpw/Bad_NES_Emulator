@@ -13,6 +13,10 @@
 #include <unordered_map>
 #include "Common.hpp"
 
+#ifdef USE_LOGGER
+#include <string>
+#endif
+
 //========//
 // Cpu6502
 //
@@ -147,12 +151,15 @@ class Cpu6502 : public Device
         AddressType              mRelativeAddress;      // Address offset used for branch instructions.
         uint8_t                  mCyclesLeft;           // Remaining clock cycles current instruction has.
         Registers                mRegisters;            // All registers the cpu has.
-        inline static constexpr uint16_t       mStartOfStack = 0x0100;
-        inline static constexpr uint8_t        mStackSize    = 0xFF;
+        inline static constexpr AddressType    cStartOfStack = 0x0100;
+        inline static constexpr uint16_t       cStackSize    = 0xFF + 1;
 
         private:
 
-            const char * Disassemble(Instruction * lInstruction);
+#ifdef DEBUG
+            std::string Disassemble(AddressType lAddress);
+            std::string DumpStack(void);
+#endif
 
 };
 

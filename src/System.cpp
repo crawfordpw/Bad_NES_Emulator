@@ -194,7 +194,7 @@ void System::LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset)
 //
 void System::DumpMemoryAsHex(const char * lFilename)
 {
-    static const char * lHexArray = "0123456789ABCDEF";
+    static const char * vHexArray = "0123456789ABCDEF";
     size_t   lSize = mRam.GetSize() * 2;
     char     lBuffer[lSize];
     DataType lValue;
@@ -219,12 +219,12 @@ void System::DumpMemoryAsHex(const char * lFilename)
     for (AddressType lIndex = 0; lIndex < mRam.GetSize(); ++lIndex)
     {
         lValue = Read(lIndex) & 0xFF;
-        lBuffer[lIndex * 2] = lHexArray[lValue >> 4];
-        lBuffer[lIndex * 2 + 1] = lHexArray[lValue & 0x0F];
+        lBuffer[lIndex * 2] = vHexArray[lValue >> 4];
+        lBuffer[lIndex * 2 + 1] = vHexArray[lValue & 0x0F];
     }
 
     // Write out to file.
-    ApiFileSystem::Read(lBuffer, lSize, lFile);
+    ApiFileSystem::Write(lBuffer, lSize, lFile);
 }
 
 //--------//

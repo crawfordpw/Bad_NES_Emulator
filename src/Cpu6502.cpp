@@ -11,6 +11,10 @@
 #include <Cpu6502.hpp>
 #include <System.hpp>
 
+#ifdef USE_LOGGER
+#include <Logger/ApiLogger.hpp>
+#endif
+
 //--------//
 //
 // Cpu6502
@@ -111,6 +115,10 @@ void Cpu6502::StepClock()
     // No instruction is in progress, so perform fetch-decode-execute.
     if (mCyclesLeft == 0)
     {
+#ifdef DEBUG
+        uint16_t lLogPc = mRegisters.mPc;
+#endif
+
         // Grab next instruction and increment program counter.
         FetchOpcode();
 
@@ -128,6 +136,22 @@ void Cpu6502::StepClock()
 
         // Calculate how much cycles this instruction takes. 
         mCyclesLeft += mOpcodeMatrix[mOpcode].mCycles;
+
+#ifdef DEBUG
+        char lBuffer[58];
+        snprintf(lBuffer, 58, "A:%02X X:%02X Y:%02X SP:%02X CL:%02d S:%s%s%s%s%s%s%s%s\n",
+                mRegisters.mAcc, mRegisters.mX, mRegisters.mY, mRegisters.mSp, mCyclesLeft,
+                GetFlag(C) ? "1" : "0", GetFlag(Z) ? "1" : "0", GetFlag(I) ? "1" : "0", GetFlag(D) ? "1" : "0",
+                GetFlag(B) ? "1" : "0", GetFlag(U) ? "1" : "0", GetFlag(V) ? "1" : "0", GetFlag(N) ? "1" : "0");
+
+        std::string lString = Disassemble(lLogPc) + lBuffer;
+
+#ifdef DUMP_STACK
+        lString += "\n" + DumpStack() + "\n";
+#endif
+
+        ApiLogger::Log(&lString);
+#endif
     }
 
     // Decrement the cycles counter, as one cycle has now elapsed.
@@ -290,7 +314,7 @@ DataType Cpu6502::FetchData()
 //
 void Cpu6502::PushStack(uint8_t lData)
 {
-    mSystem->Write(mStartOfStack | mRegisters.mSp, lData);
+    mSystem->Write(cStartOfStack | mRegisters.mSp, lData);
     --mRegisters.mSp;
 }
 
@@ -304,7 +328,7 @@ void Cpu6502::PushStack(uint8_t lData)
 //
 DataType Cpu6502::PopStack()
 {
-    uint8_t lData = mSystem->Read(mStartOfStack | mRegisters.mSp);
+    uint8_t lData = mSystem->Read(cStartOfStack | mRegisters.mSp);
     ++mRegisters.mSp;
     return lData;
 }
@@ -1795,3 +1819,129 @@ uint8_t Cpu6502::BranchHelper(bool lBranch)
     }
     return DONT_ADD_CLOCK_CYCLE;
 }
+
+#ifdef DEBUG
+//--------//
+// Disassemble
+//
+// Encodes the instruction back to the assembly.
+//
+// param[in]  lAddress       Address of instruction.
+// returns  Dissassembled instruction, in an easier format to read.
+//--------//
+//
+std::string Cpu6502::Disassemble(AddressType lAddress)
+{
+    char     lBuffer[100];
+    char *   lLocation = lBuffer;
+    DataType lLowByte;
+    DataType lHighByte;
+    Instruction lInstruction = mOpcodeMatrix[mSystem->Read(lAddress++)];
+
+    // Prefix instruction location and instruction name.
+    lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), "%04X: %s",
+                          lAddress, lInstruction.mName);
+
+
+    // Get the address. This is pretty ugly, but should only be used during debugging.
+    if (lInstruction.mAddressMode == &Cpu6502::Immediate)
+    {
+        lLowByte   = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::ZeroPage)
+    {
+        lLowByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::ZeroPageX)
+    {
+        lLowByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::ZeroPageY)
+    {
+        lLowByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::Relative)
+    {
+        lLowByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X", lAddress + lLowByte);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::Absolute)
+    {
+        lLowByte  = mSystem->Read(lAddress++);
+        lHighByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
+                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::AbsoluteX)
+    {
+        lLowByte  = mSystem->Read(lAddress++);
+        lHighByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
+                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::AbsoluteY)
+    {
+        lLowByte  = mSystem->Read(lAddress++);
+        lHighByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
+                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::Indirect)
+    {
+        lLowByte  = mSystem->Read(lAddress++);
+        lHighByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%04X)",
+                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::IndexedIndirect)
+    {
+        lLowByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%02X,X)", lLowByte);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::IndirectIndexed)
+    {
+        lLowByte  = mSystem->Read(lAddress);
+        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%02X),Y", lLowByte);
+    }
+
+    snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), "\t\t");
+    return lBuffer;
+}
+
+//--------//
+// DumpStack
+//
+// Dumps the entire contents of what is currently on the stack.
+// This is pretty inefficient and should only be used for debugging.
+//
+// returns  String containing the stack.
+//--------//
+//
+std::string Cpu6502::DumpStack(void)
+{
+    DataType    lValue;
+    static char vBuffer[810];
+
+    char *      lLocation   = vBuffer;
+    uint16_t    lNumColumns = 32;
+    uint16_t    lNumRows    = cStackSize / lNumColumns;
+
+    lLocation += sprintf(lLocation, "\t\t\t");
+
+    for (AddressType lRow = 0, lIndex = 0; lRow < lNumRows; ++lRow)
+    {
+        for (AddressType lColumn = 0; lColumn < lNumColumns; ++lColumn, ++lIndex)
+        {
+            lValue = mSystem->Read(cStartOfStack + lIndex);
+            lLocation += sprintf(lLocation, "%02X ", lValue);
+        }
+        lLocation += sprintf(lLocation, "\n\t\t\t");
+    }
+
+    return vBuffer;
+}
+#endif
