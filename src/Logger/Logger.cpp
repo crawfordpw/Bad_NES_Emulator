@@ -116,11 +116,26 @@ void ApiLogger::Log(std::string * lMessage)
 //
 void ApiLogger::Log(const char * lMessage)
 {
+    size_t lLength = strlen(lMessage);
+    Log(lMessage, lLength);
+}
+
+//--------//
+// Log
+//
+// Log a message, calling every registered loggers CaptureLog function.
+//
+// param[in]    lMessage    The message to log.
+// param[in]    lLength     Length of message.
+//--------//
+//
+void ApiLogger::Log(const char * lMessage, size_t lLength)
+{
     for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
     {
         if (cLoggers[lIndex] != NULL)
         {
-            cLoggers[lIndex]->CaptureLog(lMessage);
+            cLoggers[lIndex]->CaptureLog(lMessage, lLength);
         }
     }
 }
@@ -172,6 +187,19 @@ void StdLogger::CaptureLog(std::string * lMessage)
 //--------//
 //
 void StdLogger::CaptureLog(const char * lMessage)
+{
+    printf("%s\n", lMessage);
+}
+
+//--------//
+// CaptureLog
+//
+// Prints message to console.
+//
+// param[in]    The message to log.
+//--------//
+//
+void StdLogger::CaptureLog(const char * lMessage, size_t lLength)
 {
     printf("%s\n", lMessage);
 }

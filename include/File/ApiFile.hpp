@@ -65,6 +65,12 @@ class ApiFileSystem
 {
     public:
 
+        enum
+        {
+            MAX_FILENAME       = 250,
+            EXEC_BUFFER_LENGTH = MAX_FILENAME * 2,
+        };
+
         ApiFileSystem(void)          = default;
         virtual ~ApiFileSystem(void) = default;
 
@@ -84,12 +90,6 @@ class ApiFileSystem
         static int     Tell(long int * lPosition, File * lFile);
 
     protected:
-
-        enum
-        {
-            MAX_FILENAME       = 250,
-            EXEC_BUFFER_LENGTH = MAX_FILENAME * 2,
-        };
 
         static FileSystem * cFileSystem;
         static char *       cCurrentDirectory;

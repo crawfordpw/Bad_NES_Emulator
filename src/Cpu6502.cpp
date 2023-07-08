@@ -216,15 +216,13 @@ void Cpu6502::Reset()
     mRegisters.mStatus  = 0x00 | Flags::U | Flags::I;   // Unused flag should always be high.
                                                         // https://github.com/OneLoneCoder/olcNES/issues/34
 
-    // Believe this is what the hardware does. Not sure if this should push the PC and status
-    // register to the stack, or 0x00. The hardware does "fake" reads of those registers and
-    // discards the results, decrementing the SP. Push 0x00 for now until there is a reason not to.
-    // Regardless, SP should end up at 0xFD after this.
+    // Believe this is what the hardware does. The hardware does "fake" reads of those registers and
+    // discards the results, decrementing the SP. It should end up at 0xFD after this.
     // https://www.pagetable.com/?p=410
     mRegisters.mSp      = 0x00;
-    PushStack(0x00);
-    PushStack(0x00);
-    PushStack(0x00);
+    --mRegisters.mSp;
+    --mRegisters.mSp;
+    --mRegisters.mSp;
 
     // Grab program counter from known interrupt vector.
     mRegisters.mPc = (mSystem->Read(mInterruptVectors[RESET_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[RESET_VECTOR].mHighByte) << 8));
@@ -236,7 +234,7 @@ void Cpu6502::Reset()
 //--------//
 // SetOrClearFlag
 //
-// Sets or clears a given a certain condition.
+// Sets or clears a flag given a certain condition.
 //
 // param[in]    lFlag         The flag to set or clear.
 // param[in]    lCondition    Condition to determine to either set or clear a flag.
@@ -273,9 +271,9 @@ void Cpu6502::FetchOpcode()
 //
 DataType Cpu6502::FetchData()
 {
-    // For immediate addressing, the data immediately follow the opcode.
-    // This was already retrieved and stored in a variable.
-    if (mOpcodeMatrix[mOpcode].mAddressMode == &Immediate)
+    // For immediate addressing, the data immediately follows the opcode.
+    // mAddress already contains it, so just return.
+    if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Immediate)
     {
         return mAddress;
     }
@@ -653,7 +651,7 @@ uint8_t Cpu6502::ASL()
     SetOrClearFlag(Flags::C, lData & Bit(7));
 
     // Only store result to accumulator if address mode was Implied.
-    if (mOpcodeMatrix[mOpcode].mAddressMode == &Implied)
+    if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Implied)
     {
         mRegisters.mAcc = lData & 0x00FF;
     }
@@ -1272,7 +1270,7 @@ uint8_t Cpu6502::LSR()
     SetOrClearFlag(Flags::C, lData & Bit(7));
 
     // Only store result to accumulator if address mode was Implied.
-    if (mOpcodeMatrix[mOpcode].mAddressMode == &Implied)
+    if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Implied)
     {
         mRegisters.mAcc = lData & 0x00FF;
     }
@@ -1418,7 +1416,7 @@ uint8_t Cpu6502::ROL()
     SetOrClearFlag(Flags::C, lResult & Bit(7));
 
     // Only store result to accumulator if address mode was Implied.
-    if (mOpcodeMatrix[mOpcode].mAddressMode == &Implied)
+    if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Implied)
     {
         mRegisters.mAcc = lResult & 0x00FF;
     }
@@ -1453,7 +1451,7 @@ uint8_t Cpu6502::ROR()
     SetOrClearFlag(Flags::C, lResult & Bit(7));
 
     // Only store result to accumulator if address mode was Implied.
-    if (mOpcodeMatrix[mOpcode].mAddressMode == &Implied)
+    if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Implied)
     {
         mRegisters.mAcc = lData & 0x00FF;
     }

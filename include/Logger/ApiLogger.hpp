@@ -38,6 +38,7 @@ class ApiLogger
 
         static void Log(std::string * lMessage);
         static void Log(const char * lMessage);
+        static void Log(const char * lMessage, size_t lLength);
         static void CleanupMemory();
 
     protected:
@@ -65,8 +66,9 @@ class Logger : public ApiLogger
 
     protected:
 
-        virtual void CaptureLog(std::string * lMessage) = 0;
-        virtual void CaptureLog(const char * lMessage)  = 0;
+        virtual void CaptureLog(std::string * lMessage)                = 0;
+        virtual void CaptureLog(const char * lMessage)                 = 0;
+        virtual void CaptureLog(const char * lMessage, size_t lLength) = 0;
 
         int mId;
 };
@@ -89,6 +91,7 @@ class StdLogger : public Logger
 
         virtual void CaptureLog(std::string * lMessage);
         virtual void CaptureLog(const char * lMessage);
+        virtual void CaptureLog(const char * lMessage, size_t lLength);
 };
 #endif
 

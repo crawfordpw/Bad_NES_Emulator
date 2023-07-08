@@ -19,9 +19,9 @@
 #endif
 
 #ifdef USE_LOGGER
-    #ifdef STDOUT_LOGGER
-        StdLogger * gStdLogger = new StdLogger();
-    #endif
+#ifdef STDOUT_LOGGER
+    StdLogger * gStdLogger = new StdLogger();
+#endif
 #endif
 
 //--------//
@@ -37,21 +37,25 @@ int main(void)
     int      lStatus;
 
 #ifdef USE_LOGGER
-    #ifdef FILE_LOGGER
-        FileLogger * lFileLogger = new FileLogger();
-        lFileLogger->OpenLogFileFromExecDirectory("../Logs.txt");
-    #endif
+#ifdef FILE_LOGGER
+    FileLogger * lFileLogger = new FileLogger();
+    lFileLogger->OpenLogFileFromExecDirectory("../Logs.txt");
 #endif
-
+#endif
     // Create the NES.
     System lNes;
 
     // Grab program from a file.
-    lStatus = ApiFileSystem::OpenFromExecDirectory("../Program.txt", "r", &lFile);
+    const char * lProgramFile = "../Program.txt";
+    lStatus = ApiFileSystem::OpenFromExecDirectory(lProgramFile, "r", &lFile);
 
     if (lStatus != File::SUCCESS)
     {
-        printf("Couldn't open file!");
+#ifdef USE_LOGGER
+        char lBuffer[ApiFileSystem::MAX_FILENAME];
+        snprintf(lBuffer, ApiFileSystem::MAX_FILENAME, "Couldn't open file, %s\n", lProgramFile);
+        ApiLogger::Log(lBuffer);
+#endif
         return 0;
     }
 
@@ -73,7 +77,9 @@ int main(void)
     lNes.Start();
 
     // Clean up any left over memory.
+#ifdef USE_LOGGER
     ApiLogger::CleanupMemory();
+#endif
     ApiFileSystem::CleanupMemory();
 
     return 0;

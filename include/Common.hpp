@@ -10,7 +10,6 @@
 #define COMMON_HPP
 
 #include <stdint.h>
-#include <Config.h>
 
 typedef uint8_t DataType;
 typedef uint16_t AddressType;

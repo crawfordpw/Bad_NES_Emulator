@@ -9,6 +9,10 @@
 #include <System.hpp>
 #include <File/ApiFile.hpp>
 
+#ifdef USE_LOGGER
+#include <Logger/ApiLogger.hpp>
+#endif
+
 //--------//
 // ValidHexCharacter
 //
@@ -203,7 +207,11 @@ void System::DumpMemoryAsHex(const char * lFilename)
     // Don't proceed if can't open.
     if (lStatus != File::SUCCESS)
     {
-        printf("Couldn't open file!");
+#ifdef USE_LOGGER
+        char lBuffer[ApiFileSystem::MAX_FILENAME];
+        snprintf(lBuffer, ApiFileSystem::MAX_FILENAME, "Couldn't open file, %s\n", lFilename);
+        ApiLogger::Log(lBuffer);
+#endif
         return;
     }
     
@@ -240,7 +248,11 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     // Don't proceed if can't open.
     if (lStatus != File::SUCCESS)
     {
-        printf("Couldn't open file!");
+#ifdef USE_LOGGER
+        char lBuffer[ApiFileSystem::MAX_FILENAME];
+        snprintf(lBuffer, ApiFileSystem::MAX_FILENAME, "Couldn't open file, %s\n", lFilename);
+        ApiLogger::Log(lBuffer);
+#endif
         return;
     }
     
