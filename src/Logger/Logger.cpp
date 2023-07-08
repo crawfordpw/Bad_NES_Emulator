@@ -6,8 +6,16 @@
 //
 /////////////////////////////////////////////////////////////////////
 
-#include <iostream>
 #include <Logger/ApiLogger.hpp>
+
+#ifdef STDOUT_LOGGER
+#include <iostream>
+#include <stdio.h>
+#endif
+
+#ifdef FILE_LOGGER
+#include <cstring>
+#endif
 
 //--------//
 //
@@ -55,8 +63,8 @@ int ApiLogger::RegisterLogger(Logger * lLogger)
     {
         if (cLoggers[lIndex] == NULL)
         {
-            lId = lIndex;
             cLoggers[lIndex] = lLogger;
+            return lIndex;
         }
     }
     return lId;
@@ -88,6 +96,25 @@ void ApiLogger::UnregisterLogger(int lId)
 //--------//
 //
 void ApiLogger::Log(std::string * lMessage)
+{
+    for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
+    {
+        if (cLoggers[lIndex] != NULL)
+        {
+            cLoggers[lIndex]->CaptureLog(lMessage);
+        }
+    }
+}
+
+//--------//
+// Log
+//
+// Log a message, calling every registered loggers CaptureLog function.
+//
+// param[in]    lMessage    The message to log.
+//--------//
+//
+void ApiLogger::Log(const char * lMessage)
 {
     for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
     {
@@ -134,6 +161,19 @@ void ApiLogger::CleanupMemory(void)
 void StdLogger::CaptureLog(std::string * lMessage)
 {
     std::cout << &lMessage << "\n";
+}
+
+//--------//
+// CaptureLog
+//
+// Prints message to console.
+//
+// param[in]    The message to log.
+//--------//
+//
+void StdLogger::CaptureLog(const char * lMessage)
+{
+    printf("%s\n", lMessage);
 }
 #endif
 
@@ -182,6 +222,19 @@ int FileLogger::OpenLogFile(const char * lFileName)
 }
 
 //--------//
+// OpenLogFileFromExecDirectory
+//
+// Opens the file from the executable directory.
+//
+// param[in]    lFileName   The file to log messages to.
+//--------//
+//
+int FileLogger::OpenLogFileFromExecDirectory(const char * lFileName)
+{
+    return ApiFileSystem::OpenFromExecDirectory(lFileName, "w+", &mFile);
+}
+
+//--------//
 // CaptureLog
 //
 // Writes message to file
@@ -192,5 +245,33 @@ int FileLogger::OpenLogFile(const char * lFileName)
 void FileLogger::CaptureLog(std::string * lMessage)
 {
     ApiFileSystem::Write(const_cast<char *>(lMessage->c_str()), lMessage->size(), mFile);
+}
+
+//--------//
+// CaptureLog
+//
+// Writes message to file
+//
+// param[in]    The message to log.
+//--------//
+//
+void FileLogger::CaptureLog(const char * lMessage)
+{
+    size_t lLength = strlen(lMessage);
+    CaptureLog(lMessage, lLength);
+}
+
+//--------//
+// CaptureLog
+//
+// Writes message to file
+//
+// param[in]    The message to log.
+// param[in]    Size of message.
+//--------//
+//
+void FileLogger::CaptureLog(const char * lMessage, size_t lLength)
+{
+    ApiFileSystem::Write(const_cast<char *>(lMessage), lLength, mFile);
 }
 #endif

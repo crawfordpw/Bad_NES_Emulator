@@ -33,5 +33,5 @@ _deps
 config.json
 testserver
 __pycache__
-Program.txt
-MemDump.hex
+*.txt
+*.hex

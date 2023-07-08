@@ -74,6 +74,7 @@ class ApiFileSystem
         static void         CleanupMemory();
 
         static int     Open(const char * lFilename, const char * lMode, File ** lFile);
+        static int     OpenFromExecDirectory(const char * lFilename, const char * lMode, File ** lFile);
         static size_t  Read(void * lBuffer, size_t lCount, File * lFile);
         static size_t  Write(void * lBuffer, size_t lCount, File * lFile);
         static int     Close(File * lFile);
@@ -84,9 +85,16 @@ class ApiFileSystem
 
     protected:
 
+        enum
+        {
+            MAX_FILENAME       = 250,
+            EXEC_BUFFER_LENGTH = MAX_FILENAME * 2,
+        };
+
         static FileSystem * cFileSystem;
         static char *       cCurrentDirectory;
         static char *       cExecDirectory;
+        static char         cExecBuffer[];
 };
 
 //========//
@@ -118,9 +126,5 @@ class FileSystem : public ApiFileSystem
         virtual int     SeekFromEndFile(long int lOffset, File * lFile)        = 0;
         virtual int     TellFile(long int * lPosition, File * lFile)           = 0;
 };
-
-extern const char * gTraceDumpLocation;
-extern const char * gLogLocation;
-extern const char * gInputLocation;
 
 #endif

@@ -39,7 +39,7 @@ int main(void)
 #ifdef USE_LOGGER
     #ifdef FILE_LOGGER
         FileLogger * lFileLogger = new FileLogger();
-        lFileLogger->OpenLogFile("../Logs.txt");
+        lFileLogger->OpenLogFileFromExecDirectory("../Logs.txt");
     #endif
 #endif
 
@@ -47,7 +47,7 @@ int main(void)
     System lNes;
 
     // Grab program from a file.
-    lStatus = ApiFileSystem::Open("../Program.txt", "r", &lFile);
+    lStatus = ApiFileSystem::OpenFromExecDirectory("../Program.txt", "r", &lFile);
 
     if (lStatus != File::SUCCESS)
     {
@@ -73,8 +73,8 @@ int main(void)
     lNes.Start();
 
     // Clean up any left over memory.
-    ApiFileSystem::CleanupMemory();
     ApiLogger::CleanupMemory();
+    ApiFileSystem::CleanupMemory();
 
     return 0;
 }

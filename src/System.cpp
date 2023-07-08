@@ -198,7 +198,7 @@ void System::DumpMemoryAsHex(const char * lFilename)
     int      lStatus;
 
     // Open up a file.
-    lStatus = ApiFileSystem::Open(lFilename, "w+", &lFile);
+    lStatus = ApiFileSystem::OpenFromExecDirectory(lFilename, "w+", &lFile);
 
     // Don't proceed if can't open.
     if (lStatus != File::SUCCESS)
@@ -235,7 +235,7 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     int      lStatus;
 
     // Open up a file.
-    lStatus = ApiFileSystem::Open(lFilename, "w+", &lFile);
+    lStatus = ApiFileSystem::OpenFromExecDirectory(lFilename, "w+", &lFile);
 
     // Don't proceed if can't open.
     if (lStatus != File::SUCCESS)

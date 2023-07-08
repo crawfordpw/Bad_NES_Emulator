@@ -6,12 +6,8 @@
 //
 /////////////////////////////////////////////////////////////////////
 
+#include <cstring>
 #include <File/ApiFile.hpp>
-
-// Relative to where program is executing from.
-const char * gTraceDumpLocation = "../";
-const char * gLogLocation       = "../";
-const char * gInputLocation     = "../";
 
 //--------//
 //
@@ -22,6 +18,7 @@ const char * gInputLocation     = "../";
 FileSystem * ApiFileSystem::cFileSystem       = NULL;
 char *       ApiFileSystem::cCurrentDirectory = NULL;
 char *       ApiFileSystem::cExecDirectory    = NULL;
+char         ApiFileSystem::cExecBuffer[EXEC_BUFFER_LENGTH];
 
 //--------//
 // GetCwd
@@ -51,11 +48,31 @@ const char * ApiFileSystem::GetCwd(void)
 //
 const char * ApiFileSystem::GetExecDirectory(void)
 {
+    const char * lExecDirectory;
+
+    memset(cExecBuffer, '\0', EXEC_BUFFER_LENGTH);
+
     if (ApiFileSystem::cExecDirectory != NULL)
     {
-        return ApiFileSystem::cExecDirectory;
+        lExecDirectory = cExecDirectory;
     }
-    return cFileSystem->GetExecDirectoryFS();
+    else
+    {
+        cFileSystem->GetExecDirectoryFS();
+
+        // Remove the executable name.
+        for (int lIndex = MAX_FILENAME; lIndex > 0; --lIndex)
+        {
+            if (cExecDirectory[lIndex] == '/' || cExecDirectory[lIndex] == '\\')
+            {
+                cExecDirectory[lIndex+1] = '\0';
+                break;
+            }
+        }
+        lExecDirectory = cExecDirectory;
+    }
+    strcpy(cExecBuffer, lExecDirectory);
+    return lExecDirectory;
 }
 
 //--------//
@@ -87,14 +104,17 @@ void ApiFileSystem::CleanupMemory(void)
     if (cCurrentDirectory != NULL)
     {
         delete [] cCurrentDirectory;
+        cCurrentDirectory = NULL;
     }
     if (cExecDirectory != NULL)
     {
         delete [] cExecDirectory;
+        cExecDirectory = NULL;
     }
     if (cFileSystem != NULL)
     {
         delete cFileSystem;
+        cFileSystem = NULL;
     }
 }
 
@@ -116,6 +136,24 @@ int ApiFileSystem::Open(const char * lFilename, const char * lMode, File ** lFil
         return File::FAILURE;
     }
     return cFileSystem->OpenFile(lFilename, lMode, lFile);
+}
+
+//--------//
+// OpenFromExecDirectory
+//
+// Opens a file from the executable directory.
+//
+// param[in]  lFilename   Name of the file to open. 
+// param[in]  lMode       Mode to open the file with, "r", "w", etc.
+// param[out] lFile       The file structure created by open.
+// returns  Status on the operation.
+//--------//
+//
+int ApiFileSystem::OpenFromExecDirectory(const char * lFilename, const char * lMode, File ** lFile)
+{
+    GetExecDirectory();
+    strcat(cExecBuffer, lFilename);
+    return Open(cExecBuffer, lMode, lFile);
 }
 
 //--------//

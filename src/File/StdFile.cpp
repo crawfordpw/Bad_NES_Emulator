@@ -501,9 +501,9 @@ int StdFileSystem::TellFile(long int * lPosition, File * lFile)
 //
 const char * StdFileSystem::GetCwdFS(void)
 {
-    cCurrentDirectory = new char [FILENAME_MAX];
+    cCurrentDirectory = new char [MAX_FILENAME];
 
-    if (!GetCurrentDir(cCurrentDirectory, FILENAME_MAX))
+    if (!GetCurrentDir(cCurrentDirectory, MAX_FILENAME))
     {
         delete [] cCurrentDirectory;
         cCurrentDirectory = NULL;
@@ -529,8 +529,8 @@ const char * StdFileSystem::GetCwdFS(void)
 //
 const char * WindowsFileSystem::GetExecDirectoryFS(void)
 {
-    cExecDirectory = new char [FILENAME_MAX];
-    int lBytes = GetModuleFileName(NULL, cExecDirectory, FILENAME_MAX);
+    cExecDirectory = new char [MAX_FILENAME];
+    int lBytes = GetModuleFileName(NULL, cExecDirectory, MAX_FILENAME);
 
     if (lBytes == 0)
     {
@@ -558,8 +558,8 @@ const char * WindowsFileSystem::GetExecDirectoryFS(void)
 //
 const char * LinuxFileSystem::GetExecDirectoryFS(void)
 {
-    cExecDirectory = new char [FILENAME_MAX];
-    int lBytes = readlink("/proc/self/exe", cExecDirectory, FILENAME_MAX);
+    cExecDirectory = new char [MAX_FILENAME];
+    int lBytes = readlink("/proc/self/exe", cExecDirectory, MAX_FILENAME);
 
     if (lBytes <= 0)
     {

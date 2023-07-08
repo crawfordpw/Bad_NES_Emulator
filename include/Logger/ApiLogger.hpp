@@ -37,6 +37,7 @@ class ApiLogger
         virtual ~ApiLogger(void) = default;
 
         static void Log(std::string * lMessage);
+        static void Log(const char * lMessage);
         static void CleanupMemory();
 
     protected:
@@ -65,6 +66,7 @@ class Logger : public ApiLogger
     protected:
 
         virtual void CaptureLog(std::string * lMessage) = 0;
+        virtual void CaptureLog(const char * lMessage)  = 0;
 
         int mId;
 };
@@ -86,6 +88,7 @@ class StdLogger : public Logger
     protected:
 
         virtual void CaptureLog(std::string * lMessage);
+        virtual void CaptureLog(const char * lMessage);
 };
 #endif
 
@@ -104,10 +107,13 @@ class FileLogger : public Logger
         virtual ~FileLogger(void);
 
         int OpenLogFile(const char * lFileName);
+        int OpenLogFileFromExecDirectory(const char * lFileName);
 
     protected:
 
         virtual void CaptureLog(std::string * lMessage);
+        virtual void CaptureLog(const char * lMessage);
+        virtual void CaptureLog(const char * lMessage, size_t lLength);
 
         const char * mFileName;
         File *       mFile;
