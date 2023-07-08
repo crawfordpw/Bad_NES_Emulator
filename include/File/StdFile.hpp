@@ -23,7 +23,7 @@ class StdFile : public File
 
         StdFile() : mFileHandle(NULL) {}
         StdFile(const char * lFilename, const char * lMode);
-        virtual ~StdFile(void);
+        virtual ~StdFile(void) = default;
 
         virtual int     Open(const char * lFilename, const char * lMode) override;
         virtual size_t  Read(void * lBuffer, size_t lCount)  override;

@@ -9,12 +9,19 @@
 #include <stdio.h>
 #include <System.hpp>
 #include <File/StdFile.hpp>
+#include <Logger/ApiLogger.hpp>
 #include <unistd.h>
 
 #ifdef _WIN32
     WindowsFileSystem * gFileSystem = new WindowsFileSystem();
 #elif __linux__
     LinuxFileSystem * gFileSystem = new LinuxFileSystem();
+#endif
+
+#ifdef USE_LOGGER
+    #ifdef STDOUT_LOGGER
+        StdLogger * gStdLogger = new StdLogger();
+    #endif
 #endif
 
 //--------//
@@ -28,6 +35,13 @@ int main(void)
     long int lFileSize;
     File *   lFile;
     int      lStatus;
+
+#ifdef USE_LOGGER
+    #ifdef FILE_LOGGER
+        FileLogger * lFileLogger = new FileLogger();
+        lFileLogger->OpenLogFile("../Logs.txt");
+    #endif
+#endif
 
     // Create the NES.
     System lNes;
@@ -57,6 +71,10 @@ int main(void)
 
     // Start the system.
     lNes.Start();
+
+    // Clean up any left over memory.
+    ApiFileSystem::CleanupMemory();
+    ApiLogger::CleanupMemory();
 
     return 0;
 }

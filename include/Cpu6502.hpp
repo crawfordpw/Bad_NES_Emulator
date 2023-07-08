@@ -10,6 +10,7 @@
 #define CPU_6502_HPP
 
 #include <vector>
+#include <unordered_map>
 #include "Common.hpp"
 
 //========//
@@ -113,12 +114,22 @@ class Cpu6502 : public Device
         // Branch instruction helper function.
         uint8_t BranchHelper(bool lBranch);
 
+#ifdef USE_LOGGER
         struct Instruction 
         {
-            uint8_t (Cpu6502::*mInstruction)  (void)     = nullptr;
-            uint8_t (Cpu6502::*mAddressMode)  (void)     = nullptr;
-            uint8_t mCycles                              = 0;
+            uint8_t      (Cpu6502::*mInstruction) (void) = nullptr;
+            uint8_t      (Cpu6502::*mAddressMode) (void) = nullptr;
+            uint8_t      mCycles                         = 0;
+            const char * mName;
         };
+#else
+        struct Instruction 
+        {
+            uint8_t      (Cpu6502::*mInstruction) (void) = nullptr;
+            uint8_t      (Cpu6502::*mAddressMode) (void) = nullptr;
+            uint8_t      mCycles                         = 0;
+        };
+#endif
 
         struct Registers
         {
@@ -138,6 +149,11 @@ class Cpu6502 : public Device
         Registers                mRegisters;            // All registers the cpu has.
         inline static constexpr uint16_t       mStartOfStack = 0x0100;
         inline static constexpr uint8_t        mStackSize    = 0xFF;
+
+        private:
+
+            const char * Disassemble(Instruction * lInstruction);
+
 };
 
 #endif

@@ -39,17 +39,6 @@ StdFile::StdFile(const char * lFilename, const char * lMode)
 }
 
 //--------//
-// ~StdFile
-//
-// Destructor. Closes the file handle
-//--------//
-//
-StdFile::~StdFile(void)
-{
-    Close();
-}
-
-//--------//
 // Open
 //
 // Opens a file.
@@ -360,6 +349,26 @@ int StdFileSystem::OpenFile(const char * lFilename, const char * lMode, File ** 
 }
 
 //--------//
+// CloseFile
+//
+// Closes a file. Cleans up memory from Open.
+//
+// param[in]    lFile       The file structure to close.
+// returns  Status on the operation.
+//--------//
+//
+int StdFileSystem::CloseFile(File * lFile)
+{
+    if (lFile == NULL)
+    {
+        return File::FAILURE;
+    }
+    int lStatus = lFile->Close();
+    delete reinterpret_cast<StdFile *>(lFile);
+    return lStatus;
+}
+
+//--------//
 // ReadFile
 //
 // Reads a file.
@@ -404,26 +413,6 @@ size_t StdFileSystem::WriteFile(void * lBuffer, size_t lCount, File * lFile)
         return 0;
     }
     return lFile->Write(lBuffer, lCount);
-}
-
-//--------//
-// CloseFile
-//
-// Closes a file. Cleans up memory from Open.
-//
-// param[in]    lFile       The file structure to close.
-// returns  Status on the operation.
-//--------//
-//
-int StdFileSystem::CloseFile(File * lFile)
-{
-    if (lFile == NULL)
-    {
-        return File::FAILURE;
-    }
-    int lStatus = lFile->Close();
-    delete reinterpret_cast<StdFile *>(lFile);
-    return lStatus;
 }
 
 //--------//

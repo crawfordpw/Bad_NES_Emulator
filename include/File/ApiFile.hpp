@@ -58,19 +58,20 @@ class File
 //========//
 // ApiFileSystem
 //
-// An Api to performe file operations agnostic to what the system is.
+// An Api to perform file operations agnostic to what the system is.
 //========//
 //
 class ApiFileSystem
 {
     public:
 
-        ApiFileSystem(void) = default;
-        virtual ~ApiFileSystem(void);
+        ApiFileSystem(void)          = default;
+        virtual ~ApiFileSystem(void) = default;
 
         static const char * GetCwd(void);
         static const char * GetExecDirectory(void);
         static int          GetStatus(File * lFile);
+        static void         CleanupMemory();
 
         static int     Open(const char * lFilename, const char * lMode, File ** lFile);
         static size_t  Read(void * lBuffer, size_t lCount, File * lFile);
@@ -118,7 +119,8 @@ class FileSystem : public ApiFileSystem
         virtual int     TellFile(long int * lPosition, File * lFile)           = 0;
 };
 
-extern const char * gTraceDump;
-extern const char * gInput;
+extern const char * gTraceDumpLocation;
+extern const char * gLogLocation;
+extern const char * gInputLocation;
 
 #endif

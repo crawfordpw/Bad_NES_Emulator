@@ -10,13 +10,16 @@ project(
 set(CMAKE_CXX_FLAGS "-std=gnu++11")
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/ MAIN_SOURCES)
-aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ MAIN_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ FILE_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Logger/ LOGGER_SOURCES)
 
 configure_file(config.h.in Config.h)
 
 set(SOURCES
     ${SOURCES} 
     ${MAIN_SOURCES}
+    ${FILE_SOURCES}
+    ${LOGGER_SOURCES}
 )
 
 set(INCLUDES

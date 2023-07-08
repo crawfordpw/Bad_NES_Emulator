@@ -9,8 +9,9 @@
 #include <File/ApiFile.hpp>
 
 // Relative to where program is executing from.
-const char * gTraceDump = "../";
-const char * gInput     = "../";
+const char * gTraceDumpLocation = "../";
+const char * gLogLocation       = "../";
+const char * gInputLocation     = "../";
 
 //--------//
 //
@@ -21,28 +22,6 @@ const char * gInput     = "../";
 FileSystem * ApiFileSystem::cFileSystem       = NULL;
 char *       ApiFileSystem::cCurrentDirectory = NULL;
 char *       ApiFileSystem::cExecDirectory    = NULL;
-
-//--------//
-// ~ApiFileSystem
-//
-// Destructor
-//--------//
-//
-ApiFileSystem::~ApiFileSystem(void)
-{
-    if (cCurrentDirectory != NULL)
-    {
-        delete [] cCurrentDirectory;
-    }
-    if (cExecDirectory != NULL)
-    {
-        delete [] cExecDirectory;
-    }
-    if (cFileSystem != NULL)
-    {
-        delete cFileSystem;
-    }
-}
 
 //--------//
 // GetCwd
@@ -95,6 +74,28 @@ int ApiFileSystem::GetStatus(File * lFile)
         return File::FAILURE;
     }
     return lFile->GetStatus();
+}
+
+//--------//
+// CleanupMemory
+//
+// Removes all dynamic memory created by using the Api.
+//--------//
+//
+void ApiFileSystem::CleanupMemory(void)
+{
+    if (cCurrentDirectory != NULL)
+    {
+        delete [] cCurrentDirectory;
+    }
+    if (cExecDirectory != NULL)
+    {
+        delete [] cExecDirectory;
+    }
+    if (cFileSystem != NULL)
+    {
+        delete cFileSystem;
+    }
 }
 
 //--------//
@@ -265,4 +266,3 @@ int ApiFileSystem::Tell(long int * lPosition, File * lFile)
     }
     return cFileSystem->TellFile(lPosition, lFile);
 }
-
