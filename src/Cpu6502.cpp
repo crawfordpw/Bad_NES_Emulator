@@ -7,8 +7,6 @@
 /////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include <string>
-#include <Cpu6502.hpp>
 #include <System.hpp>
 
 #ifdef USE_LOGGER
@@ -29,13 +27,6 @@
 //
 Cpu6502::Cpu6502()
   :
-    mInterruptVectors
-    {
-        {0xFFFA, 0xFFFB},
-        {0xFFFC, 0xFFFD},
-        {0xFFFE, 0xFFFF},
-        {0xFFFE, 0xFFFF},
-    },
     // Matrix based on http://www.oxyron.de/html/opcodes02.html
 #ifdef USE_LOGGER
     mOpcodeMatrix
@@ -59,7 +50,7 @@ Cpu6502::Cpu6502()
         /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2,"BNE"},{&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5,"CMP"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},{&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4,"CMP"},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6,"DEC"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::CLD,&Cpu6502::Implied,2,"CLD"},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4,"CMP"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4,"CMP"},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7,"DEC"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"},
         /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2,"CPX"},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6,"SBC"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3,"CPX"},{&Cpu6502::SBC,&Cpu6502::ZeroPage,3,"SBC"},{&Cpu6502::INC,&Cpu6502::ZeroPage,5,"INC"},{&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"},{&Cpu6502::INX,&Cpu6502::Implied,2,"INX"},{&Cpu6502::SBC,&Cpu6502::Immediate,2,"SBC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::SBC,&Cpu6502::Immediate,2,"SBC"},{&Cpu6502::CPX,&Cpu6502::Absolute,4,"CPX"},{&Cpu6502::SBC,&Cpu6502::Absolute,4,"SBC"},{&Cpu6502::INC,&Cpu6502::Absolute,6,"INC"},{&Cpu6502::KIL,&Cpu6502::Absolute,6,"KIL"},
         /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2,"BEQ"},{&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5,"SBC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},{&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4,"SBC"},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6,"INC"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::SED,&Cpu6502::Implied,2,"SED"},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4,"SBC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4,"SBC"},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7,"INC"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"}
-    }
+    },
 #else
     mOpcodeMatrix
     {
@@ -82,8 +73,15 @@ Cpu6502::Cpu6502()
         /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2},{&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLD,&Cpu6502::Implied,2},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
         /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3},{&Cpu6502::SBC,&Cpu6502::ZeroPage,3},{&Cpu6502::INC,&Cpu6502::ZeroPage,5},{&Cpu6502::KIL,&Cpu6502::ZeroPage,5},{&Cpu6502::INX,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::CPX,&Cpu6502::Absolute,4},{&Cpu6502::SBC,&Cpu6502::Absolute,4},{&Cpu6502::INC,&Cpu6502::Absolute,6},{&Cpu6502::KIL,&Cpu6502::Absolute,6},
         /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2},{&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::SED,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7}
-    }
+    },
 #endif
+    mInterruptVectors
+    {
+        {0xFFFA, 0xFFFB},
+        {0xFFFC, 0xFFFD},
+        {0xFFFE, 0xFFFF},
+        {0xFFFE, 0xFFFF},
+    }
 {
 }
 
@@ -95,6 +93,46 @@ Cpu6502::Cpu6502()
 //
 Cpu6502::~Cpu6502()
 {
+}
+
+//--------//
+// Read
+//
+// Reads data from the system.
+//
+// param[in] lAddress   Address to read from.
+// param[in] lLastRead  If some devices are not connected, this variable
+//                      simulates "open bus behavior". Where a read of
+//                      a disconnected device results in the last value read.
+//                      Ignore what's passed in since the cpu stores this value
+//                      already internally.
+// returns  Data at the given address. 
+//--------//
+//
+DataType Cpu6502::Read(AddressType lAddress, DataType lLastRead)
+{
+    if (mSystem == NULL)
+    {
+        return mFetchedData;
+    }
+    return mSystem->Read(lAddress, mFetchedData);
+}
+
+//--------//
+// Write
+//
+// Writes data to memory on the system.
+//
+// param[in] lAddress   Address to write to. 
+// param[in] lData      Data to write. 
+//--------//
+//
+void Cpu6502::Write(AddressType lAddress, DataType lData)
+{
+    if (mSystem)
+    {
+        mSystem->Write(lAddress, lData);
+    }
 }
 
 //--------//
@@ -183,7 +221,7 @@ void Cpu6502::NMI()
     SetFlag(Flags::I);
 
     // Finally, jump to the address from the interrupt vector.
-    mRegisters.mPc = (mSystem->Read(mInterruptVectors[NMI_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[NMI_VECTOR].mHighByte) << 8));
+    mRegisters.mPc = (Read(mInterruptVectors[NMI_VECTOR].mLowByte) | (Read(mInterruptVectors[NMI_VECTOR].mHighByte) << 8));
 
     // Hardware takes 7 clock cycles to do this.
     mCyclesLeft = 7;
@@ -215,7 +253,7 @@ void Cpu6502::IRQ()
         SetFlag(Flags::I);
 
         // Finally, jump to the address from the interrupt vector.
-        mRegisters.mPc = (mSystem->Read(mInterruptVectors[IRQ_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[IRQ_VECTOR].mHighByte) << 8));
+        mRegisters.mPc = (Read(mInterruptVectors[IRQ_VECTOR].mLowByte) | (Read(mInterruptVectors[IRQ_VECTOR].mHighByte) << 8));
 
         // Hardware takes 7 clock cycles to do this.
         mCyclesLeft = 7;
@@ -232,6 +270,7 @@ void Cpu6502::Reset()
 {
     // Reset registers and internals.
     mOpcode             = 0x1A;                 // NOP - Implied. Souldn't matter since PC will jump to some other Opcode.
+    mFetchedData        = 0x00;
     mAddress            = 0x0000;
     mRelativeAddress    = 0x0000;
     mRegisters.mAcc     = 0x00;
@@ -249,7 +288,7 @@ void Cpu6502::Reset()
     --mRegisters.mSp;
 
     // Grab program counter from known interrupt vector.
-    mRegisters.mPc = (mSystem->Read(mInterruptVectors[RESET_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[RESET_VECTOR].mHighByte) << 8));
+    mRegisters.mPc = (Read(mInterruptVectors[RESET_VECTOR].mLowByte) | (Read(mInterruptVectors[RESET_VECTOR].mHighByte) << 8));
 
     // Hardware takes 7 clock cycles to do this.
     mCyclesLeft = 7;
@@ -284,7 +323,7 @@ void Cpu6502::SetOrClearFlag(Flags lFlag, bool lCondition)
 //
 void Cpu6502::FetchOpcode()
 {
-    mOpcode = mSystem->Read(mRegisters.mPc++);
+    mOpcode = Read(mRegisters.mPc++);
 }
 
 //--------//
@@ -293,15 +332,15 @@ void Cpu6502::FetchOpcode()
 // Grabs data from an address set by one of the addressing modes.
 //--------//
 //
-DataType Cpu6502::FetchData()
+void Cpu6502::FetchData()
 {
     // For immediate addressing, the data immediately follows the opcode.
     // mAddress already contains it, so just return.
     if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Immediate)
     {
-        return mAddress;
+        mFetchedData = mAddress;
     }
-    return mSystem->Read(mAddress);
+    mFetchedData = Read(mAddress);
 }
 
 //--------//
@@ -314,7 +353,7 @@ DataType Cpu6502::FetchData()
 //
 void Cpu6502::PushStack(uint8_t lData)
 {
-    mSystem->Write(cStartOfStack | mRegisters.mSp, lData);
+    Write(cStartOfStack | mRegisters.mSp, lData);
     --mRegisters.mSp;
 }
 
@@ -328,7 +367,7 @@ void Cpu6502::PushStack(uint8_t lData)
 //
 DataType Cpu6502::PopStack()
 {
-    uint8_t lData = mSystem->Read(cStartOfStack | mRegisters.mSp);
+    uint8_t lData = Read(cStartOfStack | mRegisters.mSp);
     ++mRegisters.mSp;
     return lData;
 }
@@ -362,7 +401,7 @@ uint8_t Cpu6502::Implied()
 //
 uint8_t Cpu6502::Immediate()
 {
-    mAddress = mSystem->Read(mRegisters.mPc++);
+    mAddress = Read(mRegisters.mPc++);
     return DONT_ADD_CLOCK_CYCLE;
 }
 
@@ -376,7 +415,7 @@ uint8_t Cpu6502::Immediate()
 //
 uint8_t Cpu6502::ZeroPage()
 {
-    mAddress = mSystem->Read(mRegisters.mPc++);
+    mAddress = Read(mRegisters.mPc++);
     mAddress &= 0x00FF;
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -391,7 +430,7 @@ uint8_t Cpu6502::ZeroPage()
 //
 uint8_t Cpu6502::ZeroPageX()
 {
-    mAddress = mSystem->Read(mRegisters.mPc++) + mRegisters.mX;
+    mAddress = Read(mRegisters.mPc++) + mRegisters.mX;
     mAddress &= 0x00FF; // Hardware bug! The 6502 did not cross page boundaries here.
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -406,7 +445,7 @@ uint8_t Cpu6502::ZeroPageX()
 //
 uint8_t Cpu6502::ZeroPageY()
 {
-    mAddress = mSystem->Read(mRegisters.mPc++) + mRegisters.mY;
+    mAddress = Read(mRegisters.mPc++) + mRegisters.mY;
     mAddress &= 0x00FF; // Hardware bug! The 6502 did not cross page boundaries here.
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -424,7 +463,7 @@ uint8_t Cpu6502::ZeroPageY()
 //
 uint8_t Cpu6502::Relative()
 {
-    mRelativeAddress = mSystem->Read(mRegisters.mPc++);
+    mRelativeAddress = Read(mRegisters.mPc++);
     if (mRelativeAddress & Bit(7))
     {
         mRelativeAddress |= 0xFF00;
@@ -443,8 +482,8 @@ uint8_t Cpu6502::Relative()
 //
 uint8_t Cpu6502::Absolute()
 {
-    uint16_t lLowByte = mSystem->Read(mRegisters.mPc++);
-    uint16_t lHighByte = mSystem->Read(mRegisters.mPc++);
+    uint16_t lLowByte  = Read(mRegisters.mPc++);
+    uint16_t lHighByte = Read(mRegisters.mPc++);
     mAddress = (lHighByte << 8) | lLowByte;
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -461,8 +500,8 @@ uint8_t Cpu6502::Absolute()
 //
 uint8_t Cpu6502::AbsoluteX()
 {
-    uint16_t lLowByte = mSystem->Read(mRegisters.mPc++);
-    uint16_t lHighByte = mSystem->Read(mRegisters.mPc++);
+    uint16_t lLowByte  = Read(mRegisters.mPc++);
+    uint16_t lHighByte = Read(mRegisters.mPc++);
     mAddress = (lHighByte << 8) | lLowByte;
     mAddress += + mRegisters.mX;
 
@@ -491,8 +530,8 @@ uint8_t Cpu6502::AbsoluteX()
 //
 uint8_t Cpu6502::AbsoluteY()
 {
-    uint16_t lLowByte = mSystem->Read(mRegisters.mPc++);
-    uint16_t lHighByte = mSystem->Read(mRegisters.mPc++);
+    uint16_t lLowByte  = Read(mRegisters.mPc++);
+    uint16_t lHighByte = Read(mRegisters.mPc++);
     mAddress = (lHighByte << 8) | lLowByte;
     mAddress += + mRegisters.mY;
 
@@ -522,8 +561,8 @@ uint8_t Cpu6502::AbsoluteY()
 uint8_t Cpu6502::Indirect()
 {
     // Grab the address for the address.
-    uint16_t lLowByte  = mSystem->Read(mRegisters.mPc++);
-    uint16_t lHighByte = mSystem->Read(mRegisters.mPc++);
+    uint16_t lLowByte  = Read(mRegisters.mPc++);
+    uint16_t lHighByte = Read(mRegisters.mPc++);
     uint16_t lIndrect  = (lHighByte << 8) | lLowByte;
 
     // Now grab the actual address using the contents of the previous address.
@@ -532,13 +571,13 @@ uint8_t Cpu6502::Indirect()
     //       http://www.oxyron.de/html/opcodes02.html
     if (lLowByte & 0x00FF)
     {
-        lLowByte = mSystem->Read(lIndrect);
-        lHighByte = mSystem->Read(lIndrect & 0xFF00);
+        lLowByte  = Read(lIndrect);
+        lHighByte = Read(lIndrect & 0xFF00);
     }
     else // This is how it was supposed to work in all cases.
     {
-        lLowByte = mSystem->Read(lIndrect++);
-        lHighByte = mSystem->Read(lIndrect);
+        lLowByte  = Read(lIndrect++);
+        lHighByte = Read(lIndrect);
     }
     mAddress = (lHighByte << 8) | lLowByte;
 
@@ -557,9 +596,9 @@ uint8_t Cpu6502::Indirect()
 //
 uint8_t Cpu6502::IndexedIndirect()
 {
-    uint16_t lIndirect = mSystem->Read(mRegisters.mPc++) + mRegisters.mX;
-    uint16_t lLowByte = mSystem->Read(lIndirect) & 0x00FF;      // Hardware bug! The 6502 did not cross page boundaries here.
-    uint16_t lHighByte = mSystem->Read(lIndirect + 1) & 0x00FF; // Hardware bug! The 6502 did not cross page boundaries here.
+    uint16_t lIndirect = Read(mRegisters.mPc++) + mRegisters.mX;
+    uint16_t lLowByte  = Read(lIndirect) & 0x00FF;      // Hardware bug! The 6502 did not cross page boundaries here.
+    uint16_t lHighByte = Read(lIndirect + 1) & 0x00FF; // Hardware bug! The 6502 did not cross page boundaries here.
     mAddress = (lHighByte << 8) | lLowByte;
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -576,9 +615,9 @@ uint8_t Cpu6502::IndexedIndirect()
 //
 uint8_t Cpu6502::IndirectIndexed()
 {
-    uint16_t lIndirect = mSystem->Read(mRegisters.mPc++) + mRegisters.mY;
-    uint16_t lLowByte = mSystem->Read(lIndirect);
-    uint16_t lHighByte = mSystem->Read(lIndirect + 1);
+    uint16_t lIndirect = Read(mRegisters.mPc++) + mRegisters.mY;
+    uint16_t lLowByte  = Read(lIndirect);
+    uint16_t lHighByte = Read(lIndirect + 1);
     mAddress = (lHighByte << 8) | lLowByte;
 
     if ((mAddress & 0xFF00) != (lHighByte << 8))
@@ -605,15 +644,15 @@ uint8_t Cpu6502::IndirectIndexed()
 uint8_t Cpu6502::ADC()
 {
     // Perform the add operation.
-    uint8_t  lData = FetchData();
-    uint16_t lResult = mRegisters.mAcc + lData + GetFlag(Flags::C);
+    FetchData();
+    uint16_t lResult = mRegisters.mAcc + mFetchedData + GetFlag(Flags::C);
 
     // Set the Carry flag based on if the result is more than the maximum value of an 8-bit number.
     SetOrClearFlag(Flags::C, lResult > 0x00FF);
 
     // Set the Overflow flag if the sign bit has changed from result exceeding +127 or -128.
     // https://forums.nesdev.org/viewtopic.php?t=6331
-    SetOrClearFlag(Flags::V, ((mRegisters.mAcc ^ lResult) & (lData ^ lResult)) & 0x0080);
+    SetOrClearFlag(Flags::V, ((mRegisters.mAcc ^ lResult) & (mFetchedData ^ lResult)) & 0x0080);
 
     // Set the Negative flag if the MSB is set.
     SetOrClearFlag(Flags::N, lResult & Bit(7));
@@ -639,7 +678,8 @@ uint8_t Cpu6502::ADC()
 uint8_t Cpu6502::AND()
 {
     // Perform the and operation.
-    mRegisters.mAcc = mRegisters.mAcc & FetchData();
+    FetchData();
+    mRegisters.mAcc = mRegisters.mAcc & mFetchedData;
 
     // Set the Negative flag if the MSB is set.
     SetOrClearFlag(Flags::N, mRegisters.mAcc & Bit(7));
@@ -663,7 +703,8 @@ uint8_t Cpu6502::AND()
 uint8_t Cpu6502::ASL()
 {
     // Perform the left shift.
-    uint16_t lData = FetchData() << 1;
+    FetchData();
+    uint16_t lData = mFetchedData << 1;
 
     // Set the Carry flag if bit 8 is set.
     SetOrClearFlag(Flags::C, lData > 0x00FF);
@@ -681,7 +722,7 @@ uint8_t Cpu6502::ASL()
     }
     else
     {
-        mSystem->Write(mAddress, lData & 0x00FF);
+        Write(mAddress, lData & 0x00FF);
     }
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -739,16 +780,16 @@ uint8_t Cpu6502::BEQ()
 uint8_t Cpu6502::BIT()
 {
     // Perform the and operation.
-    uint8_t lData = FetchData();
+    FetchData();
 
     // Set the Negative flag if the MSB is set at memory location.
-    SetOrClearFlag(Flags::N, lData & Bit(7));
+    SetOrClearFlag(Flags::N, mFetchedData & Bit(7));
 
     // Set the Zero flag if the result is zero.
-    SetOrClearFlag(Flags::Z, (mRegisters.mAcc & lData) == 0);
+    SetOrClearFlag(Flags::Z, (mRegisters.mAcc & mFetchedData) == 0);
 
     // Set the Overflow flag if bit 6 is set at memory location.
-    SetOrClearFlag(Flags::V, lData & Bit(6));
+    SetOrClearFlag(Flags::V, mFetchedData & Bit(6));
 
     // This instruction could add an additional clock cycle, depending on the address mode.
     return ADD_CLOCK_CYCLE;
@@ -826,7 +867,7 @@ uint8_t Cpu6502::BRK()
     SetFlag(Flags::I);
 
     // Finally, jump to the address from the interrupt vector.
-    mRegisters.mPc = (mSystem->Read(mInterruptVectors[BRK_VECTOR].mLowByte) | (mSystem->Read(mInterruptVectors[BRK_VECTOR].mHighByte) << 8));
+    mRegisters.mPc = (Read(mInterruptVectors[BRK_VECTOR].mLowByte) | (Read(mInterruptVectors[BRK_VECTOR].mHighByte) << 8));
 
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -930,8 +971,8 @@ uint8_t Cpu6502::CLV()
 uint8_t Cpu6502::CMP()
 {
     // Perform subtraction.
-    DataType lData   = FetchData();
-    uint16_t lResult = mRegisters.mAcc - lData;
+    FetchData();
+    uint16_t lResult = mRegisters.mAcc - mFetchedData;
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
@@ -940,7 +981,7 @@ uint8_t Cpu6502::CMP()
     SetOrClearFlag(Flags::N, lResult & Bit(7));
 
     // Set the Carry flag if the data in memory is <= than accumulator.
-    SetOrClearFlag(Flags::C, lData <= mRegisters.mAcc);
+    SetOrClearFlag(Flags::C, mFetchedData <= mRegisters.mAcc);
 
     return ADD_CLOCK_CYCLE;
 }
@@ -956,8 +997,8 @@ uint8_t Cpu6502::CMP()
 uint8_t Cpu6502::CPX()
 {
     // Perform subtraction.
-    DataType lData   = FetchData();
-    uint16_t lResult = mRegisters.mX - lData;
+    FetchData();
+    uint16_t lResult = mRegisters.mX - mFetchedData;
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
@@ -966,7 +1007,7 @@ uint8_t Cpu6502::CPX()
     SetOrClearFlag(Flags::N, lResult & Bit(7));
 
     // Set the Carry flag if the X register is >= than the data in memory.
-    SetOrClearFlag(Flags::C, mRegisters.mX >= lData);
+    SetOrClearFlag(Flags::C, mRegisters.mX >= mFetchedData);
 
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -982,8 +1023,8 @@ uint8_t Cpu6502::CPX()
 uint8_t Cpu6502::CPY()
 {
     // Perform subtraction.
-    DataType lData   = FetchData();
-    uint16_t lResult = mRegisters.mY - lData;
+    FetchData();
+    uint16_t lResult = mRegisters.mY - mFetchedData;
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
@@ -992,7 +1033,7 @@ uint8_t Cpu6502::CPY()
     SetOrClearFlag(Flags::N, lResult & Bit(7));
 
     // Set the Carry flag if the X register is >= than the data in memory.
-    SetOrClearFlag(Flags::C, mRegisters.mY >= lData);
+    SetOrClearFlag(Flags::C, mRegisters.mY >= mFetchedData);
 
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -1008,10 +1049,11 @@ uint8_t Cpu6502::CPY()
 uint8_t Cpu6502::DEC()
 {
     // Perform decrement.
-    uint16_t lResult = FetchData() - 1;
+    FetchData();
+    uint16_t lResult = mFetchedData - 1;
 
     // Write result back to memory.
-    mSystem->Write(mAddress, lResult & 0x00FF);
+    Write(mAddress, lResult & 0x00FF);
 
     // Set the Negative flag if the result is negative.
     SetOrClearFlag(Flags::N, lResult & Bit(7));
@@ -1077,10 +1119,11 @@ uint8_t Cpu6502::DEY()
 uint8_t Cpu6502::EOR()
 {
     // Perform decrement.
-    DataType lResult = FetchData() ^ mRegisters.mAcc;
+    FetchData();
+    DataType lResult = mFetchedData ^ mRegisters.mAcc;
 
     // Write result back to memory.
-    mSystem->Write(mAddress, lResult);
+    Write(mAddress, lResult);
 
     // Set the Negative flag if the result is negative.
     SetOrClearFlag(Flags::N, lResult & Bit(7));
@@ -1102,10 +1145,11 @@ uint8_t Cpu6502::EOR()
 uint8_t Cpu6502::INC()
 {
     // Perform increment.
-    uint16_t lResult = FetchData() + 1;
+    FetchData();
+    uint16_t lResult = mFetchedData + 1;
 
     // Write result back to memory.
-    mSystem->Write(mAddress, lResult & 0x00FF);
+    Write(mAddress, lResult & 0x00FF);
 
     // Set the Negative flag if the result is negative.
     SetOrClearFlag(Flags::N, lResult & Bit(7));
@@ -1210,8 +1254,8 @@ uint8_t Cpu6502::JSR()
 uint8_t Cpu6502::LDA()
 {
     // Load accumulator with memory.
-    DataType lData = FetchData();
-    mRegisters.mAcc = lData;
+    FetchData();
+    mRegisters.mAcc = mFetchedData;
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, mRegisters.mAcc == 0);
@@ -1233,8 +1277,8 @@ uint8_t Cpu6502::LDA()
 uint8_t Cpu6502::LDX()
 {
     // Load accumulator with memory.
-    DataType lData = FetchData();
-    mRegisters.mX = lData;
+    FetchData();
+    mRegisters.mX = mFetchedData;
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, mRegisters.mX == 0);
@@ -1256,8 +1300,8 @@ uint8_t Cpu6502::LDX()
 uint8_t Cpu6502::LDY()
 {
     // Load accumulator with memory.
-    DataType lData = FetchData();
-    mRegisters.mY = lData;
+    FetchData();
+    mRegisters.mY = mFetchedData;
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, mRegisters.mY == 0);
@@ -1278,14 +1322,12 @@ uint8_t Cpu6502::LDY()
 //
 uint8_t Cpu6502::LSR()
 {
-    // Grab the data.
-    uint16_t lData = FetchData();
+    // Grab the data and perform the right shift.
+    FetchData();
+    uint16_t lData = mFetchedData >> 1;
 
     // Set the Carry flag if bit 8 is set.
-    SetOrClearFlag(Flags::C, lData & Bit(0));
-
-    // Perform the right shift.
-    lData = lData >> 1;
+    SetOrClearFlag(Flags::C, mFetchedData & Bit(0));
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, (lData & 0x00FF) == 0);
@@ -1300,7 +1342,7 @@ uint8_t Cpu6502::LSR()
     }
     else
     {
-        mSystem->Write(mAddress, lData & 0x00FF);
+        Write(mAddress, lData & 0x00FF);
     }
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -1329,7 +1371,8 @@ uint8_t Cpu6502::NOP()
 uint8_t Cpu6502::ORA()
 {
     // Perform the and operation.
-    mRegisters.mAcc = mRegisters.mAcc | FetchData();
+    FetchData();
+    mRegisters.mAcc = mRegisters.mAcc | mFetchedData;
 
     // Set the Negative flag if the MSB is set.
     SetOrClearFlag(Flags::N, mRegisters.mAcc & Bit(7));
@@ -1428,7 +1471,8 @@ uint8_t Cpu6502::PLP()
 uint8_t Cpu6502::ROL()
 {
     // Perform rotate left operation.
-    uint16_t lResult = (FetchData() << 1) | GetFlag(Flags::C);
+    FetchData();
+    uint16_t lResult = (mFetchedData << 1) | GetFlag(Flags::C);
 
     // Set the Carry flag if bit 8 is set.
     SetOrClearFlag(Flags::C, lResult & 0xFF00);
@@ -1446,7 +1490,7 @@ uint8_t Cpu6502::ROL()
     }
     else
     {
-        mSystem->Write(mAddress, lResult & 0x00FF);
+        Write(mAddress, lResult & 0x00FF);
     }
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -1462,11 +1506,11 @@ uint8_t Cpu6502::ROL()
 uint8_t Cpu6502::ROR()
 {
     // Perform rotate right operation.
-    DataType lData   = FetchData();
-    uint16_t lResult = (lData >> 1) | (GetFlag(Flags::C) << 7);
+    FetchData();
+    uint16_t lResult = (mFetchedData >> 1) | (GetFlag(Flags::C) << 7);
 
     // Set the Carry flag if bit 1 is set.
-    SetOrClearFlag(Flags::C, lData & 0x01);
+    SetOrClearFlag(Flags::C, mFetchedData & 0x01);
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
@@ -1477,11 +1521,11 @@ uint8_t Cpu6502::ROR()
     // Only store result to accumulator if address mode was Implied.
     if (mOpcodeMatrix[mOpcode].mAddressMode == &Cpu6502::Implied)
     {
-        mRegisters.mAcc = lData & 0x00FF;
+        mRegisters.mAcc = mFetchedData & 0x00FF;
     }
     else
     {
-        mSystem->Write(mAddress, lData & 0x00FF);
+        Write(mAddress, mFetchedData & 0x00FF);
     }
     return DONT_ADD_CLOCK_CYCLE;
 }
@@ -1524,7 +1568,7 @@ uint8_t Cpu6502::RTI()
 uint8_t Cpu6502::RTS()
 {
     // Grab the program counter from the stack, low byte first then high byte.
-    mRegisters.mPc = PopStack();
+    mRegisters.mPc  = PopStack();
     mRegisters.mPc |= (PopStack() << 8);
 
     // JSR decremented program counter before pushing to stack, now we
@@ -1544,7 +1588,8 @@ uint8_t Cpu6502::RTS()
 //
 uint8_t Cpu6502::SBC()
 {
-    uint16_t lInverted = FetchData() ^ 0x00FF;
+    FetchData();
+    uint16_t lInverted = mFetchedData ^ 0x00FF;
     uint16_t lResult   = mRegisters.mAcc + lInverted + GetFlag(Flags::C);
 
     // Set the Carry flag based on if the result is more than the maximum value of an 8-bit number.
@@ -1621,7 +1666,7 @@ uint8_t Cpu6502::SEI()
 //
 uint8_t Cpu6502::STA()
 {
-    mSystem->Write(mAddress, mRegisters.mAcc);
+    Write(mAddress, mRegisters.mAcc);
     return DONT_ADD_CLOCK_CYCLE;
 }
 
@@ -1635,7 +1680,7 @@ uint8_t Cpu6502::STA()
 //
 uint8_t Cpu6502::STX()
 {
-    mSystem->Write(mAddress, mRegisters.mX);
+    Write(mAddress, mRegisters.mX);
     return DONT_ADD_CLOCK_CYCLE;
 }
 
@@ -1649,7 +1694,7 @@ uint8_t Cpu6502::STX()
 //
 uint8_t Cpu6502::STY()
 {
-    mSystem->Write(mAddress, mRegisters.mY);
+    Write(mAddress, mRegisters.mY);
     return DONT_ADD_CLOCK_CYCLE;
 }
 
@@ -1836,7 +1881,7 @@ std::string Cpu6502::Disassemble(AddressType lAddress)
     char *   lLocation = lBuffer;
     DataType lLowByte;
     DataType lHighByte;
-    Instruction lInstruction = mOpcodeMatrix[mSystem->Read(lAddress++)];
+    Instruction lInstruction = mOpcodeMatrix[Read(lAddress++)];
 
     // Prefix instruction location and instruction name.
     lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), "%04X: %s",
@@ -1846,65 +1891,65 @@ std::string Cpu6502::Disassemble(AddressType lAddress)
     // Get the address. This is pretty ugly, but should only be used during debugging.
     if (lInstruction.mAddressMode == &Cpu6502::Immediate)
     {
-        lLowByte   = mSystem->Read(lAddress);
+        lLowByte   = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::ZeroPage)
     {
-        lLowByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::ZeroPageX)
     {
-        lLowByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::ZeroPageY)
     {
-        lLowByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::Relative)
     {
-        lLowByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X", lAddress + lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::Absolute)
     {
-        lLowByte  = mSystem->Read(lAddress++);
-        lHighByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress++);
+        lHighByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
                               static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::AbsoluteX)
     {
-        lLowByte  = mSystem->Read(lAddress++);
-        lHighByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress++);
+        lHighByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
                               static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::AbsoluteY)
     {
-        lLowByte  = mSystem->Read(lAddress++);
-        lHighByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress++);
+        lHighByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
                               static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::Indirect)
     {
-        lLowByte  = mSystem->Read(lAddress++);
-        lHighByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress++);
+        lHighByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%04X)",
                               static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::IndexedIndirect)
     {
-        lLowByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%02X,X)", lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::IndirectIndexed)
     {
-        lLowByte  = mSystem->Read(lAddress);
+        lLowByte  = Read(lAddress);
         lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%02X),Y", lLowByte);
     }
 
@@ -1936,7 +1981,7 @@ std::string Cpu6502::DumpStack(void)
     {
         for (AddressType lColumn = 0; lColumn < lNumColumns; ++lColumn, ++lIndex)
         {
-            lValue = mSystem->Read(cStartOfStack + lIndex);
+            lValue = Read(cStartOfStack + lIndex);
             lLocation += sprintf(lLocation, "%02X ", lValue);
         }
         lLocation += sprintf(lLocation, "\n\t\t\t");

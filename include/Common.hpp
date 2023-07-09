@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <Config.h>
 
-typedef uint8_t DataType;
+typedef uint8_t  DataType;
 typedef uint16_t AddressType;
 
 // Forware declaration to prevent circular dependencies.
@@ -28,7 +28,10 @@ class Device
 {
     public:
 
-        void Connect(System * lSystem) {mSystem = lSystem;}
+        virtual DataType Read(AddressType lAddress, DataType lLastRead) = 0;
+        virtual void     Write(AddressType lAddress, DataType lData)    = 0;
+        void             Connect(System * lSystem) {mSystem = lSystem;}
+        void             Disconnect(void)          {mSystem = NULL;}
 
     protected:
 

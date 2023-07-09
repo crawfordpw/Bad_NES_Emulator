@@ -27,29 +27,15 @@ class Cpu6502 : public Device
 {
     public:
 
-        enum InterruptVectorIndex
-        {
-            NMI_VECTOR       = 0,
-            RESET_VECTOR,
-            IRQ_VECTOR,
-            BRK_VECTOR,
-            NUM_VECTORS
-        };
-
-        struct InterruptVector
-        {
-            uint16_t mLowByte;
-            uint16_t mHighByte;
-        };
-
         Cpu6502();
         ~Cpu6502();
 
-        void    Reset();
-        void    StepClock();
-        uint8_t GetCyclesLeft() {return mCyclesLeft;}
+        virtual DataType Read(AddressType lAddress, DataType lLastRead = 0) override;
+        virtual void     Write(AddressType lAddress, DataType lData)        override;
 
-        const InterruptVector  mInterruptVectors[NUM_VECTORS];
+        void             Reset();
+        void             StepClock();
+        uint8_t          GetCyclesLeft() {return mCyclesLeft;}
 
     private:
 
@@ -83,7 +69,7 @@ class Cpu6502 : public Device
         void     SetOrClearFlag(Flags lFlag, bool lCondition);
 
         void     FetchOpcode();
-        DataType FetchData();
+        void     FetchData();
         void     PushStack(uint8_t lData);
         DataType PopStack();
 
@@ -145,12 +131,29 @@ class Cpu6502 : public Device
             uint16_t  mPc;          // Program counter.
         };
 
+        enum InterruptVectorIndex
+        {
+            NMI_VECTOR       = 0,
+            RESET_VECTOR,
+            IRQ_VECTOR,
+            BRK_VECTOR,
+            NUM_VECTORS
+        };
+
+        struct InterruptVector
+        {
+            uint16_t mLowByte;
+            uint16_t mHighByte;
+        };
+
         const std::vector<Instruction> mOpcodeMatrix;
         DataType                 mOpcode;               // Opcode of current instruction being executed.
+        DataType                 mFetchedData;         // Last data fetched by an instruction.
         AddressType              mAddress;              // Address used for the current instruction.
         AddressType              mRelativeAddress;      // Address offset used for branch instructions.
         uint8_t                  mCyclesLeft;           // Remaining clock cycles current instruction has.
         Registers                mRegisters;            // All registers the cpu has.
+        const InterruptVector    mInterruptVectors[NUM_VECTORS];
         inline static constexpr AddressType    cStartOfStack = 0x0100;
         inline static constexpr uint16_t       cStackSize    = 0xFF + 1;
 

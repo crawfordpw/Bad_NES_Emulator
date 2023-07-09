@@ -58,14 +58,11 @@ bool ValidHexCharacter(char lChar, uint8_t * lByte)
 // Constructor.
 //--------//
 //
-System::System()
-  : mRam(RAM_SIZE)
+System::System(void)
+  : mRam(RAM_SIZE), mCartridge(NULL)
 {
     mCpu.Connect(this);
     mRam.Connect(this);
-
-    Write(mCpu.mInterruptVectors[Cpu6502::RESET_VECTOR].mLowByte, 0x00);
-    Write(mCpu.mInterruptVectors[Cpu6502::RESET_VECTOR].mHighByte, 0x00);
     mCpu.Reset();
 }
 
@@ -77,6 +74,32 @@ System::System()
 //
 System::~System()
 {
+}
+
+//--------//
+// InsertCartridge
+//
+// Connects the cartidge to the system.
+//
+// param[in]    lCartridge  The cartridge insert.
+//--------//
+//
+void System::InsertCartridge(Cartridge * lCartridge)
+{
+    mCartridge = lCartridge;
+    mCartridge->Connect(this);
+}
+
+//--------//
+// RemoveCartridge
+//
+// Disconnect the cartidge from the system.
+//--------//
+//
+void System::RemoveCartridge(void)
+{
+    mCartridge->Disconnect();
+    mCartridge = NULL;
 }
 
 //--------//
@@ -116,13 +139,14 @@ void System::Start(void)
 //
 // Reads some data out of memory.
 //
-// param[in] lAddress   Address to read from. 
+// param[in] lAddress   Address to read from.
+// param[in] lLastRead  Attempts to replicate open bus behavior.
 // returns  Data at the given address. 
 //--------//
 //
-DataType System::Read(AddressType lAddress)
+DataType System::Read(AddressType lAddress, DataType lLastRead)
 {
-    return mRam.Read(lAddress);
+    return mRam.Read(lAddress, lLastRead);
 }
 
 //--------//
@@ -218,7 +242,7 @@ void System::DumpMemoryAsHex(const char * lFilename)
     // Loop through all of memory and convert to hex.
     for (AddressType lIndex = 0; lIndex < mRam.GetSize(); ++lIndex)
     {
-        lValue = Read(lIndex) & 0xFF;
+        lValue = Read(lIndex, 0x00) & 0xFF;
         lBuffer[lIndex * 2] = vHexArray[lValue >> 4];
         lBuffer[lIndex * 2 + 1] = vHexArray[lValue & 0x0F];
     }
@@ -259,7 +283,7 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     // Loop through all of memory and convert to hex.
     for (AddressType lIndex = 0; lIndex < lSize; ++lIndex)
     {
-        lBuffer[lIndex] = static_cast<char>(Read(lIndex));
+        lBuffer[lIndex] = static_cast<char>(Read(lIndex, 0x00));
     }
 
     // Write out to file.
