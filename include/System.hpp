@@ -27,7 +27,7 @@ class System
         {
             RAM_START               = 0x0000,
             RAM_SIZE                = 0x0800,
-            RAM_RANGE               = 0x01FF,
+            RAM_RANGE               = 0x1FFF,
 
             PPU_REGISTER_START      = 0x2000,
             PPU_REGISTER_SIZE       = 0x0008,
@@ -40,6 +40,7 @@ class System
 
             CARTRIDGE_START         = 0x4020,
             CARTRIDGE_SIZE          = 0xBFE0,
+            CARTRIDGE_RANGE         = 0xFFFF,
         };
 
         System(void);

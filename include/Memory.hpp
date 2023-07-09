@@ -10,6 +10,7 @@
 #define MEMORY_HPP
 
 #include <string.h>
+#include <File/ApiFile.hpp>
 #include "Common.hpp"
 
 //========//
@@ -22,18 +23,26 @@ class Memory : public Device
 {
     public:
 
+        enum LoadStatus
+        {
+            SUCCESS = File::SUCCESS,
+            FAILURE = File::FAILURE
+        };
+
+        Memory(void)              : mSize(0) {}
         Memory(AddressType lSize) : mSize(lSize) {}
         virtual ~Memory(void) {}
 
         virtual DataType Read(AddressType lAddress, DataType lLastRead) = 0;
         virtual void     Write(AddressType lAddress, DataType lData)    = 0;
+        virtual void     Resize(AddressType lSize)                      = 0;
+        virtual int      LoadMemoryFromFile(File * lFile, size_t lSize) = 0;
+
         AddressType      GetSize(void) {return mSize;}
         
     protected:
 
         AddressType mSize;
-
-        virtual void Initialize(AddressType lSize) = 0;
 };
 
 //========//
@@ -46,17 +55,18 @@ class MemoryMapped : public Memory
 {
     public:
 
-        MemoryMapped(AddressType lSize) : Memory(lSize) {Initialize(lSize);}
+        MemoryMapped(void) : Memory() {}
+        MemoryMapped(AddressType lSize) : Memory(lSize) {Resize(lSize);}
         virtual ~MemoryMapped(void);
 
-        virtual DataType Read(AddressType lAddress, DataType lLastRead);
-        virtual void     Write(AddressType lAddress, DataType lData);
+        virtual DataType Read(AddressType lAddress, DataType lLastRead) override;
+        virtual void     Write(AddressType lAddress, DataType lData)    override;
+        virtual void     Resize(AddressType lSize)                      override;
+        virtual int      LoadMemoryFromFile(File * lFile, size_t lSize) override;
 
     protected:
 
         uint8_t * mMemory;
-
-        virtual void Initialize(AddressType lSize);
 };
 
 //========//
@@ -74,15 +84,19 @@ inline MemoryMapped::~MemoryMapped(void)
 }
 
 //--------//
-// Initialize
+// Resize
 //
-// Initializes memory.
+// Resizes allocated memory, detroying contents in process.
 //
 // param[in]    lSize   Size of memory. 
 //--------//
 //
-inline void MemoryMapped::Initialize(AddressType lSize)
+inline void MemoryMapped::Resize(AddressType lSize)
 {
+    if (mMemory)
+    {
+        delete [] mMemory;
+    }
     mMemory = new uint8_t[lSize];
     memset(mMemory, 0, lSize);
 }
@@ -121,7 +135,7 @@ inline DataType MemoryMapped::Read(AddressType lAddress, DataType lLastRead)
 //
 inline void MemoryMapped::Write(AddressType lAddress, DataType lData)
 {
-    if (lAddress <= mSize)
+    if (lAddress < mSize)
     {
         mMemory[lAddress] = lData;
     }

@@ -86,6 +86,10 @@ System::~System()
 //
 void System::InsertCartridge(Cartridge * lCartridge)
 {
+    if (!lCartridge->IsValidImage())
+    {
+        return;
+    }
     mCartridge = lCartridge;
     mCartridge->Connect(this);
 }
@@ -98,8 +102,11 @@ void System::InsertCartridge(Cartridge * lCartridge)
 //
 void System::RemoveCartridge(void)
 {
-    mCartridge->Disconnect();
-    mCartridge = NULL;
+    if (mCartridge)
+    {
+        mCartridge->Disconnect();
+        mCartridge = NULL;
+    }
 }
 
 //--------//
@@ -146,7 +153,26 @@ void System::Start(void)
 //
 DataType System::Read(AddressType lAddress, DataType lLastRead)
 {
-    return mRam.Read(lAddress, lLastRead);
+    DataType lData = lLastRead;
+
+    // The cartridge has passive access to all reads within the system.
+    // even if it's not within its address range.
+    if (mCartridge)
+    {
+        lData = mCartridge->Read(lAddress, lLastRead);
+    }
+
+    // 2KB is mirrrored across 8KB.
+    if (lAddress >= System::RAM_START && lAddress <= System::RAM_RANGE)
+    {
+        lData = mRam.Read(lAddress & (RAM_SIZE - 1), lLastRead);
+    }
+    else if (lAddress >= System::PPU_REGISTER_START && lAddress <= PPU_REGISTER_RANGE)
+    {
+        // Add when ppu is added.
+    }
+
+    return lData;
 }
 
 //--------//
@@ -160,7 +186,22 @@ DataType System::Read(AddressType lAddress, DataType lLastRead)
 //
 void System::Write(AddressType lAddress, DataType lData)
 {
-    mRam.Write(lAddress, lData);
+    // The cartridge has passive access to all writes within the system.
+    // even if it's not within its address range.
+    if (mCartridge)
+    {
+        mCartridge->Write(lAddress, lData);
+    }
+
+    // 2KB is mirrrored across 8KB.
+    if (lAddress >= System::RAM_START && lAddress <= System::RAM_RANGE)
+    {
+        mRam.Write(lAddress & (RAM_SIZE - 1), lData);
+    }
+    else if (lAddress >= System::PPU_REGISTER_START && lAddress <= PPU_REGISTER_RANGE)
+    {
+        // Add when ppu is added.
+    }
 }
 
 //--------//
