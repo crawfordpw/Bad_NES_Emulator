@@ -21,20 +21,19 @@ set(CMAKE_CXX_FLAGS "-std=gnu++11")
 # Sources
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/ MAIN_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ FILE_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Errors/ ERROR_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Logger/ LOGGER_SOURCES)
 set(SOURCES
     ${SOURCES} 
     ${MAIN_SOURCES}
     ${FILE_SOURCES}
+    ${ERROR_SOURCES}
+    ${LOGGER_SOURCES}
 )
 
 # Set up logging defines.
 if (LOG_TO_CONSOLE OR LOG_TO_FILE OR DEBUG)
     add_definitions(-DUSE_LOGGER)
-    aux_source_directory(${PROJECT_SOURCE_DIR}/src/Logger/ LOGGER_SOURCES)
-    set(SOURCES
-        ${SOURCES}
-        ${LOGGER_SOURCES}
-    )
 endif()
 
 if (DEBUG)

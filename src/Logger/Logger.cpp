@@ -7,15 +7,9 @@
 /////////////////////////////////////////////////////////////////////
 
 #include <Logger/ApiLogger.hpp>
-
-#ifdef STDOUT_LOGGER
 #include <iostream>
 #include <stdio.h>
-#endif
-
-#ifdef USE_LOGGER
 #include <cstring>
-#endif
 
 //--------//
 //
@@ -158,7 +152,33 @@ void ApiLogger::CleanupMemory(void)
     }
 }
 
-#ifdef STDOUT_LOGGER
+//--------//
+//
+// ApiLogger
+//
+//--------//
+
+//--------//
+// Logger
+//
+// Constructor.
+//
+// param[in]    lRegister   Should it register with API.
+//--------//
+//
+Logger::Logger(bool lRegister)
+{
+    if (lRegister)
+    {
+        mId = RegisterLogger(this);
+    }
+    else
+    {
+        mId = -1;
+    }
+}
+
+
 //--------//
 //
 // StdLogger
@@ -203,7 +223,6 @@ void StdLogger::CaptureLog(const char * lMessage, size_t lLength)
 {
     printf("%s", lMessage);
 }
-#endif
 
 #ifdef FILE_LOGGER
 //--------//
@@ -218,10 +237,11 @@ void StdLogger::CaptureLog(const char * lMessage, size_t lLength)
 // Constructor. Opens the file specified.
 //
 // param[in]    lFileName   The file to log messages to.
+// param[in]    lRegister   Should it register with API.
 //--------//
 //
-FileLogger::FileLogger()
-    : mFile(NULL)
+FileLogger::FileLogger(bool lRegister)
+    : Logger(lRegister,) mFile(NULL)
 {
 }
 

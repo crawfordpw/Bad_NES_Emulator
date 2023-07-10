@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <System.hpp>
 #include <File/StdFile.hpp>
-#include <Logger/ApiLogger.hpp>
+#include <Errors/ApiErrors.hpp>
 #include <unistd.h>
 
 #ifdef _WIN32
@@ -52,11 +52,7 @@ int main(void)
 
     if (lStatus != File::SUCCESS)
     {
-#ifdef USE_LOGGER
-        char lBuffer[ApiFileSystem::MAX_FILENAME];
-        snprintf(lBuffer, ApiFileSystem::MAX_FILENAME, "Couldn't open file, %s\n", lProgramFile);
-        ApiLogger::Log(lBuffer);
-#endif
+        gErrorManager.Post(ErrorCodes::COULD_NOT_OPEN_FILE);
         return 0;
     }
 

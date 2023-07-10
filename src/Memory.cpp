@@ -21,6 +21,7 @@
 //
 // param[in]    lFile   File to load
 // param[in]    lSize   How much to load.
+// returns  Status of the memory load, SUCCESS or FAILURE.
 //--------//
 //
 int MemoryMapped::LoadMemoryFromFile(File * lFile, size_t lSize)

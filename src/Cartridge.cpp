@@ -8,6 +8,7 @@
 
 #include <System.hpp>
 #include <File/ApiFile.hpp>
+#include <Errors/ApiErrors.hpp>
 
 #ifdef USE_LOGGER
 #include <Logger/ApiLogger.hpp>
@@ -53,9 +54,7 @@ Cartridge::Cartridge(const char * lFilename)
     lStatus = ApiFileSystem::Open(lFilename, "rb", &lFile);
     if (lStatus != File::SUCCESS)
     {
-#ifdef USE_LOGGER
-        ApiLogger::Log("[!] Couldn't open file!");
-#endif
+        gErrorManager.Post(ErrorCodes::COULD_NOT_OPEN_FILE, lFilename);
         return;
     }
 
@@ -63,18 +62,14 @@ Cartridge::Cartridge(const char * lFilename)
     lBytes = ApiFileSystem::Read(&mHeader, sizeof(Header), lFile);
     if (lBytes != sizeof(Header))
     {
-#ifdef USE_LOGGER
-        ApiLogger::Log("[!] Could not read Header information from cartridge!");
-#endif
+        gErrorManager.Post(ErrorCodes::READ_ERROR);
         return;
     }
 
     // Check to see if its a valid NES file.
-    if (mHeader.mId[0] !='N' || mHeader.mId[1] !='E' || mHeader.mId[2] !='S' || mHeader.mId[3] != 0x1A)
+    if (mHeader.mId[0] != 'N' || mHeader.mId[1] != 'E' || mHeader.mId[2] != 'S' || mHeader.mId[3] != 0x1A)
     {
-#ifdef USE_LOGGER
-        ApiLogger::Log("[!] File provided is not an NES file!");
-#endif
+        gErrorManager.Post(ErrorCodes::INVALID_NES_FORMAT);
         return;
     }
 
@@ -92,9 +87,7 @@ Cartridge::Cartridge(const char * lFilename)
         {
             if (mHeader.mUnused[lIndex] != 0x00)
             {
-#ifdef USE_LOGGER
-                ApiLogger::Log("[!] File has been refused to load. Incorrect header format!");
-#endif
+                gErrorManager.Post(ErrorCodes::INVALID_NES_FORMAT);
                 return;
             }
         }
@@ -122,9 +115,7 @@ Cartridge::Cartridge(const char * lFilename)
     if (lStatus != Memory::SUCCESS)
     {
         mPrgMemory.Resize(0);
-#ifdef USE_LOGGER
-        ApiLogger::Log("[!] Could not load program memory!");
-#endif
+        gErrorManager.Post(ErrorCodes::FAIL_TO_LOAD_MEMORY);
         return;
     }
 
@@ -145,9 +136,7 @@ Cartridge::Cartridge(const char * lFilename)
     if (lStatus != Memory::SUCCESS)
     {
         mChrMemory.Resize(0);
-#ifdef USE_LOGGER
-        ApiLogger::Log("[!] Could not load program memory!");
-#endif
+        gErrorManager.Post(ErrorCodes::FAIL_TO_LOAD_MEMORY);
         return;
     }
 
@@ -159,6 +148,10 @@ Cartridge::Cartridge(const char * lFilename)
 
     // If we made it this far, then it was a valid file.
     mValidImage = true;
+
+#ifdef USE_LOGGER
+    ApiLogger::Log("[i] Valid file format!");
+#endif
 }
 
 //--------//
