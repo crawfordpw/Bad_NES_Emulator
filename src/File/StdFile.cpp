@@ -7,6 +7,7 @@
 /////////////////////////////////////////////////////////////////////
 
 #include <File/StdFile.hpp>
+#include <Errors/ApiErrors.hpp>
 
 #ifdef _WIN32
     #include <direct.h>
@@ -53,7 +54,7 @@ int StdFile::Open(const char * lFilename, const char * lMode)
     // Don't try opening another file if one is already opened.
     if (mFileHandle != NULL)
     {
-        mStatus = File::FILE_ALREADY_OPENED;
+        mStatus = ErrorCodes::FILE_ALREADY_OPENED;
         return mStatus;
     }
 
@@ -63,12 +64,12 @@ int StdFile::Open(const char * lFilename, const char * lMode)
     // Open failed for some reason.
     if (mFileHandle == NULL)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::FILE_COULD_NOT_OPEN;
         return mStatus;
     }
 
     // Success!
-    mStatus = File::SUCCESS;
+    mStatus = ErrorCodes::SUCCESS;
     return mStatus;
 }
 
@@ -85,7 +86,7 @@ int StdFile::Close()
     // Don't try closing a file if the file handle doesn't exist.
     if (mFileHandle == NULL)
     {
-        mStatus = File::FILE_ALREADY_CLOSED;
+        mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
     }
 
@@ -96,12 +97,12 @@ int StdFile::Close()
     // Failed to close the file for some reason.
     if (mStatus != 0)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::FILE_COULD_NOT_CLOSE;
         return mStatus;
     }
 
     // Success!
-    mStatus = File::SUCCESS;
+    mStatus = ErrorCodes::SUCCESS;
     return mStatus;
 }
 
@@ -126,21 +127,21 @@ size_t StdFile::Read(void * lBuffer, size_t lCount)
     // Don't try reading from a file if the file handle doesn't exist.
     if (mFileHandle == NULL)
     {
-        mStatus = File::FILE_ALREADY_CLOSED;
+        mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
     }
 
     // Don't have to do anything if we need to read 0 bytes.
     if (lCount == 0)
     {
-        mStatus = File::SUCCESS;
+        mStatus = ErrorCodes::SUCCESS;
         return mStatus;
     }
 
     // Don't want to read into a NULL buffer.
     if (lBuffer == NULL)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::FILE_GENERAL_ERROR;
         return mStatus;
     }
 
@@ -153,7 +154,7 @@ size_t StdFile::Read(void * lBuffer, size_t lCount)
         // It's only an error if end of file wasn't reached.
         if (feof(mFileHandle) != 0)
         {
-            mStatus = File::FAILURE;
+            mStatus = ErrorCodes::FILE_READ_ERROR;
         }
     }
 
@@ -181,21 +182,21 @@ size_t StdFile::Write(void * lBuffer, size_t lCount)
     // Don't try reading from a file if the file handle doesn't exist.
     if (mFileHandle == NULL)
     {
-        mStatus = File::FILE_ALREADY_CLOSED;
+        mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
     }
 
     // Don't have to do anything if we need to write 0 bytes.
     if (lCount == 0)
     {
-        mStatus = File::SUCCESS;
+        mStatus = ErrorCodes::SUCCESS;
         return mStatus;
     }
 
     // Don't want to write from a NULL buffer.
     if (lBuffer == NULL)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::FILE_GENERAL_ERROR;
         return mStatus;
     }
 
@@ -205,7 +206,7 @@ size_t StdFile::Write(void * lBuffer, size_t lCount)
     // If the number of bytes read is different than requested, something may have gone wrong.
     if (lNumWrote != lCount)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::SUCCESS;
     }
 
     // Return the number of bytes that were read.
@@ -272,7 +273,7 @@ int StdFile::SeekHelper(long int lOffset, int lMode)
     // Don't try seeking if the file handle doesn't exist.
     if (mFileHandle == NULL)
     {
-        mStatus = File::FILE_ALREADY_CLOSED;
+        mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
     }
 
@@ -282,12 +283,12 @@ int StdFile::SeekHelper(long int lOffset, int lMode)
     // Failed to seek file for some reason.
     if (mStatus != 0)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::FILE_SEEK_ERROR;
         return mStatus;
     }
 
     // Success!
-    mStatus = File::SUCCESS;
+    mStatus = ErrorCodes::SUCCESS;
     return mStatus;
 }
 
@@ -305,7 +306,7 @@ int StdFile::Tell(long int * lPosition)
     // Don't try telling if the file handle doesn't exist.
     if (mFileHandle == NULL)
     {
-        mStatus = File::FILE_ALREADY_CLOSED;
+        mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
     }
 
@@ -315,12 +316,12 @@ int StdFile::Tell(long int * lPosition)
     // Failed to tell the file for some reason.
     if (*lPosition == -1)
     {
-        mStatus = File::FAILURE;
+        mStatus = ErrorCodes::FILE_TELL_ERROR;
         return mStatus;
     }
 
     // Success!
-    mStatus = File::SUCCESS;
+    mStatus = ErrorCodes::SUCCESS;
     return mStatus;
 }
 
@@ -343,7 +344,14 @@ int StdFile::Tell(long int * lPosition)
 //
 int StdFileSystem::OpenFile(const char * lFilename, const char * lMode, File ** lFile)
 {
-    StdFile * lStdFile = new StdFile(lFilename, lMode);
+    StdFile * lStdFile = new(std::nothrow) StdFile(lFilename, lMode);
+
+    if (lStdFile == NULL)
+    {
+        gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
+        return ErrorCodes::FILE_GENERAL_ERROR;
+    }
+
     *lFile = reinterpret_cast<File *>(lStdFile);
     return lStdFile->GetStatus();
 }
@@ -361,7 +369,7 @@ int StdFileSystem::CloseFile(File * lFile)
 {
     if (lFile == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     int lStatus = lFile->Close();
     delete reinterpret_cast<StdFile *>(lFile);
@@ -429,7 +437,7 @@ int StdFileSystem::SeekFile(long int lOffset, File * lFile)
 {
     if (lFile == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return lFile->Seek(lOffset);
 }
@@ -448,7 +456,7 @@ int StdFileSystem::SeekFromStartFile(long int lOffset, File * lFile)
 {
     if (lFile == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return lFile->SeekFromStart(lOffset);
 }
@@ -467,7 +475,7 @@ int StdFileSystem::SeekFromEndFile(long int lOffset, File * lFile)
 {
     if (lFile == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return lFile->SeekFromEnd(lOffset);
 }
@@ -486,7 +494,7 @@ int StdFileSystem::TellFile(long int * lPosition, File * lFile)
 {
     if (lFile == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return lFile->Tell(lPosition);
 }
@@ -501,7 +509,12 @@ int StdFileSystem::TellFile(long int * lPosition, File * lFile)
 //
 const char * StdFileSystem::GetCwdFS(void)
 {
-    cCurrentDirectory = new char [MAX_FILENAME];
+    cCurrentDirectory = new(std::nothrow) char [MAX_FILENAME];
+    if (cCurrentDirectory == NULL)
+    {
+        gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
+        return NULL;
+    }
 
     if (!GetCurrentDir(cCurrentDirectory, MAX_FILENAME))
     {
@@ -529,7 +542,13 @@ const char * StdFileSystem::GetCwdFS(void)
 //
 const char * WindowsFileSystem::GetExecDirectoryFS(void)
 {
-    cExecDirectory = new char [MAX_FILENAME];
+    cExecDirectory = new(std::nothrow) char[MAX_FILENAME];
+    if (cExecDirectory == NULL)
+    {
+        gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
+        return NULL;
+    }
+
     int lBytes = GetModuleFileName(NULL, cExecDirectory, MAX_FILENAME);
 
     if (lBytes == 0)
@@ -558,7 +577,13 @@ const char * WindowsFileSystem::GetExecDirectoryFS(void)
 //
 const char * LinuxFileSystem::GetExecDirectoryFS(void)
 {
-    cExecDirectory = new char [MAX_FILENAME];
+    cExecDirectory = new(std::nothrow) char[MAX_FILENAME];
+    if (cExecDirectory == NULL)
+    {
+        gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
+        return NULL;
+    }
+
     int lBytes = readlink("/proc/self/exe", cExecDirectory, MAX_FILENAME);
 
     if (lBytes <= 0)

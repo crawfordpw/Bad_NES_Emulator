@@ -28,14 +28,6 @@ class File
 
     public:
 
-        enum Status
-        {
-            SUCCESS                 =  0,
-            FAILURE                 = -1,
-            FILE_ALREADY_OPENED     = -2,
-            FILE_ALREADY_CLOSED     = -3
-        };
-
         File(void)          = default;
         virtual ~File(void) = default;
 

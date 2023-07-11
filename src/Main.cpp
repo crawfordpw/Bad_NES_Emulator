@@ -50,9 +50,9 @@ int main(void)
     const char * lProgramFile = "../Program.txt";
     lStatus = ApiFileSystem::OpenFromExecDirectory(lProgramFile, "r", &lFile);
 
-    if (lStatus != File::SUCCESS)
+    if (lStatus != ErrorCodes::SUCCESS)
     {
-        gErrorManager.Post(ErrorCodes::COULD_NOT_OPEN_FILE);
+        gErrorManager.Post(lStatus, lProgramFile);
         return 0;
     }
 

@@ -9,7 +9,10 @@
 #ifndef MAPPER_HPP
 #define MAPPER_HPP
 
-#include <stdint.h>
+#include "Common.hpp"
+#include "Memory.hpp"
+
+class Cartridge;
 
 //========//
 // Mapper
@@ -21,11 +24,18 @@ class Mapper
 {
     public:
 
-        Mapper(void)          = default;
+        Mapper(Cartridge * lCartridge) : mCartridge(lCartridge) {}
         virtual ~Mapper(void) = default;
+
+        virtual bool MapRead(AddressType lAddress, AddressType * lMappedAddress, DataType * lData)  = 0;
+        virtual bool MapWrite(AddressType lAddress, AddressType * lMappedAddress, DataType lData) = 0;
+
+    protected:
+
+        Cartridge *  mCartridge;
 };
 
 // Global functions.
-extern Mapper * MapperFactory(uint8_t lMapperId);
+extern Mapper * MapperFactory(uint8_t lMapperId, Cartridge * lCartridge);
 
 #endif

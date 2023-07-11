@@ -52,9 +52,9 @@ Cartridge::Cartridge(const char * lFilename)
 
     // Attempt to open the provided file.
     lStatus = ApiFileSystem::Open(lFilename, "rb", &lFile);
-    if (lStatus != File::SUCCESS)
+    if (lStatus != ErrorCodes::SUCCESS)
     {
-        gErrorManager.Post(ErrorCodes::COULD_NOT_OPEN_FILE, lFilename);
+        gErrorManager.Post(lStatus, lFilename);
         return;
     }
 
@@ -62,7 +62,7 @@ Cartridge::Cartridge(const char * lFilename)
     lBytes = ApiFileSystem::Read(&mHeader, sizeof(Header), lFile);
     if (lBytes != sizeof(Header))
     {
-        gErrorManager.Post(ErrorCodes::READ_ERROR);
+        gErrorManager.Post(lFile->GetStatus());
         return;
     }
 
@@ -108,14 +108,14 @@ Cartridge::Cartridge(const char * lFilename)
     {
         mPrgMirror = true;
     }
-    mPrgMemory.Resize(mHeader.mPrgBanks * DEFAULT_PRG_SIZE);
+    mPrgRom.Resize(mHeader.mPrgBanks * DEFAULT_PRG_SIZE);
 
     // Load Program ROM.
-    lStatus = mPrgMemory.LoadMemoryFromFile(lFile, mPrgMemory.GetSize());
-    if (lStatus != Memory::SUCCESS)
+    lStatus = mPrgRom.LoadMemoryFromFile(lFile, mPrgRom.GetSize());
+    if (lStatus != ErrorCodes::SUCCESS)
     {
-        mPrgMemory.Resize(0);
-        gErrorManager.Post(ErrorCodes::FAIL_TO_LOAD_MEMORY);
+        mPrgRom.Resize(0);
+        gErrorManager.Post(lStatus);
         return;
     }
 
@@ -123,20 +123,21 @@ Cartridge::Cartridge(const char * lFilename)
     // CHR cannot have a size 0, if the head indicates 0 then it's used as a RAM instead.
     if (mHeader.mChrBanks == 0)
     {
-        mChrMemory.Resize(DEFAULT_CHR_SIZE);
+        mChrRom.Resize(DEFAULT_CHR_SIZE);
         mChrRam = true;
     }
     else
     {
-        mChrMemory.Resize(mHeader.mChrBanks * DEFAULT_CHR_SIZE);
+        mChrRom.Resize(mHeader.mChrBanks * DEFAULT_CHR_SIZE);
     }
 
     // Load Character ROM.
-    lStatus = mChrMemory.LoadMemoryFromFile(lFile, mChrMemory.GetSize());
-    if (lStatus != Memory::SUCCESS)
+    lStatus = mChrRom.LoadMemoryFromFile(lFile, mChrRom.GetSize());
+    if (lStatus != ErrorCodes::SUCCESS)
     {
-        mChrMemory.Resize(0);
-        gErrorManager.Post(ErrorCodes::FAIL_TO_LOAD_MEMORY);
+        mPrgRom.Resize(0);
+        mChrRom.Resize(0);
+        gErrorManager.Post(lStatus);
         return;
     }
 
@@ -144,7 +145,16 @@ Cartridge::Cartridge(const char * lFilename)
     ApiFileSystem::Close(lFile);
 
     // Create the mapper.
-    mMapper = MapperFactory(mMapperId);
+    mMapper = MapperFactory(mMapperId, this);
+
+    // Could not create a valid mapper.
+    if (mMapper == NULL)
+    {
+        mPrgRom.Resize(0);
+        mChrRom.Resize(0);
+        gErrorManager.Post(ErrorCodes::MAPPER_NOT_SUPPORTED);
+        return;
+    }
 
     // If we made it this far, then it was a valid file.
     mValidImage = true;

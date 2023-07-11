@@ -503,7 +503,7 @@ uint8_t Cpu6502::AbsoluteX()
     uint16_t lLowByte  = Read(mRegisters.mPc++);
     uint16_t lHighByte = Read(mRegisters.mPc++);
     mAddress = (lHighByte << 8) | lLowByte;
-    mAddress += + mRegisters.mX;
+    mAddress += mRegisters.mX;
 
     // Adding the X register to the address may result in crossing
     // a page boundary, which adds 1 additional clock cycle.
@@ -533,7 +533,7 @@ uint8_t Cpu6502::AbsoluteY()
     uint16_t lLowByte  = Read(mRegisters.mPc++);
     uint16_t lHighByte = Read(mRegisters.mPc++);
     mAddress = (lHighByte << 8) | lLowByte;
-    mAddress += + mRegisters.mY;
+    mAddress += mRegisters.mY;
 
     // Adding the Y register to the address may result in crossing
     // a page boundary, which adds 1 additional clock cycle.

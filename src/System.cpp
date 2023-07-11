@@ -267,9 +267,9 @@ void System::DumpMemoryAsHex(const char * lFilename)
     lStatus = ApiFileSystem::OpenFromExecDirectory(lFilename, "w+", &lFile);
 
     // Don't proceed if can't open.
-    if (lStatus != File::SUCCESS)
+    if (lStatus != ErrorCodes::SUCCESS)
     {
-        gErrorManager.Post(ErrorCodes::COULD_NOT_OPEN_FILE);
+        gErrorManager.Post(lStatus);
         return;
     }
     
@@ -304,9 +304,9 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     lStatus = ApiFileSystem::OpenFromExecDirectory(lFilename, "w+", &lFile);
 
     // Don't proceed if can't open.
-    if (lStatus != File::SUCCESS)
+    if (lStatus != ErrorCodes::SUCCESS)
     {
-        gErrorManager.Post(ErrorCodes::COULD_NOT_OPEN_FILE);
+        gErrorManager.Post(lStatus);
         return;
     }
     

@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <Config.h>
+#include <new>
 
 typedef uint8_t  DataType;
 typedef uint16_t AddressType;

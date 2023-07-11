@@ -24,11 +24,24 @@ ErrorManager gErrorManager;
 //
 ErrorManager::ErrorManager()
 {
-    mErrorDefs[COULD_NOT_OPEN_FILE] = {"[!] Could not open file, %s", sizeof("[!] Could not open file, %s"), ErrorDefinition::DYNAMIC};
-    mErrorDefs[READ_ERROR]          = {"[!] Could not read from file", sizeof("[!] Could not read from file"), ErrorDefinition::NORMAL};
-    mErrorDefs[WRITE_ERROR]         = {"[!] Could not write to file", sizeof("[!] Could not write to file"), ErrorDefinition::NORMAL};
-    mErrorDefs[INVALID_NES_FORMAT]  = {"[!] File provided is not a properly NES formatted file", sizeof("[!] File provided is not an NES formatted file"), ErrorDefinition::NORMAL};
-    mErrorDefs[FAIL_TO_LOAD_MEMORY] = {"[!] Could not load program memory", sizeof("[!] Could not load program memory"), ErrorDefinition::NORMAL};
+    // File errors.
+    mErrorDefs[FILE_GENERAL_ERROR]   = {"[!] %hhu, File operation could not be performed", sizeof("[!] %hhu, File operation could not be performed"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_COULD_NOT_OPEN]  = {"[!] %hhu, Could not open file, %s", sizeof("[!] %hhu, Could not open file, %s"), ErrorDefinition::DYNAMIC};
+    mErrorDefs[FILE_COULD_NOT_CLOSE] = {"[!] %hhu, Could not close file", sizeof("[!] %hhu, Could not close file"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_ALREADY_OPENED]  = {"[!] %hhu, Tried to open file that is already opened", sizeof("[!] %hhu, Tried to open file that is already opened"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_ALREADY_CLOSED]  = {"[!] %hhu, Tried to open file that is already closed", sizeof("[!] %hhu, Tried to open file that is already closed"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_READ_ERROR]      = {"[!] %hhu, Could not read from file", sizeof("[!] %hhu, Could not read from file"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_WRITE_ERROR]     = {"[!] %hhu, Could not write to file", sizeof("[!] %hhu, Could not write to file"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_SEEK_ERROR]      = {"[!] %hhu, Seek operation failed", sizeof("[!] %hhu, Seek operation failed"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_TELL_ERROR]      = {"[!] %hhu, Tell operation failed", sizeof("[!] %hhu, Tell operation failed"), ErrorDefinition::NORMAL};
+
+    // NES specific file errors.
+    mErrorDefs[INVALID_NES_FORMAT]   = {"[!] %hhu, File provided is not a properly NES formatted file", sizeof("[!] %hhu, File provided is not a properly NES formatted file"), ErrorDefinition::NORMAL};
+    mErrorDefs[MAPPER_NOT_SUPPORTED] = {"[!] %hhu, Mapper required by game not supported", sizeof("[!] %hhu, Mapper required by game not supported"), ErrorDefinition::NORMAL};
+
+    // Memory errors.
+    mErrorDefs[FAIL_TO_LOAD_MEMORY]  = {"[!] %hhu, Could not load program memory", sizeof("[!] %hhu, Could not load program memory"), ErrorDefinition::NORMAL};
+    mErrorDefs[OUT_OF_MEMORY]        = {"[!] %hhu, Ran out of memory", sizeof("[!] %hhu, Ran out of memory"), ErrorDefinition::NORMAL};
 }
 
 //--------//
@@ -41,8 +54,8 @@ ErrorManager::ErrorManager()
 //
 void ErrorManager::Post(uint8_t lError)
 {
-    // Don't go out of bounds.
-    if (lError > NUM_ERRORS)
+    // Don't go out of bounds or post a no error.
+    if (lError > ErrorCodes::NUM_ERRORS || lError == ErrorCodes::SUCCESS)
     {
         return;
     }
@@ -55,7 +68,10 @@ void ErrorManager::Post(uint8_t lError)
     }
     else
     {
-        Post(mErrorDefs[lError].mMessage, mErrorDefs[lError].mMessageSize);
+        size_t lSize = mErrorDefs[lError].mMessageSize;
+        char lBuffer [lSize];
+        snprintf(lBuffer, lSize, mErrorDefs[lError].mMessage, lError);
+        Post(mErrorDefs[lError].mMessage, lSize);
     }
 }
 
@@ -85,15 +101,22 @@ void ErrorManager::Post(uint8_t lError, const char * lExtra)
 //
 void ErrorManager::Post(uint8_t lError, const char * lExtra, size_t lSizeExtra)
 {
-    if (lError > NUM_ERRORS)
+    if (lError > ErrorCodes::NUM_ERRORS || lError == ErrorCodes::SUCCESS)
     {
         return;
     }
 
-    size_t lSize = mErrorDefs[lError].mMessageSize + lSizeExtra + 1;
-    char lBuffer[lSize];
-    snprintf(lBuffer, lSize, mErrorDefs[lError].mMessage, lExtra);
-    Post(lBuffer, lSize);
+    if (mErrorDefs[lError].mType == ErrorDefinition::DYNAMIC)
+    {
+        size_t lSize = mErrorDefs[lError].mMessageSize + lSizeExtra + 1;
+        char lBuffer[lSize];
+        snprintf(lBuffer, lSize, mErrorDefs[lError].mMessage, lError, lExtra);
+        Post(lBuffer, lSize);
+    }
+    else
+    {
+        Post(mErrorDefs[lError].mMessage, mErrorDefs[lError].mMessageSize);
+    }
 }
 
 //--------//

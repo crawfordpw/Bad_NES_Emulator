@@ -23,12 +23,14 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src/ MAIN_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ FILE_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/Errors/ ERROR_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/Logger/ LOGGER_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Mappers/ MAPPERS_SOURCES)
 set(SOURCES
     ${SOURCES} 
     ${MAIN_SOURCES}
     ${FILE_SOURCES}
     ${ERROR_SOURCES}
     ${LOGGER_SOURCES}
+    ${MAPPERS_SOURCES}
 )
 
 # Set up logging defines.

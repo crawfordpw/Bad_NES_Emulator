@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include <File/ApiFile.hpp>
+#include <Errors/ApiErrors.hpp>
 #include "Common.hpp"
 
 //========//
@@ -22,12 +23,6 @@
 class Memory : public Device
 {
     public:
-
-        enum LoadStatus
-        {
-            SUCCESS = File::SUCCESS,
-            FAILURE = File::FAILURE
-        };
 
         Memory(void)              : mSize(0) {}
         Memory(AddressType lSize) : mSize(lSize) {}
@@ -93,11 +88,25 @@ inline MemoryMapped::~MemoryMapped(void)
 //
 inline void MemoryMapped::Resize(AddressType lSize)
 {
+    // Clean up old memory
     if (mMemory)
     {
         delete [] mMemory;
+        mMemory = NULL;
     }
-    mMemory = new uint8_t[lSize];
+
+    // Nothing else to do is size is 0.
+    if (lSize == 0)
+    {
+        return;
+    }
+
+    // Create memory at the new size and intialize to all 0's.
+    mMemory = new(std::nothrow) uint8_t[lSize];
+    if (mMemory == NULL)
+    {
+        gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
+    }
     memset(mMemory, 0, lSize);
 }
 
@@ -117,7 +126,7 @@ inline void MemoryMapped::Resize(AddressType lSize)
 //
 inline DataType MemoryMapped::Read(AddressType lAddress, DataType lLastRead)
 {
-    if (lAddress < mSize)
+    if (lAddress < mSize && mMemory != NULL)
     {
         return mMemory[lAddress];
     }
@@ -135,7 +144,7 @@ inline DataType MemoryMapped::Read(AddressType lAddress, DataType lLastRead)
 //
 inline void MemoryMapped::Write(AddressType lAddress, DataType lData)
 {
-    if (lAddress < mSize)
+    if (lAddress < mSize && mMemory != NULL)
     {
         mMemory[lAddress] = lData;
     }

@@ -8,6 +8,7 @@
 
 #include <cstring>
 #include <File/ApiFile.hpp>
+#include <Errors/ErrorCodes.hpp>
 
 //--------//
 //
@@ -60,12 +61,17 @@ const char * ApiFileSystem::GetExecDirectory(void)
     {
         cFileSystem->GetExecDirectoryFS();
 
+        if (cExecDirectory == NULL)
+        {
+            return cExecDirectory;
+        }
+
         // Remove the executable name.
         for (int lIndex = MAX_FILENAME; lIndex > 0; --lIndex)
         {
             if (cExecDirectory[lIndex] == '/' || cExecDirectory[lIndex] == '\\')
             {
-                cExecDirectory[lIndex+1] = '\0';
+                cExecDirectory[lIndex + 1] = '\0';
                 break;
             }
         }
@@ -88,7 +94,7 @@ int ApiFileSystem::GetStatus(File * lFile)
 {
     if (lFile == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return lFile->GetStatus();
 }
@@ -133,7 +139,7 @@ int ApiFileSystem::Open(const char * lFilename, const char * lMode, File ** lFil
 {
     if (cFileSystem == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return cFileSystem->OpenFile(lFilename, lMode, lFile);
 }
@@ -152,6 +158,10 @@ int ApiFileSystem::Open(const char * lFilename, const char * lMode, File ** lFil
 int ApiFileSystem::OpenFromExecDirectory(const char * lFilename, const char * lMode, File ** lFile)
 {
     GetExecDirectory();
+    if (cExecDirectory == NULL)
+    {
+        return ErrorCodes::FILE_GENERAL_ERROR;
+    }
     strcat(cExecBuffer, lFilename);
     return Open(cExecBuffer, lMode, lFile);
 }
@@ -177,7 +187,7 @@ size_t ApiFileSystem::Read(void * lBuffer, size_t lCount, File * lFile)
     {
         if (lFile)
         {
-            lFile->mStatus = File::FAILURE;
+            return ErrorCodes::FILE_GENERAL_ERROR;
         }
         return 0;
     }
@@ -204,7 +214,7 @@ size_t ApiFileSystem::Write(void * lBuffer, size_t lCount, File * lFile)
     {
         if (lFile)
         {
-            lFile->mStatus = File::FAILURE;
+            return ErrorCodes::FILE_GENERAL_ERROR;
         }
         return 0;
     }
@@ -224,7 +234,7 @@ int ApiFileSystem::Close(File * lFile)
 {
     if (cFileSystem == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return cFileSystem->CloseFile(lFile);
 }
@@ -243,7 +253,7 @@ int ApiFileSystem::Seek(long int lOffset, File * lFile)
 {
     if (cFileSystem == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return cFileSystem->SeekFile(lOffset, lFile);
 }
@@ -262,7 +272,7 @@ int ApiFileSystem::SeekFromStart(long int lOffset, File * lFile)
 {
     if (cFileSystem == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return cFileSystem->SeekFromStartFile(lOffset, lFile);
 }
@@ -281,7 +291,7 @@ int ApiFileSystem::SeekFromEnd(long int lOffset, File * lFile)
 {
     if (cFileSystem == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return cFileSystem->SeekFromEndFile(lOffset, lFile);
 }
@@ -300,7 +310,7 @@ int ApiFileSystem::Tell(long int * lPosition, File * lFile)
 {
     if (cFileSystem == NULL)
     {
-        return File::FAILURE;
+        return ErrorCodes::FILE_GENERAL_ERROR;
     }
     return cFileSystem->TellFile(lPosition, lFile);
 }

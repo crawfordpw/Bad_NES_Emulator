@@ -21,14 +21,14 @@
 //
 // param[in]    lFile   File to load
 // param[in]    lSize   How much to load.
-// returns  Status of the memory load, SUCCESS or FAILURE.
+// returns  Status of the memory load, SUCCESS or error code.
 //--------//
 //
 int MemoryMapped::LoadMemoryFromFile(File * lFile, size_t lSize)
 {
     if (mSize < lSize)
     {
-        return FAILURE;
+        return ErrorCodes::FAIL_TO_LOAD_MEMORY;
     }
     ApiFileSystem::Read(mMemory, lSize, lFile);
     return lFile->GetStatus();

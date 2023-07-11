@@ -11,28 +11,10 @@
 
 #include <cstring>
 #include <stdint.h>
+#include "ErrorCodes.hpp"
 #include <Logger/ApiLogger.hpp>
 
 class ErrorManager;
-
-//========//
-// All error codes possible to register.
-//
-enum ErrorCodes
-{
-    // File errors.
-    COULD_NOT_OPEN_FILE,
-    READ_ERROR,
-    WRITE_ERROR,
-
-    // NES specific file errors.
-    INVALID_NES_FORMAT,
-
-    // Memory errors.
-    FAIL_TO_LOAD_MEMORY,
-
-    NUM_ERRORS
-};
 
 //========//
 // ErrorDefinition

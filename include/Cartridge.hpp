@@ -30,6 +30,8 @@ class Cartridge : public Device
         virtual DataType Read(AddressType lAddress, DataType lLastRead) override;
         virtual void     Write(AddressType lAddress, DataType lData)    override;
 
+        bool             GetPrgMirror(void) {return mPrgMirror;}
+
     protected:
 
         struct Header
@@ -57,8 +59,8 @@ class Cartridge : public Device
         Header       mHeader;               // Contains header informations provided by file.
         uint8_t      mMapperId;             // Which mapper does the cartridge use.
         Mapper *     mMapper;               // The mapper.
-        MemoryMapped mPrgMemory;            // Program memory space.
-        MemoryMapped mChrMemory;            // Charcter memory space.
+        MemoryMapped mPrgRom;               // Program ROM memory space.
+        MemoryMapped mChrRom;               // Charcter ROM memory space.
         uint8_t      mMirrorType;           // Mirroring mode, horizontal or vertical.
         bool         mNes20Format;          // Is the provided file in NES 2.0 format.
         bool         mPrgMirror;            // If the number of program banks is 1, the address space is 32k with the second half mirrored.
