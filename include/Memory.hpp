@@ -50,8 +50,8 @@ class MemoryMapped : public Memory
 {
     public:
 
-        MemoryMapped(void) : Memory() {}
-        MemoryMapped(AddressType lSize) : Memory(lSize) {Resize(lSize);}
+        MemoryMapped(void) : Memory(), mMemory(NULL) {}
+        MemoryMapped(AddressType lSize) : Memory(lSize), mMemory(NULL) {Resize(lSize);}
         virtual ~MemoryMapped(void);
 
         virtual DataType Read(AddressType lAddress, DataType lLastRead) override;
@@ -95,7 +95,7 @@ inline void MemoryMapped::Resize(AddressType lSize)
         mMemory = NULL;
     }
 
-    // Nothing else to do is size is 0.
+    // Nothing else to do if size is 0.
     if (lSize == 0)
     {
         return;
@@ -106,7 +106,10 @@ inline void MemoryMapped::Resize(AddressType lSize)
     if (mMemory == NULL)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
+        return;
     }
+
+    mSize = lSize;
     memset(mMemory, 0, lSize);
 }
 

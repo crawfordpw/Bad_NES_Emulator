@@ -30,7 +30,7 @@ class Cartridge : public Device
         virtual DataType Read(AddressType lAddress, DataType lLastRead) override;
         virtual void     Write(AddressType lAddress, DataType lData)    override;
 
-        bool             GetPrgMirror(void) {return mPrgMirror;}
+        bool             IsPrgMirror(void) {return mPrgMirror;}
 
     protected:
 

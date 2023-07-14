@@ -19,6 +19,11 @@
 //
 //--------//
 
+#ifdef TEST_CPU
+char Cpu6502::cBuffer[Cpu6502::BUFFER_SIZE];
+char Cpu6502::cFormatBuffer[Cpu6502::FORMAT_BUFFER_SIZE];
+#endif
+
 //--------//
 // Cpu6502
 //
@@ -83,6 +88,9 @@ Cpu6502::Cpu6502()
         {0xFFFE, 0xFFFF},
     }
 {
+#if defined(TEST_CPU)
+    mTotalCycles = 0;
+#endif
 }
 
 //--------//
@@ -153,8 +161,24 @@ void Cpu6502::StepClock()
     // No instruction is in progress, so perform fetch-decode-execute.
     if (mCyclesLeft == 0)
     {
-#ifdef DEBUG
-        uint16_t lLogPc = mRegisters.mPc;
+#if defined(TEST_CPU)
+        // Convert instruction to something more human readable.
+        Disassemble(mRegisters.mPc);
+
+        // Add contents of registers to disassembled instruction.
+        snprintf(cFormatBuffer, Cpu6502::FORMAT_BUFFER_SIZE, "A:%02X X:%02X Y:%02X P:%02X SP:%02X CYC:%u\n",
+                mRegisters.mAcc, mRegisters.mX, mRegisters.mY, mRegisters.mStatus,mRegisters.mSp, mTotalCycles);
+        strncat(cBuffer, cFormatBuffer, Cpu6502::BUFFER_SIZE);
+
+        // Call appropriate functor to handle the trace.
+        if (mFunctor)
+        {
+            mFunctor->Execute();
+        }
+#ifdef DUMP_STACK
+        std::string lString = cBuffer + "\n" + DumpStack() + "\n";
+        ApiLogger::Log(&lString);
+#endif
 #endif
 
         // Grab next instruction and increment program counter.
@@ -174,26 +198,14 @@ void Cpu6502::StepClock()
 
         // Calculate how much cycles this instruction takes. 
         mCyclesLeft += mOpcodeMatrix[mOpcode].mCycles;
-
-#ifdef DEBUG
-        char lBuffer[58];
-        snprintf(lBuffer, 58, "A:%02X X:%02X Y:%02X SP:%02X CL:%02d S:%s%s%s%s%s%s%s%s\n",
-                mRegisters.mAcc, mRegisters.mX, mRegisters.mY, mRegisters.mSp, mCyclesLeft,
-                GetFlag(C) ? "1" : "0", GetFlag(Z) ? "1" : "0", GetFlag(I) ? "1" : "0", GetFlag(D) ? "1" : "0",
-                GetFlag(B) ? "1" : "0", GetFlag(U) ? "1" : "0", GetFlag(V) ? "1" : "0", GetFlag(N) ? "1" : "0");
-
-        std::string lString = Disassemble(lLogPc) + lBuffer;
-
-#ifdef DUMP_STACK
-        lString += "\n" + DumpStack() + "\n";
-#endif
-
-        ApiLogger::Log(&lString);
-#endif
     }
 
     // Decrement the cycles counter, as one cycle has now elapsed.
     --mCyclesLeft;
+
+#ifdef TEST_CPU
+    ++mTotalCycles;
+#endif
 }
 
 //--------//
@@ -1865,7 +1877,7 @@ uint8_t Cpu6502::BranchHelper(bool lBranch)
     return DONT_ADD_CLOCK_CYCLE;
 }
 
-#ifdef DEBUG
+#ifdef TEST_CPU
 //--------//
 // Disassemble
 //
@@ -1875,86 +1887,98 @@ uint8_t Cpu6502::BranchHelper(bool lBranch)
 // returns  Dissassembled instruction, in an easier format to read.
 //--------//
 //
-std::string Cpu6502::Disassemble(AddressType lAddress)
+char * Cpu6502::Disassemble(AddressType lAddress)
 {
-    char     lBuffer[100];
-    char *   lLocation = lBuffer;
-    DataType lLowByte;
-    DataType lHighByte;
-    Instruction lInstruction = mOpcodeMatrix[Read(lAddress++)];
+    DataType    lLowByte;
+    DataType    lHighByte;
+    char *      lLocation = cBuffer;
+    AddressType lPc       = lAddress;
 
-    // Prefix instruction location and instruction name.
-    lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), "%04X: %s",
-                          lAddress, lInstruction.mName);
-
+    DataType lOpCode = Read(lAddress++);
+    Instruction lInstruction = mOpcodeMatrix[lOpCode];
 
     // Get the address. This is pretty ugly, but should only be used during debugging.
-    if (lInstruction.mAddressMode == &Cpu6502::Immediate)
+    if (lInstruction.mAddressMode == &Cpu6502::Implied)
+    {
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                              "%04X  %02X        %s                             ", lPc, lOpCode, lInstruction.mName);
+    }
+    else if (lInstruction.mAddressMode == &Cpu6502::Immediate)
     {
         lLowByte   = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                              "%04X  %02X %02X     %s #$%02X                        ", lPc, lOpCode, lLowByte, lInstruction.mName, lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::ZeroPage)
     {
         lLowByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                              "%04X  %02X %02X     %s $%02X = %02X                    ", lPc, lOpCode, lLowByte, lInstruction.mName, lLowByte, Read(lLowByte));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::ZeroPageX)
     {
         lLowByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                              "%04X  %02X %02X     %s $%02X,X @ %02X = %02X             ", lPc, lOpCode, lLowByte, lInstruction.mName, lLowByte, mRegisters.mX, Read(lLowByte));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::ZeroPageY)
     {
         lLowByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%02X", lLowByte);
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                              "%04X  %02X %02X     %s $%02X,Y @ %02X = %02X             ", lPc, lOpCode, lLowByte, lInstruction.mName, lLowByte, mRegisters.mY, Read(lLowByte));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::Relative)
     {
         lLowByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X", lAddress + lLowByte);
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                              "%04X  %02X %02X     %s $%04X                       ", lPc, lOpCode, lLowByte, lInstruction.mName, lAddress + lLowByte);
     }
     else if (lInstruction.mAddressMode == &Cpu6502::Absolute)
     {
         lLowByte  = Read(lAddress++);
         lHighByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
-                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                        "%04X  %02X %02X %02X  %s $%04X                       ", lPc, lOpCode, lLowByte, lHighByte, lInstruction.mName, static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::AbsoluteX)
     {
         lLowByte  = Read(lAddress++);
-        lHighByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
-                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+        lHighByte = Read(lAddress);
+        DataType lTemp = lAddress + mRegisters.mY;
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                        "%04X  %02X %02X %02X  %s $%04X,X @ %04X = %02X         ", lPc, lOpCode, lLowByte, lHighByte, lInstruction.mName, lTemp, lTemp, Read(lTemp));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::AbsoluteY)
     {
         lLowByte  = Read(lAddress++);
-        lHighByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " $%04X",
-                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+        lHighByte = Read(lAddress);
+        DataType lTemp = lAddress + mRegisters.mY;
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                        "%04X  %02X %02X %02X  %s $%04X,Y @ %04X = %02X         ", lPc, lOpCode, lLowByte, lHighByte, lInstruction.mName, lTemp, lTemp, Read(lTemp));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::Indirect)
     {
         lLowByte  = Read(lAddress++);
         lHighByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%04X)",
-                              static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                        "%04X  %02X %02X %02X  %s $%04X                       ", lPc, lOpCode, lLowByte, lHighByte, lInstruction.mName, static_cast<AddressType>(((lHighByte << 8) | lLowByte)));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::IndexedIndirect)
     {
         lLowByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%02X,X)", lLowByte);
+        AddressType lTemp = lAddress + mRegisters.mX;
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                        "%04X  %02X %02X     %s ($%04X,X) @ %02X = %04X = %02X    ", lPc, lOpCode, lLowByte, lInstruction.mName, lLowByte, lLowByte, lTemp, Read(lTemp));
     }
     else if (lInstruction.mAddressMode == &Cpu6502::IndirectIndexed)
     {
         lLowByte  = Read(lAddress);
-        lLocation += snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), " ($%02X),Y", lLowByte);
+        AddressType lTemp = lAddress + mRegisters.mY;
+        lLocation += snprintf(lLocation, sizeof(cBuffer) - (lLocation - cBuffer),
+                        "%04X  %02X %02X     %s ($%04X,Y) @ %02X = %04X = %02X    ", lPc, lOpCode, lLowByte, lInstruction.mName, lLowByte, lLowByte, lTemp, Read(lTemp));
     }
 
-    snprintf(lLocation, sizeof(lBuffer) - (lLocation - lBuffer), "\t\t");
-    return lBuffer;
+    return cBuffer;
 }
 
 //--------//

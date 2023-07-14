@@ -40,6 +40,21 @@ class Device
 };
 
 //========//
+// Functor
+//
+// Base Functor class.
+//========//
+//
+class Functor
+{
+    public:
+        Functor(void)              = default;
+        virtual ~Functor(void)     = default;
+
+        virtual void Execute(void) = 0;
+};
+
+//========//
 // Bit
 //
 // Simple function to get value of a bit position.

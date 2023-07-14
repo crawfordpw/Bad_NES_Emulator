@@ -34,14 +34,14 @@ bool Mapper000::MapRead(AddressType lAddress, AddressType * lMappedAddress, Data
     // Map given address to ROM.
     if (lAddress >= PRG_ROM_START && lAddress <= PRG_ROM_END)
     {
-        *lMappedAddress = lAddress & (mCartridge->GetPrgMirror() ? PRG_ROM_NO_MIRROR_SIZE : PRG_ROM_MIRROR_SIZE);
+        *lMappedAddress = lAddress & (mCartridge->IsPrgMirror() ? PRG_ROM_MIRROR_SIZE : PRG_ROM_NO_MIRROR_SIZE);
         return true;
     }
     return false;
 }
 
 //--------//
-// MapRead
+// MapWrite
 //
 // Maps a given address to a mapped address for a write operation if the address
 // is for ROM. If its for RAM, handle the write directly.
@@ -64,7 +64,7 @@ bool Mapper000::MapWrite(AddressType lAddress, AddressType * lMappedAddress, Dat
     // Map given address to ROM.
     if (lAddress >= PRG_ROM_START && lAddress <= PRG_ROM_END)
     {
-        *lMappedAddress = lAddress & (mCartridge->GetPrgMirror() ? PRG_ROM_NO_MIRROR_SIZE : PRG_ROM_MIRROR_SIZE);
+        *lMappedAddress = lAddress & (mCartridge->IsPrgMirror() ? PRG_ROM_MIRROR_SIZE : PRG_ROM_NO_MIRROR_SIZE);
         return true;
     }
     return false;

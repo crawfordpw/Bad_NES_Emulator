@@ -25,6 +25,8 @@
 //
 class Cpu6502 : public Device
 {
+    friend class System;
+
     public:
 
         Cpu6502();
@@ -157,13 +159,25 @@ class Cpu6502 : public Device
         inline static constexpr AddressType    cStartOfStack = 0x0100;
         inline static constexpr uint16_t       cStackSize    = 0xFF + 1;
 
-        private:
+    protected:
 
-#ifdef DEBUG
-            std::string Disassemble(AddressType lAddress);
-            std::string DumpStack(void);
+#ifdef TEST_CPU
+        friend class TestNesFunctor;
+
+        enum
+        {
+            BUFFER_SIZE        = 100,
+            FORMAT_BUFFER_SIZE = 50,
+        };
+
+        char *      Disassemble(AddressType lAddress);
+        std::string DumpStack(void);
+
+        unsigned int  mTotalCycles;
+        Functor *     mFunctor;
+        static char   cBuffer[];
+        static char   cFormatBuffer[];
 #endif
-
 };
 
 #endif

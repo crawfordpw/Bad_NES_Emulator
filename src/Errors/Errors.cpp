@@ -23,6 +23,7 @@ ErrorManager gErrorManager;
 //--------//
 //
 ErrorManager::ErrorManager()
+  : StdLogger(false)
 {
     // File errors.
     mErrorDefs[FILE_GENERAL_ERROR]   = {"[!] %hhu, File operation could not be performed", sizeof("[!] %hhu, File operation could not be performed"), ErrorDefinition::NORMAL};

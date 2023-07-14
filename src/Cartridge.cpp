@@ -41,8 +41,8 @@ Cartridge::Cartridge(const char * lFilename)
     mValidImage(false)
 {
 #ifdef USE_LOGGER
-    char lBuffer[ApiFileSystem::MAX_FILENAME * 1.5];
-    snprintf(lBuffer, ApiFileSystem::MAX_FILENAME * 1.5, "[i] Opening file for cartridge, %s\n", lProgramFile);
+    char lBuffer[ApiFileSystem::MAX_FILENAME * 2];
+    snprintf(lBuffer, ApiFileSystem::MAX_FILENAME * 2, "[i] Opening file for cartridge, %s\n", lFilename);
     ApiLogger::Log(lBuffer);
 #endif
 
@@ -160,7 +160,7 @@ Cartridge::Cartridge(const char * lFilename)
     mValidImage = true;
 
 #ifdef USE_LOGGER
-    ApiLogger::Log("[i] Valid file format!");
+    ApiLogger::Log("[i] Valid ROM file format\n");
 #endif
 }
 
@@ -192,6 +192,24 @@ Cartridge::~Cartridge()
 //
 DataType Cartridge::Read(AddressType lAddress, DataType lLastRead)
 {
+    AddressType lMappedAddress;
+
+    // If mapper doesn't exit, cartridge file is likely invalid and thus
+    // this is a disconnected device. Open bus behavior is to return
+    // data last read.
+    if (mMapper == NULL)
+    {
+        return lLastRead;
+    }
+
+    // If MapRead returns true, then read from program rom.
+    if (mMapper->MapRead(lAddress, &lMappedAddress, &lLastRead))
+    {
+        return mPrgRom.Read(lMappedAddress, lLastRead);
+    }
+
+    // If made it this far, we are either reading from ram, which is the out parameter
+    // of MapRead, or the mapper doesn't care about the address being read.
     return lLastRead;
 }
 
@@ -206,5 +224,18 @@ DataType Cartridge::Read(AddressType lAddress, DataType lLastRead)
 //
 void Cartridge::Write(AddressType lAddress, DataType lData)
 {
-    return;
+    AddressType lMappedAddress;
+
+    // If mapper doesn't exit, cartridge file is likely invalid and thus
+    // this is a disconnected device.
+    if (mMapper == NULL)
+    {
+        return;
+    }
+
+    // If MapRead returns true, then write to program rom.
+    if (mMapper->MapWrite(lAddress, &lMappedAddress, lData))
+    {
+        mPrgRom.Write(lMappedAddress, lData);
+    }
 }

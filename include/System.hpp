@@ -55,6 +55,8 @@ class System
 
         void     LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset);
 
+        void     CpuTest(void);
+
     public:
 
         Cpu6502      mCpu;
@@ -66,6 +68,41 @@ class System
         void     DumpMemoryAsRaw(const char * lFilename);
 
         Cartridge *   mCartridge;
+};
+
+//========//
+// TestNesFunctor
+//
+// Functor for testing the cpu using testnes rom.
+//========//
+//
+class TestNesFunctor : public Functor
+{
+    public:
+
+        enum
+        {
+            ERROR_BUFFER_SIZE = Cpu6502::BUFFER_SIZE * 2 + 50
+        };
+
+        TestNesFunctor(Cpu6502 * lCpu, bool lStopAtFirstFail);
+        virtual ~TestNesFunctor(void);
+
+        virtual void Execute(void);
+
+        bool     mStopExecution;
+
+    protected:
+
+        Cpu6502 *   mCpu;
+        File *      mTrace;
+        char *      mLogFile;
+        long int    mFileSize;
+        bool        mStopAtFirstFail;
+        long int    mCurrentPosition;
+        int         mLineNum;
+        static char cLineBuffer[];
+        static char cErrorBuffer[];
 };
 
 #endif

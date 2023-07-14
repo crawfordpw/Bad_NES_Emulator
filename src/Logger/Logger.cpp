@@ -241,7 +241,7 @@ void StdLogger::CaptureLog(const char * lMessage, size_t lLength)
 //--------//
 //
 FileLogger::FileLogger(bool lRegister)
-    : Logger(lRegister,) mFile(NULL)
+    : Logger(lRegister), mFile(NULL)
 {
 }
 

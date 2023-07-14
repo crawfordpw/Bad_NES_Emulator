@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 # Configurable compile options.
-set(DEBUG           OFF)
-set(LOG_TO_CONSOLE  OFF)
-set(LOG_TO_FILE     OFF)
-set(DUMP_STACK      OFF)     # This option needs DEBUG enabled.
+set(TEST_CPU        ON)
+set(LOG_TO_CONSOLE  ON)
+set(LOG_TO_FILE     ON)
+set(DUMP_STACK      OFF)     # This option needs TEST_CPU enabled.
 
 configure_file(config.h.in Config.h)
 
@@ -34,13 +34,8 @@ set(SOURCES
 )
 
 # Set up logging defines.
-if (LOG_TO_CONSOLE OR LOG_TO_FILE OR DEBUG)
+if (LOG_TO_CONSOLE OR LOG_TO_FILE OR TEST_CPU)
     add_definitions(-DUSE_LOGGER)
-endif()
-
-if (DEBUG)
-    message("Debug Logging Enabled.")
-    add_definitions(-DDEBUG)
 endif()
 
 if (LOG_TO_CONSOLE)
@@ -51,6 +46,11 @@ endif()
 if (LOG_TO_FILE)
     message("File Logging Enabled.")
     add_definitions(-DFILE_LOGGER)
+endif()
+
+if (TEST_CPU)
+    message("CPU tests enabled.")
+    add_definitions(-DTEST_CPU)
 endif()
 
 # Includes
