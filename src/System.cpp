@@ -351,8 +351,6 @@ void System::CpuTest(void)
     InsertCartridge(&lCartridge);
 
     // Setup system needed for test rom to work properly.
-    TestNesFunctor lTest(&mCpu, true);
-    mCpu.mFunctor = &lTest;
     lCartridge.Write(0xFFFC, 0x00);
     lCartridge.Write(0xFFFD, 0xC0);
     mCpu.PushStack(0x00);
@@ -362,6 +360,14 @@ void System::CpuTest(void)
 
     // Get cpu into a known good state.
     mCpu.Reset();
+
+    // Setup callback after each cpu instruction.
+    TestNesFunctor lTest(&mCpu, true);
+    if (lTest.mStopExecution == true)
+    {
+        return;
+    }
+    mCpu.mFunctor = &lTest;
 
     ApiLogger::Log("[i] Nestest started");
 
@@ -477,7 +483,7 @@ void TestNesFunctor::Execute(void)
     // Grab the newline as well as null terminate the buffer.
     ++mCurrentPosition;
     cLineBuffer[lIndex++] = '\n';
-    cLineBuffer[lIndex] = '\0';
+    cLineBuffer[lIndex]   = '\0';
 
     // Check if the lines are equal between the log and cpu trace.
     if (strcmp(cLineBuffer, mCpu->cBuffer) != 0)
