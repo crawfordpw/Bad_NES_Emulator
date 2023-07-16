@@ -497,5 +497,12 @@ void TestNesFunctor::Execute(void)
         }
     }
 
+    // If this far, then the test passed.
+    if (mLineNum == cLastLine)
+    {
+        mStopExecution = true;
+        ApiLogger::Log("\n[+] NesTest has passed!\n", sizeof("\n[+] NesTest has passed!\n"));
+    }
+
     ++mLineNum;
 }

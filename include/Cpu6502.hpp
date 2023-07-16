@@ -103,6 +103,11 @@ class Cpu6502 : public Device
         uint8_t TSX();    uint8_t TXA();    uint8_t TXS();    uint8_t TYA();
         uint8_t KIL();
 
+        // Illegal opcodes. (Not all supported at this time)
+        // https://www.masswerk.at/6502/6502_instruction_set.html
+        uint8_t DCP();    uint8_t ISB();    uint8_t LAX();    uint8_t RLA();
+        uint8_t RRA();    uint8_t SAX();    uint8_t SLO();    uint8_t SRE();
+
         // Branch instruction helper function.
         uint8_t BranchHelper(bool lBranch);
 

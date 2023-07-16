@@ -39,22 +39,22 @@ Cpu6502::Cpu6502()
         // Indexed Indirect = izx
         // Indirect Indexed = izy
         //                                 x0                                          x1                                                x2                                          x3                                                x4                                          x5                                          x6                                          x7                                          x8                                        x9                                          xA                                        xB                                          xC                                          xD                                          xE                                          xF
-        /* 0x */    {&Cpu6502::BRK,&Cpu6502::Implied,7,"BRK"},  {&Cpu6502::ORA,&Cpu6502::IndexedIndirect,6,"ORA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3,"NOP"}, {&Cpu6502::ORA,&Cpu6502::ZeroPage,3,"ORA"}, {&Cpu6502::ASL,&Cpu6502::ZeroPage,5,"ASL"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"}, {&Cpu6502::PHP,&Cpu6502::Implied,3,"PHP"},{&Cpu6502::ORA,&Cpu6502::Immediate,2,"ORA"},{&Cpu6502::ASL,&Cpu6502::Implied,2,"ASL"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::NOP,&Cpu6502::Absolute,4,"NOP"}, {&Cpu6502::ORA,&Cpu6502::Absolute,4,"ORA"}, {&Cpu6502::ASL,&Cpu6502::Absolute,6,"ASL"}, {&Cpu6502::KIL,&Cpu6502::Absolute,6,"KIL"},
-        /* 1x */    {&Cpu6502::BPL,&Cpu6502::Relative,2,"BPL"}, {&Cpu6502::ORA,&Cpu6502::IndirectIndexed,5,"ORA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::ORA,&Cpu6502::ZeroPageX,4,"ORA"},{&Cpu6502::ASL,&Cpu6502::ZeroPageX,6,"ASL"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::CLC,&Cpu6502::Implied,2,"CLC"},{&Cpu6502::ORA,&Cpu6502::AbsoluteY,4,"ORA"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::ORA,&Cpu6502::AbsoluteX,4,"ORA"},{&Cpu6502::ASL,&Cpu6502::AbsoluteX,7,"ASL"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"},
-        /* 2x */    {&Cpu6502::JSR,&Cpu6502::Absolute,6,"JSR"}, {&Cpu6502::AND,&Cpu6502::IndexedIndirect,6,"AND"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::BIT,&Cpu6502::ZeroPage,3,"BIT"}, {&Cpu6502::AND,&Cpu6502::ZeroPage,3,"AND"}, {&Cpu6502::ROL,&Cpu6502::ZeroPage,5,"ROL"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"}, {&Cpu6502::PLP,&Cpu6502::Implied,4,"PLP"},{&Cpu6502::AND,&Cpu6502::Immediate,2,"AND"},{&Cpu6502::ROL,&Cpu6502::Implied,2,"ROL"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::BIT,&Cpu6502::Absolute,4,"BIT"}, {&Cpu6502::AND,&Cpu6502::Absolute,4,"AND"}, {&Cpu6502::ROL,&Cpu6502::Absolute,6,"ROL"}, {&Cpu6502::KIL,&Cpu6502::Absolute,6,"KIL"},
-        /* 3x */    {&Cpu6502::BMI,&Cpu6502::Relative,2,"BMI"}, {&Cpu6502::AND,&Cpu6502::IndirectIndexed,5,"AND"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::AND,&Cpu6502::ZeroPageX,4,"AND"},{&Cpu6502::ROL,&Cpu6502::ZeroPageX,6,"ROL"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::SEC,&Cpu6502::Implied,2,"SEC"},{&Cpu6502::AND,&Cpu6502::AbsoluteY,4,"AND"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::AND,&Cpu6502::AbsoluteX,4,"AND"},{&Cpu6502::ROL,&Cpu6502::AbsoluteX,7,"ROL"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"},
-        /* 4x */    {&Cpu6502::RTI,&Cpu6502::Implied,6,"RTI"},  {&Cpu6502::EOR,&Cpu6502::IndexedIndirect,6,"EOR"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3,"NOP"}, {&Cpu6502::EOR,&Cpu6502::ZeroPage,3,"EOR"}, {&Cpu6502::LSR,&Cpu6502::ZeroPage,5,"LSR"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"}, {&Cpu6502::PHA,&Cpu6502::Implied,3,"PHA"},{&Cpu6502::EOR,&Cpu6502::Immediate,2,"EOR"},{&Cpu6502::LSR,&Cpu6502::Implied,2,"LSR"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::JMP,&Cpu6502::Absolute,3,"JMP"}, {&Cpu6502::EOR,&Cpu6502::Absolute,4,"EOR"}, {&Cpu6502::LSR,&Cpu6502::Absolute,6,"LSR"}, {&Cpu6502::KIL,&Cpu6502::Absolute,6,"KIL"},
-        /* 5x */    {&Cpu6502::BVC,&Cpu6502::Relative,2,"BVC"}, {&Cpu6502::EOR,&Cpu6502::IndirectIndexed,5,"EOR"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::EOR,&Cpu6502::ZeroPageX,4,"EOR"},{&Cpu6502::LSR,&Cpu6502::ZeroPageX,6,"LSR"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::CLI,&Cpu6502::Implied,2,"CLI"},{&Cpu6502::EOR,&Cpu6502::AbsoluteY,4,"EOR"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::EOR,&Cpu6502::AbsoluteX,4,"EOR"},{&Cpu6502::LSR,&Cpu6502::AbsoluteX,7,"LSR"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"},
-        /* 6x */    {&Cpu6502::RTS,&Cpu6502::Implied,6,"RTS"},  {&Cpu6502::ADC,&Cpu6502::IndexedIndirect,6,"ADC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3,"NOP"}, {&Cpu6502::ADC,&Cpu6502::ZeroPage,3,"ADC"}, {&Cpu6502::ROR,&Cpu6502::ZeroPage,5,"ROR"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"}, {&Cpu6502::PLA,&Cpu6502::Implied,4,"PLA"},{&Cpu6502::ADC,&Cpu6502::Immediate,2,"ADC"},{&Cpu6502::ROR,&Cpu6502::Implied,2,"ROR"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::JMP,&Cpu6502::Indirect,5,"JMP"}, {&Cpu6502::ADC,&Cpu6502::Absolute,4,"ADC"}, {&Cpu6502::ROR,&Cpu6502::Absolute,6,"ROR"}, {&Cpu6502::KIL,&Cpu6502::Absolute,6,"KIL"},
-        /* 7x */    {&Cpu6502::BVS,&Cpu6502::Relative,2,"BVS"}, {&Cpu6502::ADC,&Cpu6502::IndirectIndexed,5,"ADC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::ADC,&Cpu6502::ZeroPageX,4,"ADC"},{&Cpu6502::ROR,&Cpu6502::ZeroPageX,6,"ROR"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::SEI,&Cpu6502::Implied,2,"SEI"},{&Cpu6502::ADC,&Cpu6502::AbsoluteY,4,"ADC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::ADC,&Cpu6502::AbsoluteX,4,"ADC"},{&Cpu6502::ROR,&Cpu6502::AbsoluteX,7,"ROR"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"},
-        /* 8x */    {&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::STA,&Cpu6502::IndexedIndirect,6,"STA"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,6,"KIL"},{&Cpu6502::STY,&Cpu6502::ZeroPage,3,"STY"}, {&Cpu6502::STA,&Cpu6502::ZeroPage,3,"STA"}, {&Cpu6502::STX,&Cpu6502::ZeroPage,3,"STX"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,3,"KIL"}, {&Cpu6502::DEY,&Cpu6502::Implied,2,"DEY"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::TXA,&Cpu6502::Implied,2,"TXA"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::STY,&Cpu6502::Absolute,4,"STY"}, {&Cpu6502::STA,&Cpu6502::Absolute,4,"STA"}, {&Cpu6502::STX,&Cpu6502::Absolute,4,"STX"}, {&Cpu6502::KIL,&Cpu6502::Absolute,4,"KIL"},
-        /* 9x */    {&Cpu6502::BCC,&Cpu6502::Relative,2,"BCC"}, {&Cpu6502::STA,&Cpu6502::IndirectIndexed,6,"STA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,6,"KIL"},{&Cpu6502::STY,&Cpu6502::ZeroPageX,4,"STY"},{&Cpu6502::STA,&Cpu6502::ZeroPageX,4,"STA"},{&Cpu6502::STX,&Cpu6502::ZeroPageY,4,"STX"},{&Cpu6502::KIL,&Cpu6502::ZeroPageY,4,"KIL"},{&Cpu6502::TYA,&Cpu6502::Implied,2,"TYA"},{&Cpu6502::STA,&Cpu6502::AbsoluteY,5,"STA"},{&Cpu6502::TXS,&Cpu6502::Implied,2,"TXS"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5,"KIL"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,5,"KIL"},{&Cpu6502::STA,&Cpu6502::AbsoluteX,5,"STA"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5,"KIL"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5,"KIL"},
-        /* Ax */    {&Cpu6502::LDY,&Cpu6502::Immediate,2,"LDY"},{&Cpu6502::LDA,&Cpu6502::IndexedIndirect,6,"LDA"},{&Cpu6502::LDX,&Cpu6502::Immediate,2,"LDX"},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,6,"KIL"},{&Cpu6502::LDY,&Cpu6502::ZeroPage,3,"LDY"}, {&Cpu6502::LDA,&Cpu6502::ZeroPage,3,"LDA"}, {&Cpu6502::LDX,&Cpu6502::ZeroPage,3,"LDX"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,3,"KIL"}, {&Cpu6502::TAY,&Cpu6502::Implied,2,"TAY"},{&Cpu6502::LDA,&Cpu6502::Immediate,2,"LDA"},{&Cpu6502::TAX,&Cpu6502::Implied,2,"TAX"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::LDY,&Cpu6502::Absolute,4,"LDY"}, {&Cpu6502::LDA,&Cpu6502::Absolute,4,"LDA"}, {&Cpu6502::LDX,&Cpu6502::Absolute,4,"LDX"}, {&Cpu6502::KIL,&Cpu6502::Absolute,4,"KIL"},
-        /* Bx */    {&Cpu6502::BCS,&Cpu6502::Relative,2,"BCS"}, {&Cpu6502::LDA,&Cpu6502::IndirectIndexed,5,"LDA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,5,"KIL"},{&Cpu6502::LDY,&Cpu6502::ZeroPageX,4,"LDY"},{&Cpu6502::LDA,&Cpu6502::ZeroPageX,4,"LDA"},{&Cpu6502::LDX,&Cpu6502::ZeroPageY,4,"LDX"},{&Cpu6502::KIL,&Cpu6502::ZeroPageY,4,"KIL"},{&Cpu6502::CLV,&Cpu6502::Implied,2,"CLV"},{&Cpu6502::LDA,&Cpu6502::AbsoluteY,4,"LDA"},{&Cpu6502::TSX,&Cpu6502::Implied,2,"TSX"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,4,"KIL"},{&Cpu6502::LDY,&Cpu6502::AbsoluteX,4,"LDY"},{&Cpu6502::LDA,&Cpu6502::AbsoluteX,4,"LDA"},{&Cpu6502::LDX,&Cpu6502::AbsoluteY,4,"LDX"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,4,"KIL"},
-        /* Cx */    {&Cpu6502::CPY,&Cpu6502::Immediate,2,"CPY"},{&Cpu6502::CMP,&Cpu6502::IndexedIndirect,6,"CMP"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::CPY,&Cpu6502::ZeroPage,3,"CPY"}, {&Cpu6502::CMP,&Cpu6502::ZeroPage,3,"CMP"}, {&Cpu6502::DEC,&Cpu6502::ZeroPage,5,"DEC"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"}, {&Cpu6502::INY,&Cpu6502::Implied,2,"INY"},{&Cpu6502::CMP,&Cpu6502::Immediate,2,"CMP"},{&Cpu6502::DEX,&Cpu6502::Implied,2,"DEX"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::CPY,&Cpu6502::Absolute,4,"CPY"}, {&Cpu6502::CMP,&Cpu6502::Absolute,4,"CMP"}, {&Cpu6502::DEC,&Cpu6502::Absolute,6,"DEC"}, {&Cpu6502::KIL,&Cpu6502::Absolute,4,"KIL"},
-        /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2,"BNE"}, {&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5,"CMP"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4,"CMP"},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6,"DEC"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::CLD,&Cpu6502::Implied,2,"CLD"},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4,"CMP"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4,"CMP"},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7,"DEC"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"},
-        /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2,"CPX"},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6,"SBC"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8,"KIL"},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3,"CPX"}, {&Cpu6502::SBC,&Cpu6502::ZeroPage,3,"SBC"}, {&Cpu6502::INC,&Cpu6502::ZeroPage,5,"INC"}, {&Cpu6502::KIL,&Cpu6502::ZeroPage,5,"KIL"}, {&Cpu6502::INX,&Cpu6502::Implied,2,"INX"},{&Cpu6502::SBC,&Cpu6502::Immediate,2,"SBC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::SBC,&Cpu6502::Immediate,2,"SBC"},{&Cpu6502::CPX,&Cpu6502::Absolute,4,"CPX"}, {&Cpu6502::SBC,&Cpu6502::Absolute,4,"SBC"}, {&Cpu6502::INC,&Cpu6502::Absolute,6,"INC"}, {&Cpu6502::KIL,&Cpu6502::Absolute,6,"KIL"},
-        /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2,"BEQ"}, {&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5,"SBC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8,"KIL"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4,"SBC"},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6,"INC"},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6,"KIL"},{&Cpu6502::SED,&Cpu6502::Implied,2,"SED"},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4,"SBC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7,"KIL"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4,"SBC"},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7,"INC"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7,"KIL"}
+        /* 0x */    {&Cpu6502::BRK,&Cpu6502::Implied,7,"BRK"},  {&Cpu6502::ORA,&Cpu6502::IndexedIndirect,6,"ORA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::SLO,&Cpu6502::IndexedIndirect,8,"SLO"},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3,"NOP"}, {&Cpu6502::ORA,&Cpu6502::ZeroPage,3,"ORA"}, {&Cpu6502::ASL,&Cpu6502::ZeroPage,5,"ASL"}, {&Cpu6502::SLO,&Cpu6502::ZeroPage,5,"SLO"}, {&Cpu6502::PHP,&Cpu6502::Implied,3,"PHP"},{&Cpu6502::ORA,&Cpu6502::Immediate,2,"ORA"},{&Cpu6502::ASL,&Cpu6502::Implied,2,"ASL"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::NOP,&Cpu6502::Absolute,4,"NOP"}, {&Cpu6502::ORA,&Cpu6502::Absolute,4,"ORA"}, {&Cpu6502::ASL,&Cpu6502::Absolute,6,"ASL"}, {&Cpu6502::SLO,&Cpu6502::Absolute,6,"SLO"},
+        /* 1x */    {&Cpu6502::BPL,&Cpu6502::Relative,2,"BPL"}, {&Cpu6502::ORA,&Cpu6502::IndirectIndexed,5,"ORA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::SLO,&Cpu6502::IndirectIndexed,8,"SLO"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::ORA,&Cpu6502::ZeroPageX,4,"ORA"},{&Cpu6502::ASL,&Cpu6502::ZeroPageX,6,"ASL"},{&Cpu6502::SLO,&Cpu6502::ZeroPageX,6,"SLO"},{&Cpu6502::CLC,&Cpu6502::Implied,2,"CLC"},{&Cpu6502::ORA,&Cpu6502::AbsoluteY,4,"ORA"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::SLO,&Cpu6502::AbsoluteY,7,"SLO"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::ORA,&Cpu6502::AbsoluteX,4,"ORA"},{&Cpu6502::ASL,&Cpu6502::AbsoluteX,7,"ASL"},{&Cpu6502::SLO,&Cpu6502::AbsoluteX,7,"SLO"},
+        /* 2x */    {&Cpu6502::JSR,&Cpu6502::Absolute,6,"JSR"}, {&Cpu6502::AND,&Cpu6502::IndexedIndirect,6,"AND"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::RLA,&Cpu6502::IndexedIndirect,8,"RLA"},{&Cpu6502::BIT,&Cpu6502::ZeroPage,3,"BIT"}, {&Cpu6502::AND,&Cpu6502::ZeroPage,3,"AND"}, {&Cpu6502::ROL,&Cpu6502::ZeroPage,5,"ROL"}, {&Cpu6502::RLA,&Cpu6502::ZeroPage,5,"RLA"}, {&Cpu6502::PLP,&Cpu6502::Implied,4,"PLP"},{&Cpu6502::AND,&Cpu6502::Immediate,2,"AND"},{&Cpu6502::ROL,&Cpu6502::Implied,2,"ROL"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::BIT,&Cpu6502::Absolute,4,"BIT"}, {&Cpu6502::AND,&Cpu6502::Absolute,4,"AND"}, {&Cpu6502::ROL,&Cpu6502::Absolute,6,"ROL"}, {&Cpu6502::RLA,&Cpu6502::Absolute,6,"RLA"},
+        /* 3x */    {&Cpu6502::BMI,&Cpu6502::Relative,2,"BMI"}, {&Cpu6502::AND,&Cpu6502::IndirectIndexed,5,"AND"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::RLA,&Cpu6502::IndirectIndexed,8,"RLA"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::AND,&Cpu6502::ZeroPageX,4,"AND"},{&Cpu6502::ROL,&Cpu6502::ZeroPageX,6,"ROL"},{&Cpu6502::RLA,&Cpu6502::ZeroPageX,6,"RLA"},{&Cpu6502::SEC,&Cpu6502::Implied,2,"SEC"},{&Cpu6502::AND,&Cpu6502::AbsoluteY,4,"AND"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::RLA,&Cpu6502::AbsoluteY,7,"RLA"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::AND,&Cpu6502::AbsoluteX,4,"AND"},{&Cpu6502::ROL,&Cpu6502::AbsoluteX,7,"ROL"},{&Cpu6502::RLA,&Cpu6502::AbsoluteX,7,"RLA"},
+        /* 4x */    {&Cpu6502::RTI,&Cpu6502::Implied,6,"RTI"},  {&Cpu6502::EOR,&Cpu6502::IndexedIndirect,6,"EOR"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::SRE,&Cpu6502::IndexedIndirect,8,"SRE"},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3,"NOP"}, {&Cpu6502::EOR,&Cpu6502::ZeroPage,3,"EOR"}, {&Cpu6502::LSR,&Cpu6502::ZeroPage,5,"LSR"}, {&Cpu6502::SRE,&Cpu6502::ZeroPage,5,"SRE"}, {&Cpu6502::PHA,&Cpu6502::Implied,3,"PHA"},{&Cpu6502::EOR,&Cpu6502::Immediate,2,"EOR"},{&Cpu6502::LSR,&Cpu6502::Implied,2,"LSR"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::JMP,&Cpu6502::Absolute,3,"JMP"}, {&Cpu6502::EOR,&Cpu6502::Absolute,4,"EOR"}, {&Cpu6502::LSR,&Cpu6502::Absolute,6,"LSR"}, {&Cpu6502::SRE,&Cpu6502::Absolute,6,"SRE"},
+        /* 5x */    {&Cpu6502::BVC,&Cpu6502::Relative,2,"BVC"}, {&Cpu6502::EOR,&Cpu6502::IndirectIndexed,5,"EOR"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::SRE,&Cpu6502::IndirectIndexed,8,"SRE"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::EOR,&Cpu6502::ZeroPageX,4,"EOR"},{&Cpu6502::LSR,&Cpu6502::ZeroPageX,6,"LSR"},{&Cpu6502::SRE,&Cpu6502::ZeroPageX,6,"SRE"},{&Cpu6502::CLI,&Cpu6502::Implied,2,"CLI"},{&Cpu6502::EOR,&Cpu6502::AbsoluteY,4,"EOR"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::SRE,&Cpu6502::AbsoluteY,7,"SRE"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::EOR,&Cpu6502::AbsoluteX,4,"EOR"},{&Cpu6502::LSR,&Cpu6502::AbsoluteX,7,"LSR"},{&Cpu6502::SRE,&Cpu6502::AbsoluteX,7,"SRE"},
+        /* 6x */    {&Cpu6502::RTS,&Cpu6502::Implied,6,"RTS"},  {&Cpu6502::ADC,&Cpu6502::IndexedIndirect,6,"ADC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::RRA,&Cpu6502::IndexedIndirect,8,"RRA"},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3,"NOP"}, {&Cpu6502::ADC,&Cpu6502::ZeroPage,3,"ADC"}, {&Cpu6502::ROR,&Cpu6502::ZeroPage,5,"ROR"}, {&Cpu6502::RRA,&Cpu6502::ZeroPage,5,"RRA"}, {&Cpu6502::PLA,&Cpu6502::Implied,4,"PLA"},{&Cpu6502::ADC,&Cpu6502::Immediate,2,"ADC"},{&Cpu6502::ROR,&Cpu6502::Implied,2,"ROR"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::JMP,&Cpu6502::Indirect,5,"JMP"}, {&Cpu6502::ADC,&Cpu6502::Absolute,4,"ADC"}, {&Cpu6502::ROR,&Cpu6502::Absolute,6,"ROR"}, {&Cpu6502::RRA,&Cpu6502::Absolute,6,"RRA"},
+        /* 7x */    {&Cpu6502::BVS,&Cpu6502::Relative,2,"BVS"}, {&Cpu6502::ADC,&Cpu6502::IndirectIndexed,5,"ADC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::RRA,&Cpu6502::IndirectIndexed,8,"RRA"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::ADC,&Cpu6502::ZeroPageX,4,"ADC"},{&Cpu6502::ROR,&Cpu6502::ZeroPageX,6,"ROR"},{&Cpu6502::RRA,&Cpu6502::ZeroPageX,6,"RRA"},{&Cpu6502::SEI,&Cpu6502::Implied,2,"SEI"},{&Cpu6502::ADC,&Cpu6502::AbsoluteY,4,"ADC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::RRA,&Cpu6502::AbsoluteY,7,"RRA"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::ADC,&Cpu6502::AbsoluteX,4,"ADC"},{&Cpu6502::ROR,&Cpu6502::AbsoluteX,7,"ROR"},{&Cpu6502::RRA,&Cpu6502::AbsoluteX,7,"RRA"},
+        /* 8x */    {&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::STA,&Cpu6502::IndexedIndirect,6,"STA"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::SAX,&Cpu6502::IndexedIndirect,6,"SAX"},{&Cpu6502::STY,&Cpu6502::ZeroPage,3,"STY"}, {&Cpu6502::STA,&Cpu6502::ZeroPage,3,"STA"}, {&Cpu6502::STX,&Cpu6502::ZeroPage,3,"STX"}, {&Cpu6502::SAX,&Cpu6502::ZeroPage,3,"SAX"}, {&Cpu6502::DEY,&Cpu6502::Implied,2,"DEY"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::TXA,&Cpu6502::Implied,2,"TXA"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::STY,&Cpu6502::Absolute,4,"STY"}, {&Cpu6502::STA,&Cpu6502::Absolute,4,"STA"}, {&Cpu6502::STX,&Cpu6502::Absolute,4,"STX"}, {&Cpu6502::SAX,&Cpu6502::Absolute,4,"SAX"},
+        /* 9x */    {&Cpu6502::BCC,&Cpu6502::Relative,2,"BCC"}, {&Cpu6502::STA,&Cpu6502::IndirectIndexed,6,"STA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,6,"KIL"},{&Cpu6502::STY,&Cpu6502::ZeroPageX,4,"STY"},{&Cpu6502::STA,&Cpu6502::ZeroPageX,4,"STA"},{&Cpu6502::STX,&Cpu6502::ZeroPageY,4,"STX"},{&Cpu6502::SAX,&Cpu6502::ZeroPageY,4,"SAX"},{&Cpu6502::TYA,&Cpu6502::Implied,2,"TYA"},{&Cpu6502::STA,&Cpu6502::AbsoluteY,5,"STA"},{&Cpu6502::TXS,&Cpu6502::Implied,2,"TXS"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5,"KIL"},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,5,"KIL"},{&Cpu6502::STA,&Cpu6502::AbsoluteX,5,"STA"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5,"KIL"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5,"KIL"},
+        /* Ax */    {&Cpu6502::LDY,&Cpu6502::Immediate,2,"LDY"},{&Cpu6502::LDA,&Cpu6502::IndexedIndirect,6,"LDA"},{&Cpu6502::LDX,&Cpu6502::Immediate,2,"LDX"},{&Cpu6502::LAX,&Cpu6502::IndexedIndirect,6,"LAX"},{&Cpu6502::LDY,&Cpu6502::ZeroPage,3,"LDY"}, {&Cpu6502::LDA,&Cpu6502::ZeroPage,3,"LDA"}, {&Cpu6502::LDX,&Cpu6502::ZeroPage,3,"LDX"}, {&Cpu6502::LAX,&Cpu6502::ZeroPage,3,"LAX"}, {&Cpu6502::TAY,&Cpu6502::Implied,2,"TAY"},{&Cpu6502::LDA,&Cpu6502::Immediate,2,"LDA"},{&Cpu6502::TAX,&Cpu6502::Implied,2,"TAX"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::LDY,&Cpu6502::Absolute,4,"LDY"}, {&Cpu6502::LDA,&Cpu6502::Absolute,4,"LDA"}, {&Cpu6502::LDX,&Cpu6502::Absolute,4,"LDX"}, {&Cpu6502::LAX,&Cpu6502::Absolute,4,"LAX"},
+        /* Bx */    {&Cpu6502::BCS,&Cpu6502::Relative,2,"BCS"}, {&Cpu6502::LDA,&Cpu6502::IndirectIndexed,5,"LDA"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::LAX,&Cpu6502::IndirectIndexed,5,"LAX"},{&Cpu6502::LDY,&Cpu6502::ZeroPageX,4,"LDY"},{&Cpu6502::LDA,&Cpu6502::ZeroPageX,4,"LDA"},{&Cpu6502::LDX,&Cpu6502::ZeroPageY,4,"LDX"},{&Cpu6502::LAX,&Cpu6502::ZeroPageY,4,"LAX"},{&Cpu6502::CLV,&Cpu6502::Implied,2,"CLV"},{&Cpu6502::LDA,&Cpu6502::AbsoluteY,4,"LDA"},{&Cpu6502::TSX,&Cpu6502::Implied,2,"TSX"},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,4,"KIL"},{&Cpu6502::LDY,&Cpu6502::AbsoluteX,4,"LDY"},{&Cpu6502::LDA,&Cpu6502::AbsoluteX,4,"LDA"},{&Cpu6502::LDX,&Cpu6502::AbsoluteY,4,"LDX"},{&Cpu6502::LAX,&Cpu6502::AbsoluteY,4,"LAX"},
+        /* Cx */    {&Cpu6502::CPY,&Cpu6502::Immediate,2,"CPY"},{&Cpu6502::CMP,&Cpu6502::IndexedIndirect,6,"CMP"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::DCP,&Cpu6502::IndexedIndirect,8,"DCP"},{&Cpu6502::CPY,&Cpu6502::ZeroPage,3,"CPY"}, {&Cpu6502::CMP,&Cpu6502::ZeroPage,3,"CMP"}, {&Cpu6502::DEC,&Cpu6502::ZeroPage,5,"DEC"}, {&Cpu6502::DCP,&Cpu6502::ZeroPage,5,"DCP"}, {&Cpu6502::INY,&Cpu6502::Implied,2,"INY"},{&Cpu6502::CMP,&Cpu6502::Immediate,2,"CMP"},{&Cpu6502::DEX,&Cpu6502::Implied,2,"DEX"},{&Cpu6502::KIL,&Cpu6502::Immediate,2,"KIL"},{&Cpu6502::CPY,&Cpu6502::Absolute,4,"CPY"}, {&Cpu6502::CMP,&Cpu6502::Absolute,4,"CMP"}, {&Cpu6502::DEC,&Cpu6502::Absolute,6,"DEC"}, {&Cpu6502::DCP,&Cpu6502::Absolute,6,"DCP"},
+        /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2,"BNE"}, {&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5,"CMP"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::DCP,&Cpu6502::IndirectIndexed,8,"DCP"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4,"CMP"},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6,"DEC"},{&Cpu6502::DCP,&Cpu6502::ZeroPageX,6,"DCP"},{&Cpu6502::CLD,&Cpu6502::Implied,2,"CLD"},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4,"CMP"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::DCP,&Cpu6502::AbsoluteY,7,"DCP"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4,"CMP"},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7,"DEC"},{&Cpu6502::DCP,&Cpu6502::AbsoluteX,7,"DCP"},
+        /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2,"CPX"},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6,"SBC"},{&Cpu6502::NOP,&Cpu6502::Immediate,2,"NOP"},{&Cpu6502::ISB,&Cpu6502::IndexedIndirect,8,"ISB"},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3,"CPX"}, {&Cpu6502::SBC,&Cpu6502::ZeroPage,3,"SBC"}, {&Cpu6502::INC,&Cpu6502::ZeroPage,5,"INC"}, {&Cpu6502::ISB,&Cpu6502::ZeroPage,5,"ISB"}, {&Cpu6502::INX,&Cpu6502::Implied,2,"INX"},{&Cpu6502::SBC,&Cpu6502::Immediate,2,"SBC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::SBC,&Cpu6502::Immediate,2,"SBC"},{&Cpu6502::CPX,&Cpu6502::Absolute,4,"CPX"}, {&Cpu6502::SBC,&Cpu6502::Absolute,4,"SBC"}, {&Cpu6502::INC,&Cpu6502::Absolute,6,"INC"}, {&Cpu6502::ISB,&Cpu6502::Absolute,6,"ISB"},
+        /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2,"BEQ"}, {&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5,"SBC"},{&Cpu6502::KIL,&Cpu6502::Implied,2,"KIL"},  {&Cpu6502::ISB,&Cpu6502::IndirectIndexed,8,"ISB"},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4,"NOP"},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4,"SBC"},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6,"INC"},{&Cpu6502::ISB,&Cpu6502::ZeroPageX,6,"ISB"},{&Cpu6502::SED,&Cpu6502::Implied,2,"SED"},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4,"SBC"},{&Cpu6502::NOP,&Cpu6502::Implied,2,"NOP"},{&Cpu6502::ISB,&Cpu6502::AbsoluteY,7,"ISB"},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4,"NOP"},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4,"SBC"},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7,"INC"},{&Cpu6502::ISB,&Cpu6502::AbsoluteX,7,"ISB"}
     },
 #else
     mOpcodeMatrix
@@ -62,22 +62,22 @@ Cpu6502::Cpu6502()
         // Indexed Indirect = izx
         // Indirect Indexed = izy
         //                             x0                                    x1                                          x2                                    x3                                          x4                                    x5                                   x6                                     x7                                    x8                                  x9                                    xA                                  xB                                    xC                                    xD                                    xE                                    xF
-        /* 0x */    {&Cpu6502::BRK,&Cpu6502::Implied,7},  {&Cpu6502::ORA,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3}, {&Cpu6502::ORA,&Cpu6502::ZeroPage,3},{&Cpu6502::ASL,&Cpu6502::ZeroPage,5},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,5}, {&Cpu6502::PHP,&Cpu6502::Implied,3},{&Cpu6502::ORA,&Cpu6502::Immediate,2},{&Cpu6502::ASL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::NOP,&Cpu6502::Absolute,4}, {&Cpu6502::ORA,&Cpu6502::Absolute,4}, {&Cpu6502::ASL,&Cpu6502::Absolute,6}, {&Cpu6502::KIL,&Cpu6502::Absolute,6},
-        /* 1x */    {&Cpu6502::BPL,&Cpu6502::Relative,2}, {&Cpu6502::ORA,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::ORA,&Cpu6502::ZeroPageX,4},{&Cpu6502::ASL,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLC,&Cpu6502::Implied,2},{&Cpu6502::ORA,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::ORA,&Cpu6502::AbsoluteX,4},{&Cpu6502::ASL,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
-        /* 2x */    {&Cpu6502::JSR,&Cpu6502::Absolute,6}, {&Cpu6502::AND,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::BIT,&Cpu6502::ZeroPage,3}, {&Cpu6502::AND,&Cpu6502::ZeroPage,3},{&Cpu6502::ROL,&Cpu6502::ZeroPage,5},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,5}, {&Cpu6502::PLP,&Cpu6502::Implied,4},{&Cpu6502::AND,&Cpu6502::Immediate,2},{&Cpu6502::ROL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::BIT,&Cpu6502::Absolute,4}, {&Cpu6502::AND,&Cpu6502::Absolute,4}, {&Cpu6502::ROL,&Cpu6502::Absolute,6}, {&Cpu6502::KIL,&Cpu6502::Absolute,6},
-        /* 3x */    {&Cpu6502::BMI,&Cpu6502::Relative,2}, {&Cpu6502::AND,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::AND,&Cpu6502::ZeroPageX,4},{&Cpu6502::ROL,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::SEC,&Cpu6502::Implied,2},{&Cpu6502::AND,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::AND,&Cpu6502::AbsoluteX,4},{&Cpu6502::ROL,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
-        /* 4x */    {&Cpu6502::RTI,&Cpu6502::Implied,6},  {&Cpu6502::EOR,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3}, {&Cpu6502::EOR,&Cpu6502::ZeroPage,3},{&Cpu6502::LSR,&Cpu6502::ZeroPage,5},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,5}, {&Cpu6502::PHA,&Cpu6502::Implied,3},{&Cpu6502::EOR,&Cpu6502::Immediate,2},{&Cpu6502::LSR,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::JMP,&Cpu6502::Absolute,3}, {&Cpu6502::EOR,&Cpu6502::Absolute,4}, {&Cpu6502::LSR,&Cpu6502::Absolute,6}, {&Cpu6502::KIL,&Cpu6502::Absolute,6},
-        /* 5x */    {&Cpu6502::BVC,&Cpu6502::Relative,2}, {&Cpu6502::EOR,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::EOR,&Cpu6502::ZeroPageX,4},{&Cpu6502::LSR,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLI,&Cpu6502::Implied,2},{&Cpu6502::EOR,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::EOR,&Cpu6502::AbsoluteX,4},{&Cpu6502::LSR,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
-        /* 6x */    {&Cpu6502::RTS,&Cpu6502::Implied,6},  {&Cpu6502::ADC,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3}, {&Cpu6502::ADC,&Cpu6502::ZeroPage,3},{&Cpu6502::ROR,&Cpu6502::ZeroPage,5},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,5}, {&Cpu6502::PLA,&Cpu6502::Implied,4},{&Cpu6502::ADC,&Cpu6502::Immediate,2},{&Cpu6502::ROR,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::JMP,&Cpu6502::Indirect,5}, {&Cpu6502::ADC,&Cpu6502::Absolute,4}, {&Cpu6502::ROR,&Cpu6502::Absolute,6}, {&Cpu6502::KIL,&Cpu6502::Absolute,6},
-        /* 7x */    {&Cpu6502::BVS,&Cpu6502::Relative,2}, {&Cpu6502::ADC,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::ADC,&Cpu6502::ZeroPageX,4},{&Cpu6502::ROR,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::SEI,&Cpu6502::Implied,2},{&Cpu6502::ADC,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::ADC,&Cpu6502::AbsoluteX,4},{&Cpu6502::ROR,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
-        /* 8x */    {&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::STA,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,6},{&Cpu6502::STY,&Cpu6502::ZeroPage,3}, {&Cpu6502::STA,&Cpu6502::ZeroPage,3},{&Cpu6502::STX,&Cpu6502::ZeroPage,3},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,3}, {&Cpu6502::DEY,&Cpu6502::Implied,2},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::TXA,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::STY,&Cpu6502::Absolute,4}, {&Cpu6502::STA,&Cpu6502::Absolute,4}, {&Cpu6502::STX,&Cpu6502::Absolute,4}, {&Cpu6502::KIL,&Cpu6502::Absolute,4},
-        /* 9x */    {&Cpu6502::BCC,&Cpu6502::Relative,2}, {&Cpu6502::STA,&Cpu6502::IndirectIndexed,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,6},{&Cpu6502::STY,&Cpu6502::ZeroPageX,4},{&Cpu6502::STA,&Cpu6502::ZeroPageX,4},{&Cpu6502::STX,&Cpu6502::ZeroPageY,4},{&Cpu6502::KIL,&Cpu6502::ZeroPageY,4},{&Cpu6502::TYA,&Cpu6502::Implied,2},{&Cpu6502::STA,&Cpu6502::AbsoluteY,5},{&Cpu6502::TXS,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,5},{&Cpu6502::STA,&Cpu6502::AbsoluteX,5},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5},
-        /* Ax */    {&Cpu6502::LDY,&Cpu6502::Immediate,2},{&Cpu6502::LDA,&Cpu6502::IndexedIndirect,6},{&Cpu6502::LDX,&Cpu6502::Immediate,2},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,6},{&Cpu6502::LDY,&Cpu6502::ZeroPage,3}, {&Cpu6502::LDA,&Cpu6502::ZeroPage,3},{&Cpu6502::LDX,&Cpu6502::ZeroPage,3},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,3}, {&Cpu6502::TAY,&Cpu6502::Implied,2},{&Cpu6502::LDA,&Cpu6502::Immediate,2},{&Cpu6502::TAX,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::LDY,&Cpu6502::Absolute,4}, {&Cpu6502::LDA,&Cpu6502::Absolute,4}, {&Cpu6502::LDX,&Cpu6502::Absolute,4}, {&Cpu6502::KIL,&Cpu6502::Absolute,4},
-        /* Bx */    {&Cpu6502::BCS,&Cpu6502::Relative,2}, {&Cpu6502::LDA,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,5},{&Cpu6502::LDY,&Cpu6502::ZeroPageX,4},{&Cpu6502::LDA,&Cpu6502::ZeroPageX,4},{&Cpu6502::LDX,&Cpu6502::ZeroPageY,4},{&Cpu6502::KIL,&Cpu6502::ZeroPageY,4},{&Cpu6502::CLV,&Cpu6502::Implied,2},{&Cpu6502::LDA,&Cpu6502::AbsoluteY,4},{&Cpu6502::TSX,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,4},{&Cpu6502::LDY,&Cpu6502::AbsoluteX,4},{&Cpu6502::LDA,&Cpu6502::AbsoluteX,4},{&Cpu6502::LDX,&Cpu6502::AbsoluteY,4},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,4},
-        /* Cx */    {&Cpu6502::CPY,&Cpu6502::Immediate,2},{&Cpu6502::CMP,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::CPY,&Cpu6502::ZeroPage,3}, {&Cpu6502::CMP,&Cpu6502::ZeroPage,3},{&Cpu6502::DEC,&Cpu6502::ZeroPage,5},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,5}, {&Cpu6502::INY,&Cpu6502::Implied,2},{&Cpu6502::CMP,&Cpu6502::Immediate,2},{&Cpu6502::DEX,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::CPY,&Cpu6502::Absolute,4}, {&Cpu6502::CMP,&Cpu6502::Absolute,4}, {&Cpu6502::DEC,&Cpu6502::Absolute,6}, {&Cpu6502::KIL,&Cpu6502::Absolute,4},
-        /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2}, {&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLD,&Cpu6502::Implied,2},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7},
-        /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::KIL,&Cpu6502::IndexedIndirect,8},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3}, {&Cpu6502::SBC,&Cpu6502::ZeroPage,3},{&Cpu6502::INC,&Cpu6502::ZeroPage,5},  {&Cpu6502::KIL,&Cpu6502::ZeroPage,5}, {&Cpu6502::INX,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::CPX,&Cpu6502::Absolute,4}, {&Cpu6502::SBC,&Cpu6502::Absolute,4}, {&Cpu6502::INC,&Cpu6502::Absolute,6}, {&Cpu6502::KIL,&Cpu6502::Absolute,6},
-        /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2}, {&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6},{&Cpu6502::KIL,&Cpu6502::ZeroPageX,6},{&Cpu6502::SED,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,7}
+        /* 0x */    {&Cpu6502::BRK,&Cpu6502::Implied,7},  {&Cpu6502::ORA,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::SLO,&Cpu6502::IndexedIndirect,8},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3}, {&Cpu6502::ORA,&Cpu6502::ZeroPage,3},{&Cpu6502::ASL,&Cpu6502::ZeroPage,5},  {&Cpu6502::SLO,&Cpu6502::ZeroPage,5}, {&Cpu6502::PHP,&Cpu6502::Implied,3},{&Cpu6502::ORA,&Cpu6502::Immediate,2},{&Cpu6502::ASL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::NOP,&Cpu6502::Absolute,4}, {&Cpu6502::ORA,&Cpu6502::Absolute,4}, {&Cpu6502::ASL,&Cpu6502::Absolute,6}, {&Cpu6502::SLO,&Cpu6502::Absolute,6},
+        /* 1x */    {&Cpu6502::BPL,&Cpu6502::Relative,2}, {&Cpu6502::ORA,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::SLO,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::ORA,&Cpu6502::ZeroPageX,4},{&Cpu6502::ASL,&Cpu6502::ZeroPageX,6},{&Cpu6502::SLO,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLC,&Cpu6502::Implied,2},{&Cpu6502::ORA,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::SLO,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::ORA,&Cpu6502::AbsoluteX,4},{&Cpu6502::ASL,&Cpu6502::AbsoluteX,7},{&Cpu6502::SLO,&Cpu6502::AbsoluteX,7},
+        /* 2x */    {&Cpu6502::JSR,&Cpu6502::Absolute,6}, {&Cpu6502::AND,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::RLA,&Cpu6502::IndexedIndirect,8},{&Cpu6502::BIT,&Cpu6502::ZeroPage,3}, {&Cpu6502::AND,&Cpu6502::ZeroPage,3},{&Cpu6502::ROL,&Cpu6502::ZeroPage,5},  {&Cpu6502::RLA,&Cpu6502::ZeroPage,5}, {&Cpu6502::PLP,&Cpu6502::Implied,4},{&Cpu6502::AND,&Cpu6502::Immediate,2},{&Cpu6502::ROL,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::BIT,&Cpu6502::Absolute,4}, {&Cpu6502::AND,&Cpu6502::Absolute,4}, {&Cpu6502::ROL,&Cpu6502::Absolute,6}, {&Cpu6502::RLA,&Cpu6502::Absolute,6},
+        /* 3x */    {&Cpu6502::BMI,&Cpu6502::Relative,2}, {&Cpu6502::AND,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::RLA,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::AND,&Cpu6502::ZeroPageX,4},{&Cpu6502::ROL,&Cpu6502::ZeroPageX,6},{&Cpu6502::RLA,&Cpu6502::ZeroPageX,6},{&Cpu6502::SEC,&Cpu6502::Implied,2},{&Cpu6502::AND,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::RLA,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::AND,&Cpu6502::AbsoluteX,4},{&Cpu6502::ROL,&Cpu6502::AbsoluteX,7},{&Cpu6502::RLA,&Cpu6502::AbsoluteX,7},
+        /* 4x */    {&Cpu6502::RTI,&Cpu6502::Implied,6},  {&Cpu6502::EOR,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::SRE,&Cpu6502::IndexedIndirect,8},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3}, {&Cpu6502::EOR,&Cpu6502::ZeroPage,3},{&Cpu6502::LSR,&Cpu6502::ZeroPage,5},  {&Cpu6502::SRE,&Cpu6502::ZeroPage,5}, {&Cpu6502::PHA,&Cpu6502::Implied,3},{&Cpu6502::EOR,&Cpu6502::Immediate,2},{&Cpu6502::LSR,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::JMP,&Cpu6502::Absolute,3}, {&Cpu6502::EOR,&Cpu6502::Absolute,4}, {&Cpu6502::LSR,&Cpu6502::Absolute,6}, {&Cpu6502::SRE,&Cpu6502::Absolute,6},
+        /* 5x */    {&Cpu6502::BVC,&Cpu6502::Relative,2}, {&Cpu6502::EOR,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::SRE,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::EOR,&Cpu6502::ZeroPageX,4},{&Cpu6502::LSR,&Cpu6502::ZeroPageX,6},{&Cpu6502::SRE,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLI,&Cpu6502::Implied,2},{&Cpu6502::EOR,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::SRE,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::EOR,&Cpu6502::AbsoluteX,4},{&Cpu6502::LSR,&Cpu6502::AbsoluteX,7},{&Cpu6502::SRE,&Cpu6502::AbsoluteX,7},
+        /* 6x */    {&Cpu6502::RTS,&Cpu6502::Implied,6},  {&Cpu6502::ADC,&Cpu6502::IndexedIndirect,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::RRA,&Cpu6502::IndexedIndirect,8},{&Cpu6502::NOP,&Cpu6502::ZeroPage,3}, {&Cpu6502::ADC,&Cpu6502::ZeroPage,3},{&Cpu6502::ROR,&Cpu6502::ZeroPage,5},  {&Cpu6502::RRA,&Cpu6502::ZeroPage,5}, {&Cpu6502::PLA,&Cpu6502::Implied,4},{&Cpu6502::ADC,&Cpu6502::Immediate,2},{&Cpu6502::ROR,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::JMP,&Cpu6502::Indirect,5}, {&Cpu6502::ADC,&Cpu6502::Absolute,4}, {&Cpu6502::ROR,&Cpu6502::Absolute,6}, {&Cpu6502::RRA,&Cpu6502::Absolute,6},
+        /* 7x */    {&Cpu6502::BVS,&Cpu6502::Relative,2}, {&Cpu6502::ADC,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::RRA,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::ADC,&Cpu6502::ZeroPageX,4},{&Cpu6502::ROR,&Cpu6502::ZeroPageX,6},{&Cpu6502::RRA,&Cpu6502::ZeroPageX,6},{&Cpu6502::SEI,&Cpu6502::Implied,2},{&Cpu6502::ADC,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::RRA,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::ADC,&Cpu6502::AbsoluteX,4},{&Cpu6502::ROR,&Cpu6502::AbsoluteX,7},{&Cpu6502::RRA,&Cpu6502::AbsoluteX,7},
+        /* 8x */    {&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::STA,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::SAX,&Cpu6502::IndexedIndirect,6},{&Cpu6502::STY,&Cpu6502::ZeroPage,3}, {&Cpu6502::STA,&Cpu6502::ZeroPage,3},{&Cpu6502::STX,&Cpu6502::ZeroPage,3},  {&Cpu6502::SAX,&Cpu6502::ZeroPage,3}, {&Cpu6502::DEY,&Cpu6502::Implied,2},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::TXA,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::STY,&Cpu6502::Absolute,4}, {&Cpu6502::STA,&Cpu6502::Absolute,4}, {&Cpu6502::STX,&Cpu6502::Absolute,4}, {&Cpu6502::SAX,&Cpu6502::Absolute,4},
+        /* 9x */    {&Cpu6502::BCC,&Cpu6502::Relative,2}, {&Cpu6502::STA,&Cpu6502::IndirectIndexed,6},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::KIL,&Cpu6502::IndirectIndexed,6},{&Cpu6502::STY,&Cpu6502::ZeroPageX,4},{&Cpu6502::STA,&Cpu6502::ZeroPageX,4},{&Cpu6502::STX,&Cpu6502::ZeroPageY,4},{&Cpu6502::SAX,&Cpu6502::ZeroPageY,4},{&Cpu6502::TYA,&Cpu6502::Implied,2},{&Cpu6502::STA,&Cpu6502::AbsoluteY,5},{&Cpu6502::TXS,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5},{&Cpu6502::KIL,&Cpu6502::AbsoluteX,5},{&Cpu6502::STA,&Cpu6502::AbsoluteX,5},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,5},
+        /* Ax */    {&Cpu6502::LDY,&Cpu6502::Immediate,2},{&Cpu6502::LDA,&Cpu6502::IndexedIndirect,6},{&Cpu6502::LDX,&Cpu6502::Immediate,2},{&Cpu6502::LAX,&Cpu6502::IndexedIndirect,6},{&Cpu6502::LDY,&Cpu6502::ZeroPage,3}, {&Cpu6502::LDA,&Cpu6502::ZeroPage,3},{&Cpu6502::LDX,&Cpu6502::ZeroPage,3},  {&Cpu6502::LAX,&Cpu6502::ZeroPage,3}, {&Cpu6502::TAY,&Cpu6502::Implied,2},{&Cpu6502::LDA,&Cpu6502::Immediate,2},{&Cpu6502::TAX,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::LDY,&Cpu6502::Absolute,4}, {&Cpu6502::LDA,&Cpu6502::Absolute,4}, {&Cpu6502::LDX,&Cpu6502::Absolute,4}, {&Cpu6502::LAX,&Cpu6502::Absolute,4},
+        /* Bx */    {&Cpu6502::BCS,&Cpu6502::Relative,2}, {&Cpu6502::LDA,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::LAX,&Cpu6502::IndirectIndexed,5},{&Cpu6502::LDY,&Cpu6502::ZeroPageX,4},{&Cpu6502::LDA,&Cpu6502::ZeroPageX,4},{&Cpu6502::LDX,&Cpu6502::ZeroPageY,4},{&Cpu6502::LAX,&Cpu6502::ZeroPageY,4},{&Cpu6502::CLV,&Cpu6502::Implied,2},{&Cpu6502::LDA,&Cpu6502::AbsoluteY,4},{&Cpu6502::TSX,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::AbsoluteY,4},{&Cpu6502::LDY,&Cpu6502::AbsoluteX,4},{&Cpu6502::LDA,&Cpu6502::AbsoluteX,4},{&Cpu6502::LDX,&Cpu6502::AbsoluteY,4},{&Cpu6502::LAX,&Cpu6502::AbsoluteY,4},
+        /* Cx */    {&Cpu6502::CPY,&Cpu6502::Immediate,2},{&Cpu6502::CMP,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::DCP,&Cpu6502::IndexedIndirect,8},{&Cpu6502::CPY,&Cpu6502::ZeroPage,3}, {&Cpu6502::CMP,&Cpu6502::ZeroPage,3},{&Cpu6502::DEC,&Cpu6502::ZeroPage,5},  {&Cpu6502::DCP,&Cpu6502::ZeroPage,5}, {&Cpu6502::INY,&Cpu6502::Implied,2},{&Cpu6502::CMP,&Cpu6502::Immediate,2},{&Cpu6502::DEX,&Cpu6502::Implied,2},{&Cpu6502::KIL,&Cpu6502::Immediate,2},{&Cpu6502::CPY,&Cpu6502::Absolute,4}, {&Cpu6502::CMP,&Cpu6502::Absolute,4}, {&Cpu6502::DEC,&Cpu6502::Absolute,6}, {&Cpu6502::DCP,&Cpu6502::Absolute,6},
+        /* Dx */    {&Cpu6502::BNE,&Cpu6502::Relative,2}, {&Cpu6502::CMP,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::DCP,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::CMP,&Cpu6502::ZeroPageX,4},{&Cpu6502::DEC,&Cpu6502::ZeroPageX,6},{&Cpu6502::DCP,&Cpu6502::ZeroPageX,6},{&Cpu6502::CLD,&Cpu6502::Implied,2},{&Cpu6502::CMP,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::DCP,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::CMP,&Cpu6502::AbsoluteX,4},{&Cpu6502::DEC,&Cpu6502::AbsoluteX,7},{&Cpu6502::DCP,&Cpu6502::AbsoluteX,7},
+        /* Ex */    {&Cpu6502::CPX,&Cpu6502::Immediate,2},{&Cpu6502::SBC,&Cpu6502::IndexedIndirect,6},{&Cpu6502::NOP,&Cpu6502::Immediate,2},{&Cpu6502::ISB,&Cpu6502::IndexedIndirect,8},{&Cpu6502::CPX,&Cpu6502::ZeroPage,3}, {&Cpu6502::SBC,&Cpu6502::ZeroPage,3},{&Cpu6502::INC,&Cpu6502::ZeroPage,5},  {&Cpu6502::ISB,&Cpu6502::ZeroPage,5}, {&Cpu6502::INX,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::Immediate,2},{&Cpu6502::CPX,&Cpu6502::Absolute,4}, {&Cpu6502::SBC,&Cpu6502::Absolute,4}, {&Cpu6502::INC,&Cpu6502::Absolute,6}, {&Cpu6502::ISB,&Cpu6502::Absolute,6},
+        /* Fx */    {&Cpu6502::BEQ,&Cpu6502::Relative,2}, {&Cpu6502::SBC,&Cpu6502::IndirectIndexed,5},{&Cpu6502::KIL,&Cpu6502::Implied,2},  {&Cpu6502::ISB,&Cpu6502::IndirectIndexed,8},{&Cpu6502::NOP,&Cpu6502::ZeroPageX,4},{&Cpu6502::SBC,&Cpu6502::ZeroPageX,4},{&Cpu6502::INC,&Cpu6502::ZeroPageX,6},{&Cpu6502::ISB,&Cpu6502::ZeroPageX,6},{&Cpu6502::SED,&Cpu6502::Implied,2},{&Cpu6502::SBC,&Cpu6502::AbsoluteY,4},{&Cpu6502::NOP,&Cpu6502::Implied,2},{&Cpu6502::ISB,&Cpu6502::AbsoluteY,7},{&Cpu6502::NOP,&Cpu6502::AbsoluteX,4},{&Cpu6502::SBC,&Cpu6502::AbsoluteX,4},{&Cpu6502::INC,&Cpu6502::AbsoluteX,7},{&Cpu6502::ISB,&Cpu6502::AbsoluteX,7}
     },
 #endif
     mInterruptVectors
@@ -1383,7 +1383,7 @@ uint8_t Cpu6502::ORA()
 {
     // Perform the and operation.
     FetchData();
-    mRegisters.mAcc = mRegisters.mAcc | mFetchedData;
+    mRegisters.mAcc |= mFetchedData;
 
     // Set the Negative flag if the MSB is set.
     SetOrClearFlag(Flags::N, mRegisters.mAcc & Bit(7));
@@ -1474,7 +1474,7 @@ uint8_t Cpu6502::PLP()
 //--------//
 // ROL
 //
-// Rotate Left. Shifts either memory or accumlator left one bit, with the carry flag store at bit 0.
+// Rotate Left. Shifts either memory or accumlator left one bit, with the carry flag stored at bit 0.
 //
 // returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
 //--------//
@@ -1520,8 +1520,8 @@ uint8_t Cpu6502::ROR()
     FetchData();
     uint16_t lResult = (mFetchedData >> 1) | (GetFlag(Flags::C) << 7);
 
-    // Set the Carry flag if bit 1 is set.
-    SetOrClearFlag(Flags::C, mFetchedData & 0x01);
+    // Set the Carry flag if bit 0 is set.
+    SetOrClearFlag(Flags::C, mFetchedData & Bit(0));
 
     // Set the Zero flag if the result is zero.
     SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
@@ -1844,6 +1844,250 @@ uint8_t Cpu6502::TYA()
 //
 uint8_t Cpu6502::KIL()
 {
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+//
+// ILLEGAL INSTRUCTIONS
+//
+//--------/
+
+//--------//
+// DCP
+//
+// Decrements the contents of a memory address and does a CMP.
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::DCP()
+{
+    // Perform decrement.
+    FetchData();
+    Write(mAddress, --mFetchedData);
+
+    uint16_t lResult = mRegisters.mAcc - mFetchedData;
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
+
+    // Set the Negative flag if the result is negative.
+    SetOrClearFlag(Flags::N, lResult & Bit(7));
+
+    // Set the Carry flag if the data in memory is <= than accumulator.
+    SetOrClearFlag(Flags::C, mFetchedData <= mRegisters.mAcc);
+
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// ISB
+//
+// Increments the contents of a memory address and does a SBC from accumulator (Also known as ISC or INS).
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::ISB()
+{
+    // Perform increment.
+    FetchData();
+    Write(mAddress, ++mFetchedData);
+
+    uint16_t lInverted = mFetchedData ^ 0x00FF;
+    uint16_t lResult   = mRegisters.mAcc + lInverted + GetFlag(Flags::C);
+
+    // Set the Carry flag based on if the result is more than the maximum value of an 8-bit number.
+    SetOrClearFlag(Flags::C, lResult > 0x00FF);
+
+    // Set the Overflow flag if the sign bit has changed from result exceeding +127 or -128.
+    // https://forums.nesdev.org/viewtopic.php?t=6331
+    SetOrClearFlag(Flags::V, ((mRegisters.mAcc ^ lResult) & (lInverted ^ lResult)) & 0x0080);
+
+    // Set the Negative flag if the MSB is set.
+    SetOrClearFlag(Flags::N, lResult & Bit(7));
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
+
+    // Make sure we are just storing the low byte from the result.
+    mRegisters.mAcc = lResult & 0x00FF;
+
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// LAX
+//
+// LDA and LDX operation.
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::LAX()
+{
+    // Load accumulator with memory.
+    FetchData();
+    mRegisters.mAcc = mFetchedData;
+    mRegisters.mX   = mFetchedData;
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, mFetchedData == 0);
+
+    // Set the Negative flag if the result is negative.
+    SetOrClearFlag(Flags::N, mFetchedData & Bit(7));
+
+    return ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// RLA
+//
+// Rotate Left then AND with Accumulator.
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::RLA()
+{
+    // Perform rotate left operation.
+    FetchData();
+    uint16_t lResult = (mFetchedData << 1) | GetFlag(Flags::C);
+
+    // Set the Carry flag if bit 8 is set.
+    SetOrClearFlag(Flags::C, lResult & 0xFF00);
+
+    // Write out to memory.
+    Write(mAddress, lResult & 0x00FF);
+
+    // Perform AND operation.
+    mRegisters.mAcc &= lResult;
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
+
+    // Set the Negative flag if bit 7 is set.
+    SetOrClearFlag(Flags::N, lResult & Bit(7));
+
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// RRA
+//
+// Rotate Right and Add Memory to Accumuatlor
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::RRA()
+{
+    // Perform rotate right operation.
+    FetchData();
+    uint16_t lResult = (mFetchedData >> 1) | (GetFlag(Flags::C) << 7);
+
+    // Write result back to memory.
+    Write(mAddress, lResult & 0x00FF);
+
+    // Perform Add with carry flag, which is set if bit 0 was shifted out.
+    lResult += mRegisters.mAcc + (mFetchedData & Bit(0));
+
+    // Set the Carry flag based on if the result is more than the maximum value of an 8-bit number.
+    SetOrClearFlag(Flags::C, lResult > 0x00FF);
+
+    // Set the Overflow flag if the sign bit has changed from result exceeding +127 or -128.
+    SetOrClearFlag(Flags::V, ((mRegisters.mAcc ^ lResult) & (lResult ^ lResult)) & 0x0080);
+
+    // Set the Negative flag if the MSB is set.
+    SetOrClearFlag(Flags::N, lResult & Bit(7));
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, (lResult & 0x00FF) == 0);
+
+    // Make sure we are just storing the low byte from the result.
+    mRegisters.mAcc = lResult & 0x00FF;
+
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// SAX
+//
+// Accumulator AND X register, stored in memory.
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::SAX()
+{
+    // Load memory with the AND operation.
+    Write(mAddress, mRegisters.mAcc & mRegisters.mX);
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// SLO
+//
+// Performs ASL of a memory locations and ORs result with accumulator.
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::SLO()
+{
+    // Perform the left shift.
+    FetchData();
+    uint16_t lData = mFetchedData << 1;
+
+    // Write back to memory.
+    Write(mAddress, lData & 0x00FF);
+
+    // Set the Carry flag if bit 8 is set.
+    SetOrClearFlag(Flags::C, lData > 0x00FF);
+
+    // Now do the OR.
+    mRegisters.mAcc |= lData;
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, (mRegisters.mAcc & 0x00FF) == 0);
+
+    // Set the Negative flag if bit 7 is set.
+    SetOrClearFlag(Flags::N, mRegisters.mAcc & Bit(7));
+
+    return DONT_ADD_CLOCK_CYCLE;
+}
+
+//--------//
+// SRE
+//
+// Logical shift right then XOR memory with accumulator.
+//
+// returns  Flag to coordinate with the address mode to determine if an additional clock cycle is needed.
+//--------//
+//
+uint8_t Cpu6502::SRE()
+{
+    // Perform the right shift.
+    FetchData();
+
+    // Set the Carry flag if bit 0 is set.
+    SetOrClearFlag(Flags::C, mFetchedData & Bit(0));
+
+    uint16_t lData = mFetchedData >> 1;
+
+    // Write back to memory.
+    Write(mAddress, lData & 0x00FF);
+
+    // Now do the XOR.
+    mRegisters.mAcc ^= lData;
+
+    // Set the Zero flag if the result is zero.
+    SetOrClearFlag(Flags::Z, (mRegisters.mAcc & 0x00FF) == 0);
+
+    // Set the Negative flag if bit 7 is set.
+    SetOrClearFlag(Flags::N, mRegisters.mAcc & Bit(7));
+
     return DONT_ADD_CLOCK_CYCLE;
 }
 

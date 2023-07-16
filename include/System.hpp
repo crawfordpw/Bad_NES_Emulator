@@ -103,6 +103,8 @@ class TestNesFunctor : public Functor
         int         mLineNum;
         static char cLineBuffer[];
         static char cErrorBuffer[];
+
+        inline static constexpr int cLastLine = 8991;   // Last line in the log file.
 };
 
 #endif
