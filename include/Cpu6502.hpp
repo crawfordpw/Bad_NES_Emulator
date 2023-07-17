@@ -62,8 +62,8 @@ class Cpu6502 : public Device
             FLAG_SET     = 1
         };
 
-        void NMI();
-        void IRQ();
+        void     NMI();
+        void     IRQ();
 
         uint8_t  GetFlag(Flags lFlag)   {return (mRegisters.mStatus & lFlag) ? FLAG_SET : FLAG_NOT_SET;}
         void     SetFlag(Flags lFlag)   {mRegisters.mStatus |= lFlag;}
@@ -155,17 +155,17 @@ class Cpu6502 : public Device
             uint16_t mHighByte;
         };
 
-        const std::vector<Instruction> mOpcodeMatrix;
-        DataType                 mOpcode;               // Opcode of current instruction being executed.
-        DataType                 mFetchedData;          // Last data fetched by an instruction.
-        AddressType              mAddress;              // Address used for the current instruction.
-        AddressType              mRelativeAddress;      // Address offset used for branch instructions.
-        uint8_t                  mCyclesLeft;           // Remaining clock cycles current instruction has.
-        Registers                mRegisters;            // All registers the cpu has.
-        bool                     mHalted;               // Is the cpu halted.
-        const InterruptVector    mInterruptVectors[NUM_VECTORS];
-        inline static constexpr AddressType    cStartOfStack = 0x0100;
-        inline static constexpr uint16_t       cStackSize    = 0xFF + 1;
+        const std::vector<Instruction>       mOpcodeMatrix;
+        DataType                             mOpcode;               // Opcode of current instruction being executed.
+        DataType                             mFetchedData;          // Last data fetched by an instruction.
+        AddressType                          mAddress;              // Address used for the current instruction.
+        AddressType                          mRelativeAddress;      // Address offset used for branch instructions.
+        uint8_t                              mCyclesLeft;           // Remaining clock cycles current instruction has.
+        Registers                            mRegisters;            // All registers the cpu has.
+        bool                                 mHalted;               // Is the cpu halted.
+        const InterruptVector                mInterruptVectors[NUM_VECTORS];
+        inline static constexpr AddressType  cStartOfStack = 0x0100;
+        inline static constexpr uint16_t     cStackSize    = 0xFF + 1;
 
     protected:
 

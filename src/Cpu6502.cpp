@@ -231,7 +231,7 @@ void Cpu6502::NMI()
         return;
     }
 
-    // NMI still interrupts, even if they are disabled.
+    // NMI still interrupts, even if interrupts are disabled.
     // https://www.nesdev.org/wiki/Status_flags#I:_Interrupt_Disable
 
     // Store the return address onto the stack, high byte then low byte.
@@ -408,10 +408,8 @@ DataType Cpu6502::PopStack()
 }
 
 //--------//
-//
 // ADDRESSING MODES
 //
-//--------/
 
 //--------//
 // Implied
@@ -664,10 +662,7 @@ uint8_t Cpu6502::IndirectIndexed()
 }
 
 //--------//
-//
 // INSTRUCTIONS
-//
-//--------/
 
 //--------//
 // ADC
@@ -1871,10 +1866,7 @@ uint8_t Cpu6502::KIL()
 }
 
 //--------//
-//
 // ILLEGAL INSTRUCTIONS
-//
-//--------/
 
 //--------//
 // ANC
@@ -2387,10 +2379,7 @@ uint8_t Cpu6502::XAA()
 }
 
 //--------//
-//
 // MISCELLANEOUS
-//
-//--------/
 
 //--------//
 // BranchHelper

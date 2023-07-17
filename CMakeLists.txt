@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 # Configurable compile options.
-set(TEST_CPU        ON)
+set(TEST_CPU        OFF)
 set(LOG_TO_CONSOLE  ON)
 set(LOG_TO_FILE     ON)
 set(DUMP_STACK      OFF)     # This option needs TEST_CPU enabled.

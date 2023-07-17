@@ -55,7 +55,9 @@ class System
 
         void     LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset);
 
+#ifdef TEST_CPU
         void     CpuTest(void);
+#endif
 
     public:
 
@@ -70,6 +72,7 @@ class System
         Cartridge *   mCartridge;
 };
 
+#ifdef TEST_CPU
 //========//
 // TestNesFunctor
 //
@@ -106,5 +109,6 @@ class TestNesFunctor : public Functor
 
         inline static constexpr int cLastLine = 8991;   // Last line in the log file.
 };
+#endif
 
 #endif

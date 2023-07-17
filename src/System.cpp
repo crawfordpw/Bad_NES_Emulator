@@ -319,6 +319,7 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     ApiFileSystem::Write(lBuffer, lSize, lFile);
 }
 
+#ifdef TEST_CPU
 //--------//
 // CpuTest
 //
@@ -506,3 +507,4 @@ void TestNesFunctor::Execute(void)
 
     ++mLineNum;
 }
+#endif
