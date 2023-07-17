@@ -101,12 +101,14 @@ class Cpu6502 : public Device
         uint8_t SEC();    uint8_t SED();    uint8_t SEI();    uint8_t STA();
         uint8_t STX();    uint8_t STY();    uint8_t TAX();    uint8_t TAY();
         uint8_t TSX();    uint8_t TXA();    uint8_t TXS();    uint8_t TYA();
-        uint8_t KIL();
 
-        // Illegal opcodes. (Not all supported at this time)
-        // https://www.masswerk.at/6502/6502_instruction_set.html
-        uint8_t DCP();    uint8_t ISB();    uint8_t LAX();    uint8_t RLA();
-        uint8_t RRA();    uint8_t SAX();    uint8_t SLO();    uint8_t SRE();
+        // Illegal opcodes.
+        // https://www.pagetable.com/c64ref/6502/?tab=2
+        uint8_t ANC();    uint8_t ARR();    uint8_t ASR();    uint8_t DCP();
+        uint8_t ISB();    uint8_t JAM();    uint8_t KIL();    uint8_t LAS();
+        uint8_t LAX();    uint8_t RLA();    uint8_t RRA();    uint8_t SAX();
+        uint8_t SBX();    uint8_t SHA();    uint8_t SHX();    uint8_t SHY();
+        uint8_t SHS();    uint8_t SLO();    uint8_t SRE();    uint8_t XAA();
 
         // Branch instruction helper function.
         uint8_t BranchHelper(bool lBranch);
@@ -155,11 +157,12 @@ class Cpu6502 : public Device
 
         const std::vector<Instruction> mOpcodeMatrix;
         DataType                 mOpcode;               // Opcode of current instruction being executed.
-        DataType                 mFetchedData;         // Last data fetched by an instruction.
+        DataType                 mFetchedData;          // Last data fetched by an instruction.
         AddressType              mAddress;              // Address used for the current instruction.
         AddressType              mRelativeAddress;      // Address offset used for branch instructions.
         uint8_t                  mCyclesLeft;           // Remaining clock cycles current instruction has.
         Registers                mRegisters;            // All registers the cpu has.
+        bool                     mHalted;               // Is the cpu halted.
         const InterruptVector    mInterruptVectors[NUM_VECTORS];
         inline static constexpr AddressType    cStartOfStack = 0x0100;
         inline static constexpr uint16_t       cStackSize    = 0xFF + 1;
