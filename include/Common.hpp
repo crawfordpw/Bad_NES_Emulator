@@ -68,4 +68,12 @@ inline constexpr uint16_t Bit(uint16_t lPosition)
     return (1 << lPosition);
 }
 
+#ifdef USE_LOGGER
+    #define CAPTURE_LOG(lMessage) ::ApiLogger::Log(lMessage)
+    #define CAPTURE_LOG_SIZE(lMessage, lSize) ::ApiLogger::Log(lMessage, lSize)
+#else
+    #define CAPTURE_LOG(lMessage)
+    #define CAPTURE_LOG_SIZE(lMessage, lSize)
+#endif
+
 #endif

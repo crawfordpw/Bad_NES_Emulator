@@ -160,7 +160,7 @@ Cartridge::Cartridge(const char * lFilename)
     mValidImage = true;
 
 #ifdef USE_LOGGER
-    ApiLogger::Log("[i] Valid ROM file format\n");
+    CAPTURE_LOG("[i] Valid ROM file format\n");
 #endif
 }
 

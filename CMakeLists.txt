@@ -18,6 +18,36 @@ project(
 )
 set(CMAKE_CXX_FLAGS "-std=gnu++11")
 
+# Set variable for downloading external dependencies.
+set(EXTERNAL_DEPENDENCIES ${PROJECT_SOURCE_DIR}/external)
+
+# GLFW build options.
+set(GLFW_BUILD_DOCS "OFF")
+
+# Downloads all git submodules
+find_package(Git QUIET)
+if(GIT_FOUND AND EXISTS "$PROJECT_SOURCE_DIR}/.git")
+    option(GIT_SUBMODULE "Check submodules during build" ON)
+    if(GIT_SUBMODULE)
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule --init failed with ${GIT_SUBMOD_RESULT}, checkout submodules")
+        endif()
+    endif()
+endif()
+
+# Check all git submodules
+if(NOT EXISTS "${EXTERNAL_DEPENDENCIES}/GLFW/CMakeLists.txt")
+    message(FATAL_ERROR "GLFW submodule not downloaded! Please update submodule")
+endif()
+
+# GLFW options
+add_subdirectory(${EXTERNAL_DEPENDENCIES}/GLFW)
+set(GLFW_BUILD_DOCS "OFF")
+
 # Sources
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/ MAIN_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ FILE_SOURCES)
@@ -39,17 +69,17 @@ if (LOG_TO_CONSOLE OR LOG_TO_FILE OR TEST_CPU)
 endif()
 
 if (LOG_TO_CONSOLE)
-    message("Console Logging Enabled.")
+    message("-- Console Logging Enabled.")
     add_definitions(-DSTDOUT_LOGGER)
 endif()
 
 if (LOG_TO_FILE)
-    message("File Logging Enabled.")
+    message("-- File Logging Enabled.")
     add_definitions(-DFILE_LOGGER)
 endif()
 
 if (TEST_CPU)
-    message("CPU tests enabled.")
+    message("-- CPU tests enabled.")
     add_definitions(-DTEST_CPU)
 endif()
 
