@@ -50,9 +50,9 @@ class ErrorManager : public StdLogger
         ErrorManager(void);
         virtual ~ErrorManager(void) = default;
 
-        void Post(uint8_t lError);
-        void Post(uint8_t lError, const char * lExtra);
-        void Post(uint8_t lError, const char * lExtra, size_t lSizeExtra);
+        void Post(int lError);
+        void Post(int lError, const char * lExtra);
+        void Post(int lError, const char * lExtra, size_t lSizeExtra);
 
     protected:
 

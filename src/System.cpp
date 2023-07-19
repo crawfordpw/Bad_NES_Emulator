@@ -398,7 +398,7 @@ char TestNesFunctor::cErrorBuffer[TestNesFunctor::ERROR_BUFFER_SIZE];
 //--------//
 //
 TestNesFunctor::TestNesFunctor(Cpu6502 * lCpu, bool lStopAtFirstFail)
-  : mStopExecution(true), mCpu(lCpu), mStopAtFirstFail(lStopAtFirstFail), mCurrentPosition(0), mLineNum(1)
+  :  mStopExecution(true), mCpu(lCpu), mTrace(NULL), mStopAtFirstFail(lStopAtFirstFail), mCurrentPosition(0), mLineNum(1)
 {
     int    lStatus;
     File * lLog;
