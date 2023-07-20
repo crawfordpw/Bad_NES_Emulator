@@ -437,7 +437,9 @@ TestNesFunctor::TestNesFunctor(Cpu6502 * lCpu, bool lStopAtFirstFail)
     // Store log in memory.
     ApiFileSystem::Read(mLogFile, mFileSize, lLog);
     lStatus = ApiFileSystem::GetStatus(lLog);
-    if (lStatus != ErrorCodes::SUCCESS)
+
+    // Yay for linux and windows handling line endings differently. Size of file will be different.
+    if (lStatus != ErrorCodes::SUCCESS && lStatus != ErrorCodes::FILE_READ_ERROR)
     {
         gErrorManager.Post(lStatus);
         return;

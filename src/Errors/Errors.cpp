@@ -31,7 +31,7 @@ ErrorManager::ErrorManager()
     mErrorDefs[FILE_COULD_NOT_CLOSE] = {"[!] %d, Could not close file\n", sizeof("[!] %d, Could not close file\n"), ErrorDefinition::NORMAL};
     mErrorDefs[FILE_ALREADY_OPENED]  = {"[!] %d, Tried to open file that is already opened\n", sizeof("[!] %d, Tried to open file that is already opened\n"), ErrorDefinition::NORMAL};
     mErrorDefs[FILE_ALREADY_CLOSED]  = {"[!] %d, Tried to open file that is already closed\n", sizeof("[!] %d, Tried to open file that is already closed\n"), ErrorDefinition::NORMAL};
-    mErrorDefs[FILE_READ_ERROR]      = {"[!] %d, Could not read from file\n", sizeof("[!] %d, Could not read from file\n"), ErrorDefinition::NORMAL};
+    mErrorDefs[FILE_READ_ERROR]      = {"[!] %d, Could not read all requested data from file\n", sizeof("[!] %d, Could not read from file\n"), ErrorDefinition::NORMAL};
     mErrorDefs[FILE_WRITE_ERROR]     = {"[!] %d, Could not write to file\n", sizeof("[!] %d, Could not write to file\n"), ErrorDefinition::NORMAL};
     mErrorDefs[FILE_SEEK_ERROR]      = {"[!] %d, Seek operation failed\n", sizeof("[!] %d, Seek operation failed\n"), ErrorDefinition::NORMAL};
     mErrorDefs[FILE_TELL_ERROR]      = {"[!] %d, Tell operation failed\n", sizeof("[!] %d, Tell operation failed\n"), ErrorDefinition::NORMAL};
