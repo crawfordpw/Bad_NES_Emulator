@@ -106,7 +106,7 @@ void System::RemoveCartridge(void)
 }
 
 //--------//
-// Start
+// Clock
 //
 // Starts running a program already loaded into memory.
 //
@@ -114,7 +114,7 @@ void System::RemoveCartridge(void)
 //
 //--------//
 //
-void System::Start(void)
+bool System::Clock(void)
 {
     uint8_t lCycles;
     uint8_t lInstructions = 0;
@@ -135,6 +135,7 @@ void System::Start(void)
             break;
         }
     }
+    return true;
 }
 
 //--------//
@@ -319,7 +320,6 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     ApiFileSystem::Write(lBuffer, lSize, lFile);
 }
 
-#ifdef TEST_CPU
 //--------//
 // CpuTest
 //
@@ -327,8 +327,11 @@ void System::DumpMemoryAsRaw(const char * lFilename)
 // project source directoy.
 //--------//
 //
-void System::CpuTest(void)
+bool System::CpuTest(void)
 {
+#ifdef TEST_CPU
+    CAPTURE_LOG("[i] Starting cpu tests...\n");
+
     // Grab the test file.
     char lFilename[ApiFileSystem::MAX_FILENAME * 2];
 
@@ -380,6 +383,11 @@ void System::CpuTest(void)
 
     // Final cleanup.
     RemoveCartridge();
+
+    return false;
+#else
+    return true;
+#endif
 }
 
 //--------//
@@ -387,7 +395,7 @@ void System::CpuTest(void)
 // TestNesFunctor
 //
 //--------//
-
+#ifdef TEST_CPU
 char TestNesFunctor::cLineBuffer[Cpu6502::BUFFER_SIZE];
 char TestNesFunctor::cErrorBuffer[TestNesFunctor::ERROR_BUFFER_SIZE];
 

@@ -45,7 +45,7 @@ if(NOT EXISTS "${EXTERNAL_DEPENDENCIES}/GLFW/CMakeLists.txt")
 endif()
 
 # GLFW options
-add_subdirectory(${EXTERNAL_DEPENDENCIES}/GLFW)
+add_subdirectory(${EXTERNAL_DEPENDENCIES}/glfw)
 set(GLFW_BUILD_DOCS "OFF")
 
 # Sources
@@ -54,6 +54,7 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src/File/ FILE_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/Errors/ ERROR_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/Logger/ LOGGER_SOURCES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/Mappers/ MAPPERS_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Platform/Glfw/ GLFW_SOURCES)
 set(SOURCES
     ${SOURCES} 
     ${MAIN_SOURCES}
@@ -61,6 +62,7 @@ set(SOURCES
     ${ERROR_SOURCES}
     ${LOGGER_SOURCES}
     ${MAPPERS_SOURCES}
+    ${GLFW_SOURCES}
 )
 
 # Set up logging defines.
@@ -88,11 +90,14 @@ set(INCLUDES
     ${INCLUDES} 
     ${PROJECT_BINARY_DIR}
     ${PROJECT_SOURCE_DIR}/include/
+    ${PROJECT_SOURCE_DIR}/src/
+    ${EXTERNAL_DEPENDENCIES}/glfw/include/
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_compile_options(${PROJECT_NAME} PUBLIC -g -Wall -MMD -MP -Wno-multichar)
 target_include_directories(NES PUBLIC ${INCLUDES})
+target_link_libraries(${PROJECT_NAME} glfw)
 
 set_target_properties(NES PROPERTIES
     CXX_STANDARD 17

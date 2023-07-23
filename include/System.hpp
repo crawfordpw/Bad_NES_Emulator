@@ -2,7 +2,7 @@
 //
 // System.hpp
 //
-// File for the entire system.
+// File for the entire NES system.
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +46,7 @@ class System
         System(void);
         ~System(void);
 
-        void     Start(void);
+        bool     Clock(void);
         DataType Read(AddressType lAddress, DataType lLastRead);
         void     Write(AddressType lAddress, DataType lData);
 
@@ -55,9 +55,9 @@ class System
 
         void     LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset);
 
-#ifdef TEST_CPU
-        void     CpuTest(void);
-#endif
+
+        bool     CpuTest(void);
+
 
     public:
 

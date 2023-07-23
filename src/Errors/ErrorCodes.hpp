@@ -35,6 +35,9 @@ enum ErrorCodes
     FAIL_TO_LOAD_MEMORY,
     OUT_OF_MEMORY,
 
+    // Window errors
+    WINDOW_FAIL_INIT,
+
     NUM_ERRORS
 };
 

@@ -43,6 +43,9 @@ ErrorManager::ErrorManager()
     // Memory errors.
     mErrorDefs[FAIL_TO_LOAD_MEMORY]  = {"[!] %d, Could not load program memory\n", sizeof("[!] %d, Could not load program memory\n"), ErrorDefinition::NORMAL};
     mErrorDefs[OUT_OF_MEMORY]        = {"[!] %d, Ran out of memory\n", sizeof("[!] %d, Ran out of memory\n"), ErrorDefinition::NORMAL};
+
+    // Window errors.
+    mErrorDefs[WINDOW_FAIL_INIT]  = {"[!] %d, Failed to initialize window\n", sizeof("[!] %d, Failed to initialize window\n"), ErrorDefinition::NORMAL};
 }
 
 //--------//

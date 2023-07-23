@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include <System.hpp>
+#include <Application.hpp>
 #include <File/StdFile.hpp>
 #include <Errors/ApiErrors.hpp>
 #include <unistd.h>
@@ -18,10 +18,8 @@
     LinuxFileSystem * gFileSystem = new LinuxFileSystem();
 #endif
 
-#ifdef USE_LOGGER
 #ifdef STDOUT_LOGGER
     StdLogger * gStdLogger = new StdLogger();
-#endif
 #endif
 
 //--------//
@@ -40,23 +38,20 @@ int main(void)
     ApiLogger::Log("[i] Program Started\n");
 #endif
 
-    // Create the NES.
-    System lNes;
-
-#ifdef TEST_CPU
-    ApiLogger::Log("[i] Starting cpu tests...\n");
-    lNes.CpuTest();
-#else
-    // Start the system.
-    lNes.Start();
-#endif
+    // Start the application.
+    Application lApp;
+    lApp.Start("../tests/nestest.nes");
 
     // Clean up any left over memory.
+    ApiFileSystem::CleanupMemory();
+    Window::ShutDown();
+
 #ifdef USE_LOGGER
     ApiLogger::Log("[i] Program End\n");
     ApiLogger::CleanupMemory();
 #endif
-    ApiFileSystem::CleanupMemory();
+
+    delete gFileSystem;
 
     return 0;
 }
