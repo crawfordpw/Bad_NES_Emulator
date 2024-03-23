@@ -125,8 +125,13 @@ inline void MemoryRom::Resize(AddressType lSize)
 //--------//
 //
 inline DataType MemoryRom::Read(AddressType lAddress)
-{
-    if (lAddress >= mSize && nullptr == mMemory)
+{   
+    // Don't post error as that should've happened already during construction.
+    if (nullptr == mMemory)
+    {
+        return 0;
+    }
+    if (lAddress >= mSize)
     {
         gErrorManager.Post(ErrorCodes::INTERNAL_ERROR, "memory index out of range");
         return 0;
@@ -178,7 +183,12 @@ class MemoryRam : public MemoryRom
 //
 inline void MemoryRam::Write(AddressType lAddress, DataType lData)
 {
-    if (lAddress >= mSize && nullptr == mMemory)
+    // Don't post error as that should've happened already during construction.
+    if (nullptr == mMemory)
+    {
+        return;
+    }
+    if (lAddress >= mSize)
     {
         gErrorManager.Post(ErrorCodes::INTERNAL_ERROR, "memory index out of range");
         return;
