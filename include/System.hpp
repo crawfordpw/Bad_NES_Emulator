@@ -12,6 +12,7 @@
 #include "Memory.hpp"
 #include "Cpu6502.hpp"
 #include "Cartridge.hpp"
+#include "Ppu2C02.hpp"
 
 //========//
 // System
@@ -47,29 +48,32 @@ class System
         ~System(void);
 
         bool     Clock(void);
-        DataType Read(AddressType lAddress, DataType lLastRead);
+        DataType Read(AddressType lAddress);
         void     Write(AddressType lAddress, DataType lData);
 
         void     InsertCartridge(Cartridge * lCartridge);
         void     RemoveCartridge(void);
-
         void     LoadMemory(char * lProgram, AddressType lSize, AddressType lOffset);
-
 
         bool     CpuTest(void);
 
+        // If some devices are not connected, this variable
+        // simulates "open bus behavior". Where a read of
+        // a disconnected device results in the last value read.
+        DataType    mLastRead;
 
     public:
 
-        Cpu6502      mCpu;
-        MemoryMapped mRam;
+        Cpu6502   mCpu;
+        Ppu2C02   mPpu;
+        MemoryRam mRam;
 
     private:
 
         void     DumpMemoryAsHex(const char * lFilename);
         void     DumpMemoryAsRaw(const char * lFilename);
 
-        Cartridge *   mCartridge;
+        Cartridge * mCartridge;
 };
 
 #ifdef TEST_CPU

@@ -25,6 +25,9 @@ ErrorManager gErrorManager;
 ErrorManager::ErrorManager()
   : StdLogger(false)
 {
+    // General errors.
+    mErrorDefs[INTERNAL_ERROR]      = {"[!] %d, Internal error, %s\n", sizeof("[!] %d, Internal error, %s\n"), ErrorDefinition::DYNAMIC};
+
     // File errors.
     mErrorDefs[FILE_GENERAL_ERROR]   = {"[!] %d, File operation could not be performed\n", sizeof("[!] %d, File operation could not be performed\n"), ErrorDefinition::NORMAL};
     mErrorDefs[FILE_COULD_NOT_OPEN]  = {"[!] %d, Could not open file, %s\n", sizeof("[!] %d, Could not open file, %s\n"), ErrorDefinition::DYNAMIC};
@@ -135,12 +138,18 @@ void ErrorManager::Post(int lError, const char * lExtra, size_t lSizeExtra)
 //
 void ErrorManager::Post(const char * lError, size_t lSize)
 {
+    std::string lErrorLocation = __FILE__ + __LINE__;
+
 #if defined(USE_LOGGER) && !defined(STDOUT_LOGGER)
     CaptureLog(lError, lSize);
+    CaptureLog(&lErrorLocation);
     ApiLogger::Log(lError, lSize);
+    ApiLogger::Log(&lErrorLocation);
 #elif defined(USE_LOGGER) && defined(STDOUT_LOGGER)
     ApiLogger::Log(lError, lSize);
+    ApiLogger::Log(&lErrorLocation);
 #else
     CaptureLog(lError, lSize);
+    CaptureLog(&lErrorLocation);
 #endif
 }

@@ -27,7 +27,7 @@ class Cartridge : public Device
         virtual ~Cartridge(void);
 
         bool             IsValidImage(void) {return mValidImage;}
-        virtual DataType Read(AddressType lAddress, DataType lLastRead) override;
+        virtual DataType Read(AddressType lAddress) override;
         virtual void     Write(AddressType lAddress, DataType lData)    override;
 
         bool             IsPrgMirror(void) {return mPrgMirror;}
@@ -59,8 +59,8 @@ class Cartridge : public Device
         Header       mHeader;               // Contains header informations provided by file.
         uint8_t      mMapperId;             // Which mapper does the cartridge use.
         Mapper *     mMapper;               // The mapper.
-        MemoryMapped mPrgRom;               // Program ROM memory space.
-        MemoryMapped mChrRom;               // Charcter ROM memory space.
+        MemoryRam    mPrgMemory;            // Program ROM memory space or mapper registers.
+        MemoryRam    mChrMemory;            // Character ROM memory space or mapper registers.
         uint8_t      mMirrorType;           // Mirroring mode, horizontal or vertical.
         bool         mNes20Format;          // Is the provided file in NES 2.0 format.
         bool         mPrgMirror;            // If the number of program banks is 1, the address space is 32k with the second half mirrored.

@@ -33,7 +33,7 @@ Cartridge::Cartridge(const char * lFilename)
   : mAddressStart(System::CARTRIDGE_START),
     mAddressEnd(mAddressStart + System::CARTRIDGE_SIZE),
     mMapperId(0),
-    mMapper(NULL),
+    mMapper(nullptr),
     mMirrorType(HORIZONTAL),
     mNes20Format(false),
     mPrgMirror(false),
@@ -108,13 +108,13 @@ Cartridge::Cartridge(const char * lFilename)
     {
         mPrgMirror = true;
     }
-    mPrgRom.Resize(mHeader.mPrgBanks * DEFAULT_PRG_SIZE);
+    mPrgMemory.Resize(mHeader.mPrgBanks * DEFAULT_PRG_SIZE);
 
     // Load Program ROM.
-    lStatus = mPrgRom.LoadMemoryFromFile(lFile, mPrgRom.GetSize());
+    lStatus = mPrgMemory.LoadMemoryFromFile(lFile, mPrgMemory.GetSize());
     if (lStatus != ErrorCodes::SUCCESS)
     {
-        mPrgRom.Resize(0);
+        mPrgMemory.Resize(0);
         gErrorManager.Post(lStatus);
         return;
     }
@@ -123,20 +123,20 @@ Cartridge::Cartridge(const char * lFilename)
     // CHR cannot have a size 0, if the head indicates 0 then it's used as a RAM instead.
     if (mHeader.mChrBanks == 0)
     {
-        mChrRom.Resize(DEFAULT_CHR_SIZE);
+        mChrMemory.Resize(DEFAULT_CHR_SIZE);
         mChrRam = true;
     }
     else
     {
-        mChrRom.Resize(mHeader.mChrBanks * DEFAULT_CHR_SIZE);
+        mChrMemory.Resize(mHeader.mChrBanks * DEFAULT_CHR_SIZE);
     }
 
     // Load Character ROM.
-    lStatus = mChrRom.LoadMemoryFromFile(lFile, mChrRom.GetSize());
+    lStatus = mChrMemory.LoadMemoryFromFile(lFile, mChrMemory.GetSize());
     if (lStatus != ErrorCodes::SUCCESS)
     {
-        mPrgRom.Resize(0);
-        mChrRom.Resize(0);
+        mPrgMemory.Resize(0);
+        mChrMemory.Resize(0);
         gErrorManager.Post(lStatus);
         return;
     }
@@ -148,10 +148,10 @@ Cartridge::Cartridge(const char * lFilename)
     mMapper = MapperFactory(mMapperId, this);
 
     // Could not create a valid mapper.
-    if (mMapper == NULL)
+    if (nullptr == mMapper)
     {
-        mPrgRom.Resize(0);
-        mChrRom.Resize(0);
+        mPrgMemory.Resize(0);
+        mChrMemory.Resize(0);
         gErrorManager.Post(ErrorCodes::MAPPER_NOT_SUPPORTED);
         return;
     }
@@ -159,9 +159,7 @@ Cartridge::Cartridge(const char * lFilename)
     // If we made it this far, then it was a valid file.
     mValidImage = true;
 
-#ifdef USE_LOGGER
     CAPTURE_LOG("[i] Valid ROM file format\n");
-#endif
 }
 
 //--------//
@@ -184,33 +182,34 @@ Cartridge::~Cartridge()
 // Reads data from the system.
 //
 // param[in] lAddress   Address to read from.
-// param[in] lLastRead  If some devices are not connected, this variable
-//                      simulates "open bus behavior". Where a read of
-//                      a disconnected device results in the last value read.
 // returns  Data at the given address. 
 //--------//
 //
-DataType Cartridge::Read(AddressType lAddress, DataType lLastRead)
+DataType Cartridge::Read(AddressType lAddress)
 {
     AddressType lMappedAddress;
 
-    // If mapper doesn't exit, cartridge file is likely invalid and thus
-    // this is a disconnected device. Open bus behavior is to return
-    // data last read.
-    if (mMapper == NULL)
+    if (IsDisconnected())
     {
-        return lLastRead;
+        return 0;
     }
 
-    // If MapRead returns true, then read from program rom.
-    if (mMapper->MapRead(lAddress, &lMappedAddress, &lLastRead))
+    // If mapper doesn't exit, cartridge file is likely invalid. Open bus behavior is to
+    //  return data last read.
+    if (nullptr == mMapper)
     {
-        return mPrgRom.Read(lMappedAddress, lLastRead);
+        return mSystem->mLastRead;
+    }
+
+    // If MapRead returns true, then read from program memory.
+    if (mMapper->MapRead(lAddress, &lMappedAddress, &mSystem->mLastRead))
+    {
+        return mPrgMemory.Read(lMappedAddress);
     }
 
     // If made it this far, we are either reading from ram, which is the out parameter
-    // of MapRead, or the mapper doesn't care about the address being read.
-    return lLastRead;
+    // of MapRead, or the cartridge doesn't care about the address being read.
+    return mSystem->mLastRead;
 }
 
 //--------//
@@ -228,14 +227,14 @@ void Cartridge::Write(AddressType lAddress, DataType lData)
 
     // If mapper doesn't exit, cartridge file is likely invalid and thus
     // this is a disconnected device.
-    if (mMapper == NULL)
+    if (nullptr == mMapper)
     {
         return;
     }
 
-    // If MapRead returns true, then write to program rom.
+    // If MapRead returns true, then write to program memory.
     if (mMapper->MapWrite(lAddress, &lMappedAddress, lData))
     {
-        mPrgRom.Write(lMappedAddress, lData);
+        mPrgMemory.Write(lMappedAddress, lData);
     }
 }

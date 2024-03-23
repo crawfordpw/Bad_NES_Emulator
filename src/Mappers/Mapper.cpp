@@ -30,7 +30,7 @@ Mapper * MapperFactory(uint8_t lMapperId, Cartridge * lCartridge)
             break;
         
         default:
-            lMapper = NULL;
+            lMapper = nullptr;
     }
 
     return lMapper;

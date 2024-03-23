@@ -24,12 +24,14 @@
 //
 bool Mapper000::MapRead(AddressType lAddress, AddressType * lMappedAddress, DataType * lData)
 {
+#ifdef FAMILY_BASIC
     // Reading from RAM.
     if (lAddress >= Mapper000::PRG_RAM_START && lAddress <= Mapper000::PRG_RAM_END)
     {
         *lData = mRam.Read(lAddress & (PRG_RAM_SIZE - 1), *lData);
         return false;
     }
+#endif
 
     // Map given address to ROM.
     if (lAddress >= PRG_ROM_START && lAddress <= PRG_ROM_END)
@@ -54,12 +56,14 @@ bool Mapper000::MapRead(AddressType lAddress, AddressType * lMappedAddress, Data
 //
 bool Mapper000::MapWrite(AddressType lAddress, AddressType * lMappedAddress, DataType lData)
 {
+#ifdef FAMILY_BASIC
     // Writing to RAM.
     if (lAddress >= Mapper000::PRG_RAM_START && lAddress <= Mapper000::PRG_RAM_END)
     {
         mRam.Write(lAddress & (PRG_RAM_SIZE - 1), lData);
         return false;
     }
+#endif
 
     // Map given address to ROM.
     if (lAddress >= PRG_ROM_START && lAddress <= PRG_ROM_END)

@@ -47,7 +47,7 @@ void Application::Start(const char * lFilename)
 
     // Open the emulator window.
     mMainWindow = Window::Open();
-    if (mMainWindow == NULL)
+    if (nullptr == mMainWindow)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
         return;

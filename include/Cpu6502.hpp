@@ -29,17 +29,17 @@ class Cpu6502 : public Device
 
     public:
 
-        Cpu6502();
-        ~Cpu6502();
+        Cpu6502(void);
+        virtual ~Cpu6502(void);
 
-        virtual DataType Read(AddressType lAddress, DataType lLastRead = 0) override;
+        virtual DataType Read(AddressType lAddress) override;
         virtual void     Write(AddressType lAddress, DataType lData)        override;
 
         void             Reset();
         void             StepClock();
         uint8_t          GetCyclesLeft() {return mCyclesLeft;}
 
-    private:
+    protected:
 
         enum ExtraCycleFlags
         {

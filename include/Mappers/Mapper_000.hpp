@@ -22,9 +22,13 @@ class Mapper000 : public Mapper
     public:
         enum
         {
+#ifdef FAMILY_BASIC
             PRG_RAM_START           = 0x6000,
             PRG_RAM_END             = 0x7FFF,
             PRG_RAM_SIZE            = PRG_RAM_END - PRG_RAM_START + 1,
+#else
+            PRG_RAM_SIZE            = 0,
+#endif
 
             PRG_ROM_START           = 0x8000,
             PRG_ROM_END             = 0xFFFF,
@@ -41,7 +45,7 @@ class Mapper000 : public Mapper
 
     protected:
 
-        MemoryMapped mRam;
+        MemoryRam mRam;
 };
 
 #endif

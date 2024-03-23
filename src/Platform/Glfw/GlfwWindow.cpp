@@ -84,8 +84,8 @@ void GlfwWindow::Init(const WindowProperties * lProperties)
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // Create the window.
-    mWindow = glfwCreateWindow(lWindowWidth, lWindowHeight, lProperties->mTitle, NULL, NULL);
-    if (mWindow == NULL)
+    mWindow = glfwCreateWindow(lWindowWidth, lWindowHeight, lProperties->mTitle, nullptr, nullptr);
+    if (nullptr == mWindow)
     {
         return;
     }
@@ -104,7 +104,7 @@ void GlfwWindow::Init(const WindowProperties * lProperties)
     glfwMakeContextCurrent(mWindow);
     glfwSwapInterval(1);
     glfwSetWindowShouldClose(mWindow, 0);
-    glfwSetWindowUserPointer(mWindow, NULL);
+    glfwSetWindowUserPointer(mWindow, nullptr);
     glfwDefaultWindowHints();
     glfwShowWindow(mWindow);
 

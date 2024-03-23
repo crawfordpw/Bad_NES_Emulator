@@ -56,10 +56,10 @@ bool ValidHexCharacter(char lChar, uint8_t * lByte)
 //--------//
 //
 System::System(void)
-  : mRam(RAM_SIZE), mCartridge(NULL)
+  : mRam(RAM_SIZE), mCartridge(nullptr)
 {
     mCpu.Connect(this);
-    mRam.Connect(this);
+    mPpu.Connect(this);
 }
 
 //--------//
@@ -101,7 +101,7 @@ void System::RemoveCartridge(void)
     if (mCartridge)
     {
         mCartridge->Disconnect();
-        mCartridge = NULL;
+        mCartridge = nullptr;
     }
 }
 
@@ -144,32 +144,29 @@ bool System::Clock(void)
 // Reads some data out of memory.
 //
 // param[in] lAddress   Address to read from.
-// param[in] lLastRead  Attempts to replicate open bus behavior.
 // returns  Data at the given address. 
 //--------//
 //
-DataType System::Read(AddressType lAddress, DataType lLastRead)
+DataType System::Read(AddressType lAddress)
 {
-    DataType lData = lLastRead;
-
     // The cartridge has passive access to all reads within the system.
     // even if it's not within its address range.
     if (mCartridge)
     {
-        lData = mCartridge->Read(lAddress, lLastRead);
+        mLastRead = mCartridge->Read(lAddress);
     }
 
     // 2KB is mirrrored across 8KB.
     if (lAddress >= System::RAM_START && lAddress <= System::RAM_RANGE)
     {
-        lData = mRam.Read(lAddress & (RAM_SIZE - 1), lLastRead);
+        mLastRead = mRam.Read(lAddress & (RAM_SIZE - 1));
     }
     else if (lAddress >= System::PPU_REGISTER_START && lAddress <= PPU_REGISTER_RANGE)
     {
         // Add when ppu is added.
     }
 
-    return lData;
+    return mLastRead;
 }
 
 //--------//
@@ -276,7 +273,7 @@ void System::DumpMemoryAsHex(const char * lFilename)
     // Loop through all of memory and convert to hex.
     for (AddressType lIndex = 0; lIndex < mRam.GetSize(); ++lIndex)
     {
-        lValue = Read(lIndex, 0x00) & 0xFF;
+        lValue = Read(lIndex) & 0xFF;
         lBuffer[lIndex * 2] = vHexArray[lValue >> 4];
         lBuffer[lIndex * 2 + 1] = vHexArray[lValue & 0x0F];
     }
@@ -313,7 +310,7 @@ void System::DumpMemoryAsRaw(const char * lFilename)
     // Loop through all of memory and convert to hex.
     for (AddressType lIndex = 0; lIndex < lSize; ++lIndex)
     {
-        lBuffer[lIndex] = static_cast<char>(Read(lIndex, 0x00));
+        lBuffer[lIndex] = static_cast<char>(Read(lIndex));
     }
 
     // Write out to file.
@@ -336,7 +333,7 @@ bool System::CpuTest(void)
     char lFilename[ApiFileSystem::MAX_FILENAME * 2];
 
     const char * lExecDirectory = ApiFileSystem::GetExecDirectory();
-    if (lExecDirectory == NULL)
+    if (nullptr == lExecDirectory)
     {
         gErrorManager.Post(ErrorCodes::FILE_GENERAL_ERROR);
     }
@@ -406,7 +403,7 @@ char TestNesFunctor::cErrorBuffer[TestNesFunctor::ERROR_BUFFER_SIZE];
 //--------//
 //
 TestNesFunctor::TestNesFunctor(Cpu6502 * lCpu, bool lStopAtFirstFail)
-  :  mStopExecution(true), mCpu(lCpu), mTrace(NULL), mStopAtFirstFail(lStopAtFirstFail), mCurrentPosition(0), mLineNum(1)
+  :  mStopExecution(true), mCpu(lCpu), mTrace(nullptr), mStopAtFirstFail(lStopAtFirstFail), mCurrentPosition(0), mLineNum(1)
 {
     int    lStatus;
     File * lLog;
@@ -436,7 +433,7 @@ TestNesFunctor::TestNesFunctor(Cpu6502 * lCpu, bool lStopAtFirstFail)
 
     // Create memory to read log file into.
     mLogFile = new(std::nothrow) char[mFileSize];
-    if (mLogFile == NULL)
+    if (nullptr == mLogFile)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
         return;

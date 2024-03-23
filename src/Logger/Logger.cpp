@@ -33,7 +33,7 @@ ApiLogger::ApiLogger(void)
     {
         for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
         {
-            cLoggers[lIndex] = NULL;
+            cLoggers[lIndex] = nullptr;
         }
         ++vInitialized;
     }
@@ -55,7 +55,7 @@ int ApiLogger::RegisterLogger(Logger * lLogger)
 
     for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
     {
-        if (cLoggers[lIndex] == NULL)
+        if (nullptr == cLoggers[lIndex])
         {
             cLoggers[lIndex] = lLogger;
             return lIndex;
@@ -78,7 +78,7 @@ void ApiLogger::UnregisterLogger(int lId)
     {
         return;
     }
-    cLoggers[lId] = NULL;
+    cLoggers[lId] = nullptr;
 }
 
 //--------//
@@ -93,7 +93,7 @@ void ApiLogger::Log(std::string * lMessage)
 {
     for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
     {
-        if (cLoggers[lIndex] != NULL)
+        if (cLoggers[lIndex] != nullptr)
         {
             cLoggers[lIndex]->CaptureLog(lMessage);
         }
@@ -127,7 +127,7 @@ void ApiLogger::Log(const char * lMessage, size_t lLength)
 {
     for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
     {
-        if (cLoggers[lIndex] != NULL)
+        if (nullptr != cLoggers[lIndex])
         {
             cLoggers[lIndex]->CaptureLog(lMessage, lLength);
         }
@@ -144,10 +144,10 @@ void ApiLogger::CleanupMemory(void)
 {
     for (int lIndex = 0; lIndex < MAX_NUM_LOGGERS; ++lIndex)
     {
-        if (cLoggers[lIndex] != NULL)
+        if (nullptr != cLoggers[lIndex])
         {
             delete cLoggers[lIndex];
-            cLoggers[lIndex] = NULL;
+            cLoggers[lIndex] = nullptr;
         }
     }
 }
@@ -241,7 +241,7 @@ void StdLogger::CaptureLog(const char * lMessage, size_t lLength)
 //--------//
 //
 FileLogger::FileLogger(bool lRegister)
-    : Logger(lRegister), mFile(NULL)
+    : Logger(lRegister), mFile(nullptr)
 {
 }
 

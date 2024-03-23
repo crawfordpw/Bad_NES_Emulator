@@ -16,6 +16,9 @@ enum ErrorCodes
 {
     SUCCESS,    // NO ERROR
 
+    // GENERAL ERRORS
+    INTERNAL_ERROR,         // Reserved for errors cases that shouldn't happen.
+
     // File errors.
     FILE_GENERAL_ERROR,
     FILE_COULD_NOT_OPEN,

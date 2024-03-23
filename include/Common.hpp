@@ -29,14 +29,20 @@ class Device
 {
     public:
 
-        virtual DataType Read(AddressType lAddress, DataType lLastRead) = 0;
+        virtual DataType Read(AddressType lAddress)                     = 0;
         virtual void     Write(AddressType lAddress, DataType lData)    = 0;
-        void             Connect(System * lSystem) {mSystem = lSystem;}
-        void             Disconnect(void)          {mSystem = NULL;}
+        void             Connect(System * lSystem) {mSystem = lSystem; mDisconnectedError = false;}
+        void             Disconnect(void)          {mSystem = nullptr;}
+
+        Device(void) : mSystem(nullptr), mDisconnectedError(false) {};
+        virtual ~Device(void) = default;
 
     protected:
 
+        bool IsDisconnected(void);
+
         System * mSystem;
+        bool mDisconnectedError;    // Have we posted an error already due to being disconnected?
 };
 
 //========//

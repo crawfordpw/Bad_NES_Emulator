@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <Application.hpp>
 #include <File/StdFile.hpp>
-#include <Errors/ApiErrors.hpp>
 #include <unistd.h>
 
 #ifdef _WIN32

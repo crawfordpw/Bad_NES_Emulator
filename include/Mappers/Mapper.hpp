@@ -27,8 +27,8 @@ class Mapper
         Mapper(Cartridge * lCartridge) : mCartridge(lCartridge) {}
         virtual ~Mapper(void) = default;
 
-        virtual bool MapRead(AddressType lAddress, AddressType * lMappedAddress, DataType * lData)  = 0;
-        virtual bool MapWrite(AddressType lAddress, AddressType * lMappedAddress, DataType lData) = 0;
+        virtual bool MapRead(AddressType lAddress, AddressType * lMappedAddress, DataType * lData) = 0;
+        virtual bool MapWrite(AddressType lAddress, AddressType * lMappedAddress, DataType lData)  = 0;
 
     protected:
 

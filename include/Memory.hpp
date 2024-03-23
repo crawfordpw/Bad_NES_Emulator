@@ -20,7 +20,7 @@
 // Base class that every type of memory should inherit from.
 //========//
 //
-class Memory : public Device
+class Memory
 {
     public:
 
@@ -28,7 +28,7 @@ class Memory : public Device
         Memory(AddressType lSize) : mSize(lSize) {}
         virtual ~Memory(void) {}
 
-        virtual DataType Read(AddressType lAddress, DataType lLastRead) = 0;
+        virtual DataType Read(AddressType lAddress)                     = 0;
         virtual void     Write(AddressType lAddress, DataType lData)    = 0;
         virtual void     Resize(AddressType lSize)                      = 0;
         virtual int      LoadMemoryFromFile(File * lFile, size_t lSize) = 0;
@@ -37,24 +37,26 @@ class Memory : public Device
         
     protected:
 
+        int              LoadMemoryFromFile(File * lFile, size_t lSize, uint8_t * mMemory);
+
         AddressType mSize;
 };
 
 //========//
-// MemoryMapped
+// MemoryRom
 //
 // Memory directly managed in RAM.
 //========//
 //
-class MemoryMapped : public Memory
+class MemoryRom : public Memory
 {
     public:
 
-        MemoryMapped(void) : Memory(), mMemory(NULL) {}
-        MemoryMapped(AddressType lSize) : Memory(lSize), mMemory(NULL) {Resize(lSize);}
-        virtual ~MemoryMapped(void);
+        MemoryRom(void) : Memory(), mMemory(nullptr) {}
+        MemoryRom(AddressType lSize) : Memory(lSize), mMemory(nullptr) {Resize(lSize);}
+        virtual ~MemoryRom(void);
 
-        virtual DataType Read(AddressType lAddress, DataType lLastRead) override;
+        virtual DataType Read(AddressType lAddress)                     override;
         virtual void     Write(AddressType lAddress, DataType lData)    override;
         virtual void     Resize(AddressType lSize)                      override;
         virtual int      LoadMemoryFromFile(File * lFile, size_t lSize) override;
@@ -65,12 +67,12 @@ class MemoryMapped : public Memory
 };
 
 //========//
-// ~MemoryMapped
+// ~MemoryRom
 //
 // Destructor.
 //========//
 //
-inline MemoryMapped::~MemoryMapped(void)
+inline MemoryRom::~MemoryRom(void)
 {
     if (mMemory)
     {
@@ -86,13 +88,13 @@ inline MemoryMapped::~MemoryMapped(void)
 // param[in]    lSize   Size of memory. 
 //--------//
 //
-inline void MemoryMapped::Resize(AddressType lSize)
+inline void MemoryRom::Resize(AddressType lSize)
 {
     // Clean up old memory
     if (mMemory)
     {
         delete [] mMemory;
-        mMemory = NULL;
+        mMemory = nullptr;
     }
 
     // Nothing else to do if size is 0.
@@ -103,7 +105,7 @@ inline void MemoryMapped::Resize(AddressType lSize)
 
     // Create memory at the new size and intialize to all 0's.
     mMemory = new(std::nothrow) uint8_t[lSize];
-    if (mMemory == NULL)
+    if (nullptr == mMemory)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
         return;
@@ -119,22 +121,51 @@ inline void MemoryMapped::Resize(AddressType lSize)
 // Reads some data out of memory.
 //
 // param[in] lAddress   Address to read from.
-// param[in] lLastRead  If some devices are not connected, this variable
-//                      simulates "open bus behavior". Where a read of
-//                      a disconnected device results in the last value read.
-//                      This shouldn't happen, but if we go outside the address
-//                      range, just return this value.
 // returns  Data at the given address. 
 //--------//
 //
-inline DataType MemoryMapped::Read(AddressType lAddress, DataType lLastRead)
+inline DataType MemoryRom::Read(AddressType lAddress)
 {
-    if (lAddress < mSize && mMemory != NULL)
+    if (lAddress >= mSize && nullptr == mMemory)
     {
-        return mMemory[lAddress];
+        gErrorManager.Post(ErrorCodes::INTERNAL_ERROR, "memory index out of range");
+        return 0;
     }
-    return lLastRead;
+    return mMemory[lAddress];
 }
+
+//--------//
+// Write
+//
+// Do nothing, this is ROM.
+//
+// param[in] lAddress   Address to write to. 
+// param[in] lData      Data to write. 
+//--------//
+//
+inline void MemoryRom::Write(AddressType lAddress, DataType lData)
+{
+    (void)lAddress;
+    (void)lData;
+    return;
+}
+
+//========//
+// MemoryRam
+//
+// Memory directly managed in RAM.
+//========//
+//
+class MemoryRam : public MemoryRom
+{
+    public:
+
+        MemoryRam(void) : MemoryRom() {}
+        MemoryRam(AddressType lSize) : MemoryRom(lSize) {}
+        virtual ~MemoryRam(void) = default;
+
+        virtual void Write(AddressType lAddress, DataType lData) override;
+};
 
 //--------//
 // Write
@@ -145,12 +176,14 @@ inline DataType MemoryMapped::Read(AddressType lAddress, DataType lLastRead)
 // param[in] lData      Data to write. 
 //--------//
 //
-inline void MemoryMapped::Write(AddressType lAddress, DataType lData)
+inline void MemoryRam::Write(AddressType lAddress, DataType lData)
 {
-    if (lAddress < mSize && mMemory != NULL)
+    if (lAddress >= mSize && nullptr == mMemory)
     {
-        mMemory[lAddress] = lData;
+        gErrorManager.Post(ErrorCodes::INTERNAL_ERROR, "memory index out of range");
+        return;
     }
+    mMemory[lAddress] = lData;
 }
 
 #endif

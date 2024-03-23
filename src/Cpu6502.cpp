@@ -91,7 +91,7 @@ Cpu6502::Cpu6502()
 {
 #if defined(TEST_CPU)
     mTotalCycles = 0;
-    mFunctor     = NULL;
+    mFunctor     = nullptr;
 #endif
 }
 
@@ -111,21 +111,16 @@ Cpu6502::~Cpu6502()
 // Reads data from the system.
 //
 // param[in] lAddress   Address to read from.
-// param[in] lLastRead  If some devices are not connected, this variable
-//                      simulates "open bus behavior". Where a read of
-//                      a disconnected device results in the last value read.
-//                      Ignore what's passed in since the cpu stores this value
-//                      already internally.
 // returns  Data at the given address. 
 //--------//
 //
-DataType Cpu6502::Read(AddressType lAddress, DataType lLastRead)
+DataType Cpu6502::Read(AddressType lAddress)
 {
-    if (mSystem == NULL)
+    if (IsDisconnected())
     {
         return mFetchedData;
     }
-    return mSystem->Read(lAddress, mFetchedData);
+    return mSystem->Read(lAddress);
 }
 
 //--------//
@@ -139,10 +134,11 @@ DataType Cpu6502::Read(AddressType lAddress, DataType lLastRead)
 //
 void Cpu6502::Write(AddressType lAddress, DataType lData)
 {
-    if (mSystem)
+    if (IsDisconnected())
     {
-        mSystem->Write(lAddress, lData);
+        return;
     }
+    mSystem->Write(lAddress, lData);
 }
 
 //--------//

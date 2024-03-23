@@ -21,7 +21,7 @@ class StdFile : public File
 {
     public:
 
-        StdFile() : mFileHandle(NULL) {}
+        StdFile() : mFileHandle(nullptr) {}
         StdFile(const char * lFilename, const char * lMode);
         virtual ~StdFile(void) = default;
 

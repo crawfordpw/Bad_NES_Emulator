@@ -34,7 +34,7 @@
 //--------//
 //
 StdFile::StdFile(const char * lFilename, const char * lMode)
-  : mFileHandle(NULL)
+  : mFileHandle(nullptr)
 {
     mStatus = Open(lFilename, lMode);
 }
@@ -52,7 +52,7 @@ StdFile::StdFile(const char * lFilename, const char * lMode)
 int StdFile::Open(const char * lFilename, const char * lMode)
 {
     // Don't try opening another file if one is already opened.
-    if (mFileHandle != NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_ALREADY_OPENED;
         return mStatus;
@@ -62,7 +62,7 @@ int StdFile::Open(const char * lFilename, const char * lMode)
     mFileHandle = fopen(lFilename, lMode);
 
     // Open failed for some reason.
-    if (mFileHandle == NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_COULD_NOT_OPEN;
         return mStatus;
@@ -84,7 +84,7 @@ int StdFile::Open(const char * lFilename, const char * lMode)
 int StdFile::Close()
 {
     // Don't try closing a file if the file handle doesn't exist.
-    if (mFileHandle == NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
@@ -92,7 +92,7 @@ int StdFile::Close()
 
     // Close the file.
     mStatus = fclose(mFileHandle);
-    mFileHandle = NULL;
+    mFileHandle = nullptr;
 
     // Failed to close the file for some reason.
     if (mStatus != 0)
@@ -125,7 +125,7 @@ size_t StdFile::Read(void * lBuffer, size_t lCount)
     size_t lNumRead;
 
     // Don't try reading from a file if the file handle doesn't exist.
-    if (mFileHandle == NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
@@ -138,8 +138,8 @@ size_t StdFile::Read(void * lBuffer, size_t lCount)
         return mStatus;
     }
 
-    // Don't want to read into a NULL buffer.
-    if (lBuffer == NULL)
+    // Don't want to read into a nullptr  buffer.
+    if (nullptr == lBuffer)
     {
         mStatus = ErrorCodes::FILE_GENERAL_ERROR;
         return mStatus;
@@ -180,7 +180,7 @@ size_t StdFile::Write(void * lBuffer, size_t lCount)
     size_t lNumWrote;
 
     // Don't try reading from a file if the file handle doesn't exist.
-    if (mFileHandle == NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
@@ -194,7 +194,7 @@ size_t StdFile::Write(void * lBuffer, size_t lCount)
     }
 
     // Don't want to write from a NULL buffer.
-    if (lBuffer == NULL)
+    if (nullptr == lBuffer)
     {
         mStatus = ErrorCodes::FILE_GENERAL_ERROR;
         return mStatus;
@@ -271,7 +271,7 @@ int StdFile::SeekFromEnd(long int lOffset)
 int StdFile::SeekHelper(long int lOffset, int lMode)
 {
     // Don't try seeking if the file handle doesn't exist.
-    if (mFileHandle == NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
@@ -304,7 +304,7 @@ int StdFile::SeekHelper(long int lOffset, int lMode)
 int StdFile::Tell(long int * lPosition)
 {
     // Don't try telling if the file handle doesn't exist.
-    if (mFileHandle == NULL)
+    if (nullptr != mFileHandle)
     {
         mStatus = ErrorCodes::FILE_ALREADY_CLOSED;
         return mStatus;
@@ -346,7 +346,7 @@ int StdFileSystem::OpenFile(const char * lFilename, const char * lMode, File ** 
 {
     StdFile * lStdFile = new(std::nothrow) StdFile(lFilename, lMode);
 
-    if (lStdFile == NULL)
+    if (nullptr == lStdFile)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
         return ErrorCodes::FILE_GENERAL_ERROR;
@@ -367,7 +367,7 @@ int StdFileSystem::OpenFile(const char * lFilename, const char * lMode, File ** 
 //
 int StdFileSystem::CloseFile(File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return ErrorCodes::FILE_GENERAL_ERROR;
     }
@@ -393,7 +393,7 @@ int StdFileSystem::CloseFile(File * lFile)
 //
 size_t StdFileSystem::ReadFile(void * lBuffer, size_t lCount, File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return 0;
     }
@@ -416,7 +416,7 @@ size_t StdFileSystem::ReadFile(void * lBuffer, size_t lCount, File * lFile)
 //
 size_t StdFileSystem::WriteFile(void * lBuffer, size_t lCount, File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return 0;
     }
@@ -435,7 +435,7 @@ size_t StdFileSystem::WriteFile(void * lBuffer, size_t lCount, File * lFile)
 //
 int StdFileSystem::SeekFile(long int lOffset, File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return ErrorCodes::FILE_GENERAL_ERROR;
     }
@@ -454,7 +454,7 @@ int StdFileSystem::SeekFile(long int lOffset, File * lFile)
 //
 int StdFileSystem::SeekFromStartFile(long int lOffset, File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return ErrorCodes::FILE_GENERAL_ERROR;
     }
@@ -473,7 +473,7 @@ int StdFileSystem::SeekFromStartFile(long int lOffset, File * lFile)
 //
 int StdFileSystem::SeekFromEndFile(long int lOffset, File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return ErrorCodes::FILE_GENERAL_ERROR;
     }
@@ -492,7 +492,7 @@ int StdFileSystem::SeekFromEndFile(long int lOffset, File * lFile)
 //
 int StdFileSystem::TellFile(long int * lPosition, File * lFile)
 {
-    if (lFile == NULL)
+    if (nullptr == lFile)
     {
         return ErrorCodes::FILE_GENERAL_ERROR;
     }
@@ -510,16 +510,16 @@ int StdFileSystem::TellFile(long int * lPosition, File * lFile)
 const char * StdFileSystem::GetCwdFS(void)
 {
     cCurrentDirectory = new(std::nothrow) char [MAX_FILENAME];
-    if (cCurrentDirectory == NULL)
+    if (nullptr == cCurrentDirectory)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
-        return NULL;
+        return nullptr;
     }
 
     if (!GetCurrentDir(cCurrentDirectory, MAX_FILENAME))
     {
         delete [] cCurrentDirectory;
-        cCurrentDirectory = NULL;
+        cCurrentDirectory = nullptr;
         return cCurrentDirectory;
     }
     return reinterpret_cast<const char *>(cCurrentDirectory);
@@ -543,18 +543,18 @@ const char * StdFileSystem::GetCwdFS(void)
 const char * WindowsFileSystem::GetExecDirectoryFS(void)
 {
     cExecDirectory = new(std::nothrow) char[MAX_FILENAME];
-    if (cExecDirectory == NULL)
+    if (nullptr == cExecDirectory)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
-        return NULL;
+        return nullptr;
     }
 
-    int lBytes = GetModuleFileName(NULL, cExecDirectory, MAX_FILENAME);
+    int lBytes = GetModuleFileName(nullptr, cExecDirectory, MAX_FILENAME);
 
     if (lBytes == 0)
     {
         delete [] cExecDirectory;
-        cExecDirectory = NULL;
+        cExecDirectory = nullptr;
     }
     return reinterpret_cast<const char *>(cExecDirectory);
 }
@@ -578,10 +578,10 @@ const char * WindowsFileSystem::GetExecDirectoryFS(void)
 const char * LinuxFileSystem::GetExecDirectoryFS(void)
 {
     cExecDirectory = new(std::nothrow) char[MAX_FILENAME];
-    if (cExecDirectory == NULL)
+    if (nullptr == cExecDirectory)
     {
         gErrorManager.Post(ErrorCodes::OUT_OF_MEMORY);
-        return NULL;
+        return nullptr;
     }
 
     int lBytes = readlink("/proc/self/exe", cExecDirectory, MAX_FILENAME);
@@ -589,7 +589,7 @@ const char * LinuxFileSystem::GetExecDirectoryFS(void)
     if (lBytes <= 0)
     {
         delete [] cExecDirectory;
-        cExecDirectory = NULL;
+        cExecDirectory = nullptr;
     }
     cExecDirectory[lBytes] = '\0';
     return reinterpret_cast<const char *>(cExecDirectory);
