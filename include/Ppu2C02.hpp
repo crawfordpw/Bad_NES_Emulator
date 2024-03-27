@@ -11,6 +11,12 @@
 
 #include "Common.hpp"
 
+//========//
+// PpuRegister
+//
+// Class for ppu registers along with functions to manipulate its contents.
+//========//
+//
 template <typename Width>
 class PpuRegister
 {
@@ -124,7 +130,7 @@ class Ppu2C02 : public Device
         // A name table is made of 32x30 tiles for 960 bytes. The remaning 64 bytes are used for the attribute table. This table is how we know which
         // palette (group of 4 colors) to use for a tile. To further complicate things, the screen is also subdived into "blocks", or a 2x2 grid of tiles.
         // The coordinates of the block (from top left of screen down to bottom right) is the index into the attribute table. Each byte represents a block
-        // where every 2-bits in that byte is which palette that tile is using.
+        // where every 2-bits in that byte is which palette that block is using.
         enum Nametable
         {
             NUM_NAME_TABLES = 2,
@@ -133,7 +139,7 @@ class Ppu2C02 : public Device
         MemoryRam mNameTable[NUM_NAME_TABLES];
 
         // Pattern tables contain the shape of tiles that make up backgrounds and sprites. The two pattern tables are used together
-        // to index into a pallete for a specific color, and are typically referred as "left" (first pattern table) and "right"
+        // to index into a palette for a specific color, and are typically referred as "left" (first pattern table) and "right"
         // (second pattern table). Each tile takes up 16-bytes, 8 from the left and 8 right pattern tables. A pattern table is static memory.
         // Each bit is added from the two tables to index (0-3) into a specific palette, which is known from the attribute table.
         enum PatternTable
@@ -143,20 +149,41 @@ class Ppu2C02 : public Device
         };
         MemoryRom mPatternTable[NUM_PATTERN_TABLES];
 
-        enum Oam
-        {
-            NUM_SPRITES
-        };
-
+        // Internal memory inside the PPU containing 64 sprites (4 bytes to describe information about each sprite).
         struct ObjectAttributeMemory
         {
+            enum
+            {
+                // Amount of OAM memory.
+                NUM_PRIMARY_SPRITES     = 64,
+                NUM_SECONDARY_SPRITES   = 8,
+
+                // For mTileIndex.
+                BANK_TILE_BIT           = Bit(0),           // Bit for 8x16 sprites to see which bank of tiles to use.
+                TILE_NUM_MASK           = BitMask(7,1),     // Remaining bits for tile number if sprite is 8x16.
+
+                //For mAttribute.
+                ATTR_PALETTE            = BitMask(2),       // Which palette to use for sprites, which is 4-7. (background gets 0-3).
+                ATTR_UNIMPLEMENTED      = BitMask(3,2),     // Always readback as 0.
+                ATTR_PRIO               = Bit(5),           // Priority (0: in front of background; 1: behind background).
+                ATTR_FLIP_HORIZONAL     = Bit(6),           // Flip sprite horizontally.
+                ATTR_FLIP_VERTICAL      = Bit(7),           // Flip sprite vertically.
+            };
+
             ObjectAttributeMemory(void) : mYPos(0), mTileIndex(0), mAttribute(0), mXPos(0) {}
 
-            uint8_t mYPos;
-            uint8_t mTileIndex;
-            uint8_t mAttribute;
-            uint8_t mXPos;
-        } OAM[NUM_SPRITES];
+            uint8_t mYPos;          // Y position of the sprite. Delayed by one scanline, so must subtract 1 before writing here.
+            uint8_t mTileIndex;     // Tile index number. For 8x8 sprites, it's the tile number withing the pattern table. selected bu bit 3 of PPUCTRL.
+                                    //      For 8x16 sprite (bit 5 set of PPUCTRL), ignore selected pattern table and uses bit 9 from this number for
+                                    //      which bank of tile it uses (0000 or 1000).
+            uint8_t mAttribute;     // Contains various flags about the sprite indicated by which bits are set.
+            uint8_t mXPos;          // Y position of the sprite.
+        } mOam[ObjectAttributeMemory::NUM_PRIMARY_SPRITES];
+
+        // In addition to the OAM, the PPU also contains an internal secondary OAM that is not directly accessible by the program. During each visible scanline,
+        // this memory is cleared, and a linear search of the primary OAM is performed to find sprites within Y range of next scanline (the sprite evaluation phase https://www.nesdev.org/wiki/PPU_sprite_evaluation),
+        // and copied to this memory. These are sprites to be rendered in the next scanline.
+        ObjectAttributeMemory mSecondaryOam[ObjectAttributeMemory::NUM_SECONDARY_SPRITES];
 };
 
 #endif
