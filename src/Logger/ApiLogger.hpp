@@ -61,7 +61,7 @@ class Logger : public ApiLogger
 
     public:
 
-        Logger(bool lRegister = true);
+        explicit Logger(bool lRegister = true);
         virtual ~Logger(void) {UnregisterLogger(mId);}
 
     protected:
@@ -83,7 +83,7 @@ class StdLogger : public Logger
 {
     public:
 
-        StdLogger(bool lRegister = true) : Logger(lRegister) {}
+        explicit StdLogger(bool lRegister = true) : Logger(lRegister) {}
         virtual ~StdLogger(void) = default;
 
     protected:
@@ -104,7 +104,7 @@ class FileLogger : public Logger
 {
     public:
 
-        FileLogger(bool lRegister = true);
+        explicit FileLogger(bool lRegister = true);
         virtual ~FileLogger(void);
 
         int OpenLogFile(const char * lFileName);

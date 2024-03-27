@@ -24,7 +24,7 @@ class Mapper
 {
     public:
 
-        Mapper(Cartridge * lCartridge) : mCartridge(lCartridge) {}
+        explicit Mapper(Cartridge * lCartridge) : mCartridge(lCartridge) {}
         virtual ~Mapper(void) = default;
 
         virtual bool MapRead(AddressType lAddress, AddressType * lMappedAddress, DataType * lData) = 0;

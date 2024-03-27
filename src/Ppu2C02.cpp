@@ -25,8 +25,8 @@
 //--------//
 //
 Ppu2C02::Ppu2C02(void)
- :  mNameTable      {{NAME_TABLE_SIZE}, {NAME_TABLE_SIZE}},
-    mPatternTable   {{PATTERN_TABLE_SIZE}, {PATTERN_TABLE_SIZE}}
+ :  mNameTable      {MemoryRam{NAME_TABLE_SIZE}, MemoryRam{NAME_TABLE_SIZE}},
+    mPatternTable   {MemoryRom{PATTERN_TABLE_SIZE}, MemoryRom{PATTERN_TABLE_SIZE}}
 {
 }
 

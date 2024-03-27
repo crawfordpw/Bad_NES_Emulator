@@ -24,7 +24,7 @@ struct WindowProperties
     bool         mCenter;
     const char * mTitle;
 
-    WindowProperties(unsigned int lHeight = 480, unsigned int lWidth = 780, unsigned int lPixelHeight = 2,
+    explicit WindowProperties(unsigned int lHeight = 480, unsigned int lWidth = 780, unsigned int lPixelHeight = 2,
                      unsigned int lPixelWidth = 2, bool lCenter = true, const char * lTitle = "Bad NES")
       : mHeight(lHeight), mWidth(lWidth), mPixelHeight(lPixelHeight), mPixelWidth(lPixelWidth), mCenter(lCenter),
         mTitle(lTitle)

@@ -22,7 +22,7 @@ class StdFile : public File
     public:
 
         StdFile() : mFileHandle(nullptr) {}
-        StdFile(const char * lFilename, const char * lMode);
+        explicit StdFile(const char * lFilename, const char * lMode);
         virtual ~StdFile(void) = default;
 
         virtual int     Open(const char * lFilename, const char * lMode) override;

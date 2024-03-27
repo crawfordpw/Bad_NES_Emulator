@@ -37,7 +37,7 @@ class Mapper000 : public Mapper
         };
 
         // According to https://www.nesdev.org/wiki/NROM most emulators just provide 8kb of program ram.
-        Mapper000(Cartridge * lCartridge) : Mapper(lCartridge), mRam(PRG_RAM_SIZE) {}
+        explicit Mapper000(Cartridge * lCartridge) : Mapper(lCartridge), mRam(PRG_RAM_SIZE) {}
         virtual ~Mapper000(void) = default;
 
         virtual bool MapRead(AddressType lAddress, AddressType * lMappedAddress, DataType * lData)  override;

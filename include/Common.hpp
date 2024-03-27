@@ -65,13 +65,45 @@ class Functor
 //
 // Simple function to get value of a bit position.
 //
-// param[in]    lPosition  The position to get.
+// param[in]    lPosition  The bit position to get the value of.
 // returns  The value of the bit.
 //========//
 //
-inline constexpr uint16_t Bit(uint16_t lPosition)
+template <typename UINT>
+inline constexpr UINT Bit(UINT lPosition)
 {
-    return (1 << lPosition);
+    return (1 << static_cast<unsigned>(lPosition));
+}
+
+//========//
+// BitMask
+//
+// Simple function to mask off a number of bits at a specific location.
+//
+// param[in]    lWidth      How many consecutive bits in the mask.
+// param[in]    lPosition   How much to shift the mask left by.
+// returns  The value of the bit.
+//========//
+//
+template <typename UINT>
+inline constexpr UINT BitMask(UINT lWidth, UINT lPosition)
+{
+    return (~(~0U << static_cast<unsigned>(lWidth)) << static_cast<unsigned>(lPosition));
+}
+
+//========//
+// BitMask
+//
+// Simple function to mask off a number of bits from bit 0.
+//
+// param[in]    lWidth      How many consecutive bits in the mask.
+// returns  The value of the bit.
+//========//
+//
+template <typename UINT>
+inline constexpr UINT BitMask(UINT lWidth)
+{
+    return BitMask(lWidth, static_cast<UINT>(0));
 }
 
 #ifdef USE_LOGGER

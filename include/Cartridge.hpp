@@ -23,7 +23,7 @@ class Cartridge : public Device
 {
     public:
 
-        Cartridge(const char * lFilename);
+        explicit Cartridge(const char * lFilename);
         virtual ~Cartridge(void);
 
         bool             IsValidImage(void) {return mValidImage;}

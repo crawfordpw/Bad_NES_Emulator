@@ -24,8 +24,8 @@ class Memory
 {
     public:
 
-        Memory(void)              : mSize(0) {}
-        Memory(AddressType lSize) : mSize(lSize) {}
+        Memory(void)                       : mSize(0) {}
+        explicit Memory(AddressType lSize) : mSize(lSize) {}
         virtual ~Memory(void) {}
 
         virtual DataType Read(AddressType lAddress)                     = 0;
@@ -53,7 +53,7 @@ class MemoryRom : public Memory
     public:
 
         MemoryRom(void) : Memory(), mMemory(nullptr) {}
-        MemoryRom(AddressType lSize) : Memory(lSize), mMemory(nullptr) {Resize(lSize);}
+        explicit MemoryRom(AddressType lSize) : Memory(lSize), mMemory(nullptr) {Resize(lSize);}
         virtual ~MemoryRom(void);
 
         virtual DataType Read(AddressType lAddress)                     override;
@@ -166,7 +166,7 @@ class MemoryRam : public MemoryRom
     public:
 
         MemoryRam(void) : MemoryRom() {}
-        MemoryRam(AddressType lSize) : MemoryRom(lSize) {}
+        explicit MemoryRam(AddressType lSize) : MemoryRom(lSize) {}
         virtual ~MemoryRam(void) = default;
 
         virtual void Write(AddressType lAddress, DataType lData) override;

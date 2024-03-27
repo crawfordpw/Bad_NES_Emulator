@@ -37,7 +37,7 @@ class GlfwWindow : public Window
 {
     public:
 
-        GlfwWindow(const WindowProperties & lProperties) {Init(&lProperties);}
+        explicit GlfwWindow(const WindowProperties & lProperties) {Init(&lProperties);}
         virtual ~GlfwWindow(void) {Close();}
 
         virtual bool ShouldClose(void);
